@@ -43,12 +43,12 @@ def exponential ():
 
 def binomial ():
     np.random.seed(SEED)
-    SUCCESS = 10
+    TRIES = 10
     P = 0.5
     _, axes = plt.subplots(2, 2, figsize=(12, 10))
     axes = axes.ravel()
     for i, n in enumerate(N_VALUES):
-        x = np.random.binomial(p=P, n=SUCCESS, size=n)
+        x = np.random.binomial(p=P, n=TRIES, size=n)
         axes[i].hist(x, bins='auto', edgecolor='black', alpha=0.5)
         axes[i].set_title(f'Binomial (n={n})')
         axes[i].set_xlabel('$x$')
