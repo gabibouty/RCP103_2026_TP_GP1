@@ -1,0 +1,163 @@
+\documentclass[11pt,a4paper]{article}
+
+% -------------------------------------------------
+% ENCODAGE / LANGUE
+% -------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+
+% -------------------------------------------------
+% MISE EN PAGE
+% -------------------------------------------------
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{setspace}
+\usepackage{parskip} % espace entre paragraphes
+
+% -------------------------------------------------
+% MATHS / IMAGES / TABLEAUX
+% -------------------------------------------------
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{float}
+
+% -------------------------------------------------
+% LIENS
+% -------------------------------------------------
+\usepackage[colorlinks=true,linkcolor=black,urlcolor=blue,citecolor=black]{hyperref}
+
+% -------------------------------------------------
+% CODE (optionnel)
+% -------------------------------------------------
+\usepackage{xcolor}
+\usepackage{listings}
+\renewcommand{\lstlistingname}{Code}
+
+\definecolor{backcolour}{rgb}{0.95,0.95,0.95}
+\definecolor{codegreen}{rgb}{0,0.5,0}
+\definecolor{codegray}{rgb}{0.4,0.4,0.4}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    numberstyle=\tiny\color{codegray},
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    numbers=left,
+    numbersep=5pt,
+    showstringspaces=false
+}
+
+\lstset{style=mystyle}
+
+% -------------------------------------------------
+% TITRE
+% -------------------------------------------------
+\title{\textbf{RCP103 -- Rapport de TP}\\Titre de la manipulation}
+\author{BOURDAYA Amina, BOUTY Gabriel, CLERC Julien}
+\date{\today}
+
+% -------------------------------------------------
+% DOCUMENT
+% -------------------------------------------------
+\begin{document}
+
+\maketitle
+
+\bigskip
+
+\begin{abstract}
+Ce document présente un compte rendu rapide de la manipulation réalisée en travaux pratiques. Il résume l'objectif, la méthode employée, les résultats obtenus et les principales conclusions.
+\end{abstract}
+
+\bigskip
+
+% -------------------------------------------------
+\section{Introduction}
+
+Présenter brièvement le contexte du TP, la problématique étudiée et les objectifs de la manipulation.
+
+Exemple :
+L'objectif de cette séance est d'étudier le comportement d'un système électronique simple et de mesurer ses performances.
+
+% -------------------------------------------------
+\section{Matériel et Méthodes}
+
+\subsection{Matériel utilisé}
+
+\begin{itemize}
+    \item Appareil 1
+    \item Appareil 2
+    \item Logiciel utilisé
+\end{itemize}
+
+\subsection{Procédure}
+
+Décrire rapidement les étapes suivies :
+
+\begin{enumerate}
+    \item Mise en place du montage
+    \item Réalisation des mesures
+    \item Analyse des résultats
+\end{enumerate}
+
+% -------------------------------------------------
+\section{Résultats}
+
+Présenter les mesures, observations ou graphiques.
+
+\subsection{Tableau de mesures}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ccc}
+\toprule
+Essai & Valeur mesurée & Unité \\
+\midrule
+1 & 12.4 & V \\
+2 & 12.6 & V \\
+3 & 12.5 & V \\
+\bottomrule
+\end{tabular}
+\caption{Exemple de mesures}
+\end{table}
+
+\subsection{Figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.65\textwidth]{../binomial.png}
+\caption{Résultat expérimental}
+\end{figure}
+
+% -------------------------------------------------
+\section{Analyse}
+
+Interpréter les résultats :
+
+\begin{itemize}
+    \item Les valeurs mesurées sont cohérentes.
+    \item Une légère dispersion est observée.
+    \item Les écarts peuvent provenir des incertitudes de mesure.
+\end{itemize}
+
+% -------------------------------------------------
+\section{Conclusion}
+
+Faire une synthèse rapide :
+
+La manipulation a permis de valider le fonctionnement attendu du système étudié. Les mesures obtenues sont conformes aux hypothèses initiales.
+
+% -------------------------------------------------
+\section*{Annexe (optionnelle)}
+
+\begin{lstlisting}[language=Python,caption=Script de traitement]
+import numpy as np
+
+mesures = [12.4, 12.6, 12.5]
+print(np.mean(mesures))
+\end{lstlisting}
+
+\end{document}
