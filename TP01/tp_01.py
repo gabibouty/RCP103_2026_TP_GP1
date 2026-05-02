@@ -42,9 +42,10 @@ def draw_on_axe(
 
 def uniform_discrete():
     axes = init_axes()
+    print("=== uniform_discrete ===")
     for i, n in enumerate(N_VALUES):
         MIN = 0
-        MAX = 20
+        MAX = 20 
         rng = np.random.default_rng(seed=SEED)
         x = rng.integers(low=MIN, high=MAX + 1, size=n)
         draw_on_axe(
@@ -56,47 +57,67 @@ def uniform_discrete():
             start_at_zero=False,
             use_int_x_axes=True,
         )
+        theoretical = (MIN + MAX) / 2
+        real = np.mean(x)
+        error = real - theoretical
+        print(f"n: {n:6}, Moyenne théorique: {theoretical:.4f}, Moyenne réelle: {real:.4f}, Erreur: {error:.4f}")
     plt.tight_layout()
     plt.savefig("uniform_discrete.png")
 
 
 def uniform_real():
     axes = init_axes()
+    print("\n=== uniform_real ===")
     for i, n in enumerate(N_VALUES):
         rng = np.random.default_rng(seed=SEED)
         # By default, rng.uniform return values in range [0.0;1.0] (include)
         x = rng.uniform(size=n)
         draw_on_axe(axes[i], x, n, "Uniform Real")
+        theoretical = (0.0 + 1.0) / 2
+        real = np.mean(x)
+        error = real - theoretical
+        print(f"n: {n:6}, Moyenne théorique: {theoretical:.4f}, Moyenne réelle: {real:.4f}, Erreur: {error:.4f}")
     plt.tight_layout()
     plt.savefig("uniform_real.png")
 
 
 def exponential():
     axes = init_axes()
+    print("\n=== exponential ===")
     for i, n in enumerate(N_VALUES):
         AVG = 1
         # More AVG is high, more the distibution decrease quickly
         rng = np.random.default_rng(seed=SEED)
         x = rng.exponential(scale=(1 / AVG), size=n)
         draw_on_axe(axes[i], x, n, "Exponential")
+        theoretical = 1 # Because Moyenne théorique : 1/λ and λ = 1 for our group
+        real = np.mean(x)
+        error = real - theoretical
+        print(f"n: {n:6}, Moyenne théorique: {theoretical:.4f}, Moyenne réelle: {real:.4f}, Erreur: {error:.4f}")
     plt.tight_layout()
     plt.savefig("exponential.png")
 
 
 def normal():
     axes = init_axes()
+    print("\n=== normal ===")
     for i, n in enumerate(N_VALUES):
         MU_AVG = 0
         SIGMA_VAR = 1
         rng = np.random.default_rng(seed=SEED)
         x = rng.normal(loc=MU_AVG, scale=SIGMA_VAR, size=n)
         draw_on_axe(axes[i], x, n, "Normal", start_at_zero=False)
+        theoretical = 0 # Because MU_AVG = 0
+        real = np.mean(x)
+        error = real - theoretical
+        print(f"n: {n:6}, Moyenne théorique: {theoretical:.4f}, Moyenne réelle: {real:.4f}, Erreur: {error:.4f}")
     plt.tight_layout()
     plt.savefig("normal.png")
 
 
 def binomial():
     axes = init_axes()
+    print("\n=== binomial ===")
     for i, n in enumerate(N_VALUES):
         TRIES = 10
         P = 0.50
@@ -111,6 +132,10 @@ def binomial():
             use_int_x_axes=True,
             start_at_zero=False,
         )
+        theoretical = TRIES * P
+        real = np.mean(x)
+        error = real - theoretical
+        print(f"n: {n:6}, Moyenne théorique: {theoretical:.4f}, Moyenne réelle: {real:.4f}, Erreur: {error:.4f}")
     plt.tight_layout()
     plt.savefig("binomial.png")
 
