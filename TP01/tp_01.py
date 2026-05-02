@@ -22,9 +22,9 @@ def init_axes():
 
 
 def draw_on_axe(
-    axe, x, n, title, bins="auto", use_int_x_axes=False, start_at_zero=True
+    axe, x, n, title, bins="auto", use_int_x_axes=False, start_at_zero=True, density=False
 ):
-    axe.hist(x, bins=bins, edgecolor="black", alpha=0.5)
+    axe.hist(x, bins=bins, edgecolor="black", alpha=0.5, density=density)
     axe.set_title(f"{title} (n={n})")
     axe.set_xlabel("$x$")
     axe.set_ylabel("$F$")
@@ -72,7 +72,7 @@ def uniform_real():
         rng = np.random.default_rng(seed=SEED)
         # By default, rng.uniform return values in range [0.0;1.0] (include)
         x = rng.uniform(size=n)
-        draw_on_axe(axes[i], x, n, "Uniform Real")
+        draw_on_axe(axes[i], x, n, "Uniform Real", density=True)
         theoretical = (0.0 + 1.0) / 2
         real = np.mean(x)
         error = real - theoretical
