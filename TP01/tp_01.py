@@ -2,6 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 
+# TODO:
+#   - theorical law curve
+
+
 # ========================================================
 # CONSTANTS
 
@@ -36,6 +40,13 @@ def draw_on_axe(
         axe.set_ylim(bottom=0)
 
 
+def print_x (x, n, esp):
+    print(f"n: {n:6}, 5 premières et 5 dernières valeurs: {x[:5]} ... {x[-5:]}")
+    real = np.mean(x)
+    error = real - esp       
+    print(f"n: {n:6}, Espérance: {esp:.4f}, Moyenne constatée: {real:.4f}, Delta: {error:.4f}")
+
+
 # ========================================================
 # DISTRIBUTIONS
 
@@ -57,11 +68,7 @@ def uniform_discrete():
             start_at_zero=False,
             use_int_x_axes=True,
         )
-        theoretical = (MIN + MAX) / 2
-        real = np.mean(x)
-        error = real - theoretical
-        print(f"n: {n:6}, 5 premières valeurs: {x[:5]}") # Affichage des 5 premières valeurs
-        print(f"n: {n:6}, Moyenne théorique: {theoretical:.4f}, Moyenne réelle: {real:.4f}, Erreur: {error:.4f}")
+        print_x (x, n, (MIN + MAX) / 2)
     plt.tight_layout()
     plt.savefig("uniform_discrete.png")
 
@@ -74,11 +81,7 @@ def uniform_real():
         # By default, rng.uniform return values in range [0.0;1.0] (include)
         x = rng.uniform(size=n)
         draw_on_axe(axes[i], x, n, "Uniform Real", density=True)
-        theoretical = (0.0 + 1.0) / 2
-        real = np.mean(x)
-        error = real - theoretical
-        print(f"n: {n:6}, 5 premières valeurs: {x[:5]}") # Affichage des 5 premières valeurs
-        print(f"n: {n:6}, Moyenne théorique: {theoretical:.4f}, Moyenne réelle: {real:.4f}, Erreur: {error:.4f}")
+        print_x (x, n, (0.0 + 1.0) / 2)
     plt.tight_layout()
     plt.savefig("uniform_real.png")
 
@@ -92,11 +95,7 @@ def exponential():
         rng = np.random.default_rng(seed=SEED)
         x = rng.exponential(scale=(1 / AVG), size=n)
         draw_on_axe(axes[i], x, n, "Exponential", density=True)
-        theoretical = 1 # Because Moyenne théorique : 1/λ and λ = 1 for our group
-        real = np.mean(x)
-        error = real - theoretical
-        print(f"n: {n:6}, 5 premières valeurs: {x[:5]}") # Affichage des 5 premières valeurs
-        print(f"n: {n:6}, Moyenne théorique: {theoretical:.4f}, Moyenne réelle: {real:.4f}, Erreur: {error:.4f}")
+        print_x (x, n, AVG)
     plt.tight_layout()
     plt.savefig("exponential.png")
 
@@ -110,11 +109,7 @@ def normal():
         rng = np.random.default_rng(seed=SEED)
         x = rng.normal(loc=MU_AVG, scale=SIGMA_VAR, size=n)
         draw_on_axe(axes[i], x, n, "Normal", start_at_zero=False, density=True)
-        theoretical = 0 # Because MU_AVG = 0
-        real = np.mean(x)
-        error = real - theoretical
-        print(f"n: {n:6}, 5 premières valeurs: {x[:5]}") # Affichage des 5 premières valeurs
-        print(f"n: {n:6}, Moyenne théorique: {theoretical:.4f}, Moyenne réelle: {real:.4f}, Erreur: {error:.4f}")
+        print_x (x, n, MU_AVG)
     plt.tight_layout()
     plt.savefig("normal.png")
 
@@ -136,11 +131,7 @@ def binomial():
             use_int_x_axes=True,
             start_at_zero=False,
         )
-        theoretical = TRIES * P
-        real = np.mean(x)
-        error = real - theoretical
-        print(f"n: {n:6}, 5 premières valeurs: {x[:5]}") # Affichage des 5 premières valeurs
-        print(f"n: {n:6}, Moyenne théorique: {theoretical:.4f}, Moyenne réelle: {real:.4f}, Erreur: {error:.4f}")
+        print_x (x, n, TRIES * P)
     plt.tight_layout()
     plt.savefig("binomial.png")
 
