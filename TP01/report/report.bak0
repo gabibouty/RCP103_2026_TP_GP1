@@ -90,7 +90,7 @@
 \bigskip
 
 \begin{abstract}
-	Ce TP a pour objectif d'écrire un programme générant des nombres aléatoires selon les distributions uniforme discrète, uniforme continue, normale, exponentielle, et binomiale.
+Ce TP a pour objectif d'écrire un programme générant des nombres aléatoires selon les distributions uniforme discrète, uniforme continue, normale, exponentielle, et binomiale.
 \end{abstract}
 
 \bigskip
@@ -101,17 +101,17 @@
 
 Pour générer une variable aléatoire dans un environnement informatique, les implémentations standards proposées reposent sur deux composants :
 \begin{itemize}
-	\item Le générateur pseudo-aléatoire (MT19937, PGC64, etc.) qui va générer une séquence de bit de manière déterministe, basée sur une valeur de départ (“seed”).
-	\item La distribution qui va appliquer la description mathématique de la loi de distribution sur cette séquence pseudo-aléatoire pour obtenir la variable aléatoire à proprement parlé.
+    \item Le générateur pseudo-aléatoire (MT19937, PGC64, etc.) qui va générer une séquence de bit de manière déterministe, basée sur une valeur de départ (“seed”).
+    \item La distribution qui va appliquer la description mathématique de la loi de distribution sur cette séquence pseudo-aléatoire pour obtenir la variable aléatoire à proprement parlé.
 \end{itemize}
 
 \bigskip
 \bigskip
 
 \begin{figure}[H]
-	\centering
-	\includegraphics[width=0.65\textwidth]{./random_generation.png}
-	\caption{Génération de valeurs aléatoires sur environnement informatique}
+\centering
+\includegraphics[width=0.65\textwidth]{./random_generation.png}
+\caption{Génération de valeurs aléatoires sur environnement informatique}
 \end{figure}
 
 \bigskip
@@ -132,8 +132,8 @@ n:10000, 4 premières et 2 dernières valeurs: [9, 10, 15, 19, ... 11, 18]
 \subsection{Conditions d'expérimentation}
 Le programme créé pour mener les expérimentations de ce TP a été développé en python avec l'aide des librairies:
 \begin{itemize}
-	\item numpy
-	\item matplotlib
+    \item numpy
+    \item matplotlib
 \end{itemize}
 Le code source est disponible en annexe.
 
@@ -144,18 +144,18 @@ Le code source est disponible en annexe.
 
 \subsection{Description}
 \[
-	P(X = k) =
-	\begin{cases}
-		\frac{1}{b - a + 1} & \text{si } k \in \{a, a+1, \dots, b\} \\
-		0                   & \text{sinon}
-	\end{cases}
+P(X = k) = 
+\begin{cases} 
+\frac{1}{b - a + 1} & \text{si } k \in \{a, a+1, \dots, b\} \\
+0 & \text{sinon}
+\end{cases}
 \]
 
 \subsection{Paramètres}
 
 \begin{itemize}
-	\item $a = 0$
-	\item $b = 20$
+    \item $a = 0$
+    \item $b = 20$
 \end{itemize}
 \emph{NB: Il y a donc 21 valeurs possibles.}
 
@@ -164,9 +164,9 @@ Le code source est disponible en annexe.
 \subsection{Résultats}
 
 \begin{figure}[H]
-	\centering
-	\includegraphics[width=0.95\textwidth]{../uniform_discrete.png}
-	\caption{Histogramme des valeurs aléatoires pour $n$ tirages, selon une distribution uniforme discrète}
+\centering
+\includegraphics[width=0.95\textwidth]{../uniform_discrete.png}
+\caption{Histogramme des valeurs aléatoires pour $n$ tirages, selon une distribution uniforme discrète}
 \end{figure}
 
 \newpage
@@ -195,17 +195,17 @@ De même, on observe que l'histogramme, se rapproche de la PMF théorique, au fu
 
 \subsection{Description}
 \[
-	f(x) = \begin{cases}
-		\frac{1}{b - a} & \text{si } a \le x \le b \\
-		0               & \text{sinon}
-	\end{cases}
+f(x) = \begin{cases} 
+\frac{1}{b - a} & \text{si } a \le x \le b \\ 
+0 & \text{sinon} 
+\end{cases}
 \]
 
 \subsection{Paramètres}
 
 \begin{itemize}
-	\item $a = 0.0$
-	\item $b = 1.0$
+    \item $a = 0.0$
+    \item $b = 1.0$
 \end{itemize}
 
 \bigskip
@@ -213,9 +213,9 @@ De même, on observe que l'histogramme, se rapproche de la PMF théorique, au fu
 \subsection{Résultats}
 
 \begin{figure}[H]
-	\centering
-	\includegraphics[width=0.95\textwidth]{../uniform_real.png}
-	\caption{Histogramme des valeurs aléatoires pour $n$ tirages, selon une distribution uniforme continue}
+\centering
+\includegraphics[width=0.95\textwidth]{../uniform_real.png}
+\caption{Histogramme des valeurs aléatoires pour $n$ tirages, selon une distribution uniforme continue}
 \end{figure}
 
 \newpage
@@ -244,16 +244,16 @@ De même, on observe que l'histogramme, se rapproche de la PDF théorique, au fu
 
 \subsection{Description}
 \[
-	f(x) = \begin{cases}
-		\lambda e^{-\lambda x} & \text{si } x \ge 0 \\
-		0                      & \text{si } x < 0
-	\end{cases}
+f(x) = \begin{cases} 
+\lambda e^{-\lambda x} & \text{si } x \ge 0 \\ 
+0 & \text{si } x < 0 
+\end{cases}
 \]
 
 \subsection{Paramètres}
 
 \begin{itemize}
-	\item $E[x] = 1.0$
+    \item $E[x] = 1.0$
 \end{itemize}
 \emph{donc: $\lambda = 1 / E = 1$}
 
@@ -262,9 +262,9 @@ De même, on observe que l'histogramme, se rapproche de la PDF théorique, au fu
 \subsection{Résultats}
 
 \begin{figure}[H]
-	\centering
-	\includegraphics[width=0.95\textwidth]{../exponential.png}
-	\caption{Histogramme des valeurs aléatoires pour $n$ tirages, selon une distribution exponentielle}
+\centering
+\includegraphics[width=0.95\textwidth]{../exponential.png}
+\caption{Histogramme des valeurs aléatoires pour $n$ tirages, selon une distribution exponentielle}
 \end{figure}
 
 \newpage
@@ -284,10 +284,10 @@ n:  10000, Espérance théorique: 1, Espérance constatée: 1.001, Delta: 0.0012
 \subsection{Analyses}
 Même s'il est difficile de constater pour un faible nombre de tirages, pour chacun des histogrammes, on observe les caractéristiques de la loi de distribution exponentielle, à savoir :
 \begin{itemize}
-	\item Une forte probabilité d'avoir une valeur proche de 0
-	\item Une décroissance suivant une courbe exponentielle
+    \item Une forte probabilité d'avoir une valeur proche de 0
+    \item Une décroissance suivant une courbe exponentielle
 \end{itemize}
-Même si la probabilité d'obtenir un grand nombre est extrêmement faible, on observe que plus notre nombre de tirages augmente, plus nos valeurs maximales augmentent. Cette observation corrobore le fait que la probabilité de tirer un grand nombre reste non nulle.
+Même si la probabilité d'obtenir un grand nombre est extrêmement faible, on observe que plus notre nombre de tirages augmente, plus nos valeurs maximales augmentent. Cette observation corrobore le fait que la probabilité de tirer un grand nombre reste non nulle. 
 
 \newpage
 
@@ -296,7 +296,7 @@ Même si la probabilité d'obtenir un grand nombre est extrêmement faible, on o
 
 \subsection{Description}
 \[
-	f(x) = \frac{1}{\sigma \sqrt{2\pi}} e^{-\frac{1}{2} \left( \frac{x - \mu}{\sigma} \right)^2}
+f(x) = \frac{1}{\sigma \sqrt{2\pi}} e^{-\frac{1}{2} \left( \frac{x - \mu}{\sigma} \right)^2}
 \]
 
 où $\mu$ représente l'espérance (valeur moyenne attendue), et $\sigma$ représente l'écart type.
@@ -304,8 +304,8 @@ où $\mu$ représente l'espérance (valeur moyenne attendue), et $\sigma$ repré
 \subsection{Paramètres}
 
 \begin{itemize}
-	\item $\mu = 0.0$
-	\item $\sigma = 1.0$
+    \item $\mu = 0.0$
+    \item $\sigma = 1.0$
 \end{itemize}
 
 \bigskip
@@ -313,9 +313,9 @@ où $\mu$ représente l'espérance (valeur moyenne attendue), et $\sigma$ repré
 \subsection{Résultats}
 
 \begin{figure}[H]
-	\centering
-	\includegraphics[width=0.95\textwidth]{../normal.png}
-	\caption{Histogramme des valeurs aléatoires pour $n$ tirages, selon une distribution normale}
+\centering
+\includegraphics[width=0.95\textwidth]{../normal.png}
+\caption{Histogramme des valeurs aléatoires pour $n$ tirages, selon une distribution normale}
 \end{figure}
 
 \newpage
@@ -336,12 +336,12 @@ n:  10000, Espérance théorique: 0, Espérance constatée: -0.01091, Delta: -0.
 
 On constate que pour une valeur très faible de tirage l'ensemble des valeurs n'est pas tiré.
 Plus on augmente le nombre de tirages, plus la forme de l'histogramme prend rapidement une forme de cloche quasi symétrique, centrée autour de notre valeur moyenne, caractéristique de la loi normale.
-On constate, même avec un nombre de tirages relativement faible, qu'on retrouve la règle empirique de répartition de la loi normale :
+On constate, même avec un nombre de tirages relativement faible, qu'on retrouve la règle empirique de répartition de la loi normale : 
 
 \begin{itemize}
-	\item 68 \% des données se situent à moins de 1 écart-type de la moyenne.
-	\item 95 \% des données se situent à moins de 2 écarts-types de la moyenne.
-	\item 99,7 \% des données se situent à moins de 3 écarts-types de la moyenne.
+\item 68 \% des données se situent à moins de 1 écart-type de la moyenne.
+\item 95 \% des données se situent à moins de 2 écarts-types de la moyenne.
+\item 99,7 \% des données se situent à moins de 3 écarts-types de la moyenne.
 \end{itemize}
 
 Cependant, pour un nombre de tirage trop faible (ici 10), on constate que notre tirage ne nous amène pas à obtenir notre valeur moyenne attendue.
@@ -353,17 +353,17 @@ Cependant, pour un nombre de tirage trop faible (ici 10), on constate que notre 
 
 \subsection{Description}
 \[
-	P(X = k) = \begin{cases}
-		\binom{n}{k} p^k (1-p)^{n-k} & \text{si } k \in \{0, 1, \dots, n\} \\
-		0                            & \text{sinon}
-	\end{cases}
+P(X = k) = \begin{cases} 
+\binom{n}{k} p^k (1-p)^{n-k} & \text{si } k \in \{0, 1, \dots, n\} \\ 
+0 & \text{sinon} 
+\end{cases}
 \]
 
 \subsection{Paramètres}
 
 \begin{itemize}
-	\item $p = 0.5$
-	\item $n = 10$
+    \item $p = 0.5$
+    \item $n = 10$
 \end{itemize}
 
 \bigskip
@@ -371,9 +371,9 @@ Cependant, pour un nombre de tirage trop faible (ici 10), on constate que notre 
 \subsection{Résultats}
 
 \begin{figure}[H]
-	\centering
-	\includegraphics[width=0.95\textwidth]{../binomial.png}
-	\caption{Histogramme des valeurs aléatoires pour $n$ tirages, selon une distribution binomiale}
+\centering
+\includegraphics[width=0.95\textwidth]{../binomial.png}
+\caption{Histogramme des valeurs aléatoires pour $n$ tirages, selon une distribution binomiale}
 \end{figure}
 
 \newpage
@@ -397,7 +397,7 @@ Pour autant, nous observons que la probabilité que cette valeur soit différent
 De plus, on constate que lorsque le nombre de tirages devient très grand, on voit se dessiner l'approximation de la loi binomiale définie par:
 
 \[
-	f(x) \approx \frac{1}{\sqrt{2\pi np(1-p)}} e^{-\frac{(x-np)^2}{2np(1-p)}}
+f(x) \approx \frac{1}{\sqrt{2\pi np(1-p)}} e^{-\frac{(x-np)^2}{2np(1-p)}}
 \]
 
 \bigskip
@@ -408,9 +408,9 @@ De plus, on constate que lorsque le nombre de tirages devient très grand, on vo
 % -------------------------------------------------
 \section{Conclusion}
 
-À travers ce TP, nous avons pu observer et mettre évidence les principales caractéristiques de quelques distributions de variables aléatoires.
+À travers ce TP, nous avons pu observer et mettre évidence les principales caractéristiques de quelques distributions de variables aléatoires. 
 
-Nous avons observé à travers les histogrammes que, pour toutes les distributions étudiées, plus le nombre de tirages est grand, plus les résultats se rapprochent des valeurs théoriques attendues. La diminution de l'écart entre les valeurs théoriques attendues, et les valeurs observées, à mesure que le nombre de tirages augmente, met en évidence la loi des grands nombres, vue en cours.
+Nous avons observé à travers les histogrammes que, pour toutes les distributions étudiées, plus le nombre de tirages est grand, plus les résultats se rapprochent des valeurs théoriques attendues. La diminution de l'écart entre les valeurs théoriques attendues, et les valeurs observées, à mesure que le nombre de tirages augmente, met en évidence la loi des grands nombres, vue en cours. 
 
 \newpage
 
