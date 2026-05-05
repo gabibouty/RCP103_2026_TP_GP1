@@ -13,8 +13,14 @@ class Message:
     def get_message_id(self) -> int:
         return self.__id
 
-    def get_message_time(self) -> float:
-        return self.__timestamp
+    def get_message_send_time(self) -> float:
+        return self.__send_time
+    
+    def get_message_arrival_time(self) -> float:
+        return self.__arrival_time
+    
+    def get_message_server_time(self) -> float:
+        return self.__server_start
 
     def get_message_source(self) -> int:
         return self.__source
@@ -25,8 +31,14 @@ class Message:
     def set_message_id(self, t_id: int):
         self.__id = t_id
 
-    def set_message_time(self, t_timestamp: float) -> float:
-        self.__timestamp = t_timestamp
+    def set_message_send_time(self, t_timestamp: float) -> float:
+        self.__send_time = t_timestamp
+
+    def set_message_arrival_time(self, t_timestamp: float) -> float:
+        self.__arrival_time = t_timestamp
+    
+    def set_message_server_time(self, t_timestamp: float) -> float:
+        self.__server_start = t_timestamp
 
     def set_message_source(self, t_source: int) -> int:
         self.__source = t_source
