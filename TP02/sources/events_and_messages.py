@@ -6,7 +6,6 @@ class Message:
         self.__id: int = t_id
         self.__source: int = t_source
         self.__destination: int = t_destination
-        # TODO: define timestamp?
         self.__timestamp: float = 0
 
     def get_message_id(self) -> int:
