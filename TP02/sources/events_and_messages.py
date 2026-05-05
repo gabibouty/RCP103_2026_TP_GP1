@@ -56,11 +56,14 @@ class Event:
         self.__timestamp: float = t_timestamp
         self.__message: Message = t_message
 
-    def get_event_time(self) -> int:
+    def get_event_time(self) -> float:
         return self.__timestamp
 
     def get_event_type(self) -> EventType:
         return self.__type
+    
+    def get_message(self) -> Message:
+        return self.__message
 
     def set_event_time(self, t_timestamp: float):
         self.__timestamp = t_timestamp
