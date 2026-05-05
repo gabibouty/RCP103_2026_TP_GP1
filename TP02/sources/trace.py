@@ -1,4 +1,4 @@
-from sources import Event, EventType, Message
+from events_and_messages import Event, EventType, Message
 import csv
 
 def get_time_and_node(e: Event):
