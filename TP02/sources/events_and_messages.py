@@ -6,7 +6,9 @@ class Message:
         self.__id: int = t_id
         self.__source: int = t_source
         self.__destination: int = t_destination
-        self.__timestamp: float = 0
+        self.__send_time: float = 0
+        self.__arrival_time: float = 0
+        self.__server_start: float = 0
 
     def get_message_id(self) -> int:
         return self.__id
@@ -61,7 +63,7 @@ class Event:
 
     def get_event_type(self) -> EventType:
         return self.__type
-    
+
     def get_message(self) -> Message:
         return self.__message
 
