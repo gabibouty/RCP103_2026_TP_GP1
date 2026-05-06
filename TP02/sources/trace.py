@@ -1,6 +1,7 @@
 from events_and_messages import Event, EventType, Message
 import csv
 
+
 def get_time_and_node(e: Event):
     if e.get_event_type() == EventType.SEND_MSG:
         node = e.get_message().get_message_source()

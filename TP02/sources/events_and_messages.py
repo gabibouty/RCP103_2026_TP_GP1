@@ -15,10 +15,10 @@ class Message:
 
     def get_message_send_time(self) -> float:
         return self.__send_time
-    
+
     def get_message_arrival_time(self) -> float:
         return self.__arrival_time
-    
+
     def get_message_server_time(self) -> float:
         return self.__server_start
 
@@ -36,7 +36,7 @@ class Message:
 
     def set_message_arrival_time(self, t_timestamp: float) -> float:
         self.__arrival_time = t_timestamp
-    
+
     def set_message_server_time(self, t_timestamp: float) -> float:
         self.__server_start = t_timestamp
 
