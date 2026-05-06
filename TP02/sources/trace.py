@@ -1,4 +1,4 @@
-from events_and_messages import Event, EventType, Message
+from sources.events_and_messages import Event, EventType, Message
 import csv
 
 

@@ -1,6 +1,6 @@
 from typing import List
 
-from events_and_messages import Event
+from sources.events_and_messages import Event
 
 
 class Scheduler:
@@ -16,8 +16,8 @@ class Scheduler:
     def pop_event(self) -> Event:
         return self.__events.pop(0)
 
-    def get_current_time(self) -> Event:
-        return self.__events[-1].get_event_time()
+    def get_current_time(self) -> float:
+        return self.__events[-1].get_event_time() if self.has_events() else 0
 
     def has_events(self) -> bool:
         return len(self.__events) == 0

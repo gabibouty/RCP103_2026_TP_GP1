@@ -1,6 +1,6 @@
 import pytest
-from events_and_messages import *
-from trace import *
+from sources.events_and_messages import Message, Event, EventType
+from sources.trace import get_time_and_node
 
 
 # A tester avec la commande : $ pytest test_trace.py
