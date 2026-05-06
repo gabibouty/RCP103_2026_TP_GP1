@@ -17,7 +17,7 @@ TRANSMISSION_DURATION = 1.0
 
 class Engine:
     def __init__(self, t_simulation_duration: float):
-        self.__scheduler: Scheduler
+        self.__scheduler: Scheduler = Scheduler()
         self.__mock_client: List[Message] = []
 
         # TODO: generate client
@@ -31,16 +31,19 @@ class Engine:
         msg_id: int = 0
         while timestamp < t_simulation_duration:
             self.__mock_client.append(
-                Message(msg_id, Message(msg_id, CLIENT_ID, SERVER_ID))
+                Message(t_id=msg_id, t_source=CLIENT_ID, t_destination=SERVER_ID)
             )
             self.__mock_client[-1].set_message_send_time(t_timestamp=timestamp)
             x = rng.exponential(scale=LAMBDA, size=1)
             timestamp += x[0]
             msg_id += 1
 
+    def has_finished(self) -> bool:
+        return len(self.__mock_client) == 0 and not self.__scheduler.has_events()
+
     def run(self):
         event_id: int = 0
-        while len(self.__mock_client) != 0 and self.__scheduler.has_events():
+        while not self.has_finished():
             if (
                 not self.__scheduler.has_events()
                 or self.__scheduler.get_current_time()
