@@ -33,7 +33,7 @@ class Engine:
             self.__mock_client.append(
                 Message(msg_id, Message(msg_id, CLIENT_ID, SERVER_ID))
             )
-            self.__mock_client[-1].set_message_time(t_timestamp=timestamp)
+            self.__mock_client[-1].set_message_send_time(t_timestamp=timestamp)
             x = rng.exponential(scale=LAMBDA, size=1)
             timestamp += x[0]
             msg_id += 1
