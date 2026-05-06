@@ -50,8 +50,7 @@ class Message:
         return (
             f"Message:: Id: {self.__id} | "
             f"Source: {self.__source} | "
-            f"Dest: {self.__destination} | "
-            f"Timestamp: {self.__timestamp}"
+            f"Dest: {self.__destination}"
         )
 
 

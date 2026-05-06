@@ -12,6 +12,7 @@ class Scheduler:
         while i >= 0 and self.__events[i].get_event_time() > t_event.get_event_time():
             i -= 1
         self.__events.insert(i + 1, t_event)
+        assert len(self.__events) != 0
 
     def pop_event(self) -> Event:
         return self.__events.pop(0)
@@ -20,4 +21,4 @@ class Scheduler:
         return self.__events[-1].get_event_time() if self.has_events() else 0
 
     def has_events(self) -> bool:
-        return len(self.__events) == 0
+        return len(self.__events) != 0
