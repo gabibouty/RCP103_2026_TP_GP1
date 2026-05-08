@@ -47,7 +47,7 @@ class Engine:
             if (
                 not self.__scheduler.has_events()
                 or self.__scheduler.get_current_time()
-                <= self.__mock_client[0].get_message_send_time()
+                >= self.__mock_client[0].get_message_send_time()
             ):
                 msg = self.__mock_client.pop(0)
                 self.__scheduler.add_event(
@@ -58,6 +58,7 @@ class Engine:
                 event_id += 1
 
             event = self.__scheduler.pop_event()
+            # trace
             if event.get_event_type() == EventType.SEND_MSG:
                 msg = event.get_message()
                 msg.set_message_arrival_time(

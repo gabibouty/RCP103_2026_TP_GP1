@@ -1,13 +1,11 @@
 from sources.events_and_messages import Event, EventType, Message
+
 def test_event_init():
     msg = Message(1,2,3)
     event = Event(10, EventType.SEND_MSG, 1.5, msg)
 
     assert event.get_event_time() == 1.5
     assert event.get_event_type() == EventType.SEND_MSG
-
-       
-
 
 
 def test_event_setters():

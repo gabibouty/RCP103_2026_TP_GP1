@@ -18,7 +18,7 @@ class Scheduler:
         return self.__events.pop(0)
 
     def get_current_time(self) -> float:
-        return self.__events[-1].get_event_time() if self.has_events() else 0
+        return self.__events[0].get_event_time() if self.has_events() else 0
 
     def has_events(self) -> bool:
         return len(self.__events) != 0
