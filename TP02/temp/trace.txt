@@ -1,0 +1,46 @@
+Le fichier trace.py contient trois fonctions nommées get_time_and_node, generateTraceOut et generateTraceCSV.
+Ces fonctions servent à fournir un système de journalisation au simulateur.
+Elles fournissent un moyen de visualiser et d'enregistrer les évènements.
+
+Voici le prototype et la description de chaque fonctions :
+
+```
+def get_time_and_node(e: Event):
+``` 
+Cette fonction prend un évènement en paramètre et retourne un tuple constitué du numéro de node et du temps en fonction du type d'évènement.
+
+```
+def generateTraceOut(t_event: list[Event]):
+``` 
+Cette fonction prend une liste d'évènements en paramètre et écrit sur la sortie standard l'ensemble des évènements contenu dans la liste.
+
+```
+def generateTraceCSV(t_event: list[Event]):
+``` 
+Cette fonction prend une liste d'évènements en paramètre et écrit dans un fichier nommé "trace.csv" l'ensemble des évènements contenu dans la liste au format CSV.
+Le délimiteur utilisé est le caractère ";".
+
+
+
+TEST
+
+Les tests suivants vérifient que la fonction get_time_and_node_event() renvoie bien le bon tuple en fonction du type de message.
+
+```
+def test_get_time_and_node_event_SEND_MSG():
+def test_get_time_and_node_event_RECV_MSG():
+def test_get_time_and_node_event_MSG_DEPT():
+```
+
+Les tests suivants vérifient que la fonction generateTraceOut() affiche les bonnes informations en fonction du type de message.
+
+```
+def test_generateTraceOut_SEND_MSG(capsys):
+def test_generateTraceOut_RECV_MSG(capsys):
+def test_generateTraceOut_MSG_DEPT(capsys):
+```
+
+Le test suivants vérifie que la fonction generateTraceCSV() crée le fichier "trace.csv" avec les bonnes valeurs pour plusieurs messages.
+```
+def test_generateTraceCSV():
+```
