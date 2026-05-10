@@ -90,7 +90,7 @@
 \bigskip
 
 \begin{abstract}
-    Ce TP à pour objectif de créer un programme permettant de simuler un système simple de type Client(s)/Server(s) asynchrones.
+    Ce TP à pour objectif de créer un programme permettant de simuler un système simple de type Client(s)/Server asynchrones.
     Ce premier document présente l'inititalisation du projet, la schématisation du simulateur, et la description de la réalisation des premiers composants.
 \end{abstract}
 
@@ -100,9 +100,9 @@
 % -------------------------------------------------
 \section{Description du système simulé}
 
-Comme évoqué en introduction, ce rapport présente la première phase de réalisation d'un simple simulateur Client(s)/Server(s):
+Comme évoqué en introduction, ce rapport présente la première phase de réalisation d'un simple simulateur Client(s)/Server:
 
-Un ensemble de $M$ clients ($M >= 1$), envoient des messages à $N$ serveurs ($N >= 1$). Un portail sert d'intermédiaire entre clients et serveurs. Compte tenu que les serveurs ne peuvent traiter qu'un message à la fois, le portail permet de temporiser les messages en attente de traitement dans un tampon de taille fixe $K$.
+Un ensemble de $N$ clients ($N >= 1$), envoient des messages à 1 serveur. Un portail sert d'intermédiaire entre les clients et le serveur. Compte tenu que le serveurs ne peuvent traiter qu'un message à la fois, le portail permet de temporiser les messages en attente de traitement dans une file de taille fixe $K$.
 
 \begin{figure}[H]
     \centering
@@ -112,13 +112,22 @@ Un ensemble de $M$ clients ($M >= 1$), envoient des messages à $N$ serveurs ($N
 
 Dans ce simulateur, les envois de messages suivent un processus de Poisson: le taux d'envois est constant dans le temps, les temps entre deux envois consécutifs suivent une distribution exponentielle. De même, le temps de service suit une loi exponentielle.
 
-Dans un premier temps, nous limiterons notre simulateur à un seul serveur, nous pourrons donc simuler un processus de file d'attente de type M/M/1/K:
+Compte tenu du fait que nous n'avons pour l'instant qu'un seul serveur, nous pouvons donc définir cette simulation comme un processus de file d'attente de type M/M/1/K:
 
 \begin{itemize}
     \item M: Arrivées selon un processus de Poisson (Markovien).
     \item M: Temps de service selon une distribution exponentielle (Markovien).
     \item 1: Nombres de serveurs (ici, 1).
-    \item K: Capacité du système (ici, la taille du tampon du portail de capacité K).
+    \item K: Capacité du système (ici, la taille de la file du portail de capacité K).
+\end{itemize}
+
+La configuration du simulateur est définie comme suit:
+
+\begin{itemize}
+    \item Temps moyen inter-message: configurable
+    \item Temps de transmission: $1t$
+    \item Temps moyen de service: configurable
+    \item Temps total de la simulation: configurable
 \end{itemize}
 
 \bigskip
@@ -128,8 +137,36 @@ Dans un premier temps, nous limiterons notre simulateur à un seul serveur, nous
 % -------------------------------------------------
 \section{Architecture du simulateur}
 \subsection{Architecture initiale}
+
+Afin de simuler les transmissions et traitement de messages entre le ou les \emph{Client} et le \emph{Server} (à travers le \emph{Gateway}), chaques étapes de gestion du \emph{Message} seront encapsulées dans des \emph{Event}. Ces \emph{Event} pourront être, de fait, de 3 types différents:
+
+\begin{itemize}
+    \item SEND: Le message est envoyé par le client.
+    \item RECV: Le message est reçu par le portail.
+    \item DPT: Le message est transmis au serveur (si ce dernier est disponible).
+\end{itemize}
+
+Chacuns de ces \emph{Event} sera timestampé et stocké chronologiquement dans un ordonnanceur (\emph{Scheduler}). Ainsi, en itérant progressivement sur les évènements enregistrés dans le \emph{Scheduler}, nous pourrons simuler l'écoulement du temps, en nous concentrant uniquement sur les échantillons temporelles qui nous interresse.
+
+L'ensemble de ces composants seront encapsulés dans un \emph{Engine}, dont la boucle principale viendra intéragir avec ces derniers afin de dérouler la simulation.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{../images/engine_view.png}
+    \caption{Schéma de principe du simulateur}
+\end{figure}
+
 \bigskip
 \subsection{Organisation du code source}
+
+Le dossier fournit s'organise ainsi:
+\begin{itemize}
+    \item \emph{Root}: Le point d'entrée du programme principal (\emph{tp02\_main.py}), et les fichiers de configurations de lancement des tests
+    \item Dossier \emph{sources}: Le code applicatif.
+    \item Dossier \emph{tests}: Le code relatifs aux tests unitaires.
+    \item Dossiers \emph{report} et \emph{images}: Le présent rapport les images associées.
+\end{itemize}
+
 \bigskip
 
 \bigskip
