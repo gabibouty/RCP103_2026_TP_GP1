@@ -244,6 +244,17 @@ Test de Message:
     \item Le test \lstinline[basicstyle=\ttfamily]|test_message_str| vérifie la méthode d'affichage de la classe message. Cette méthode est utile pour le débogage, car elle permet d'afficher rapidement les informations principales d'un message.
 \end{itemize}
 
+Test de Trace:
+\begin{itemize}
+    \item Le test \lstinline[basicstyle=\ttfamily]|test_get_time_and_node_event_SEND_MSG| vérifie que la fonction get\_time\_and\_node\_event renvoie bien le bon tuple en fonction du type de message. 
+    \item Le test \lstinline[basicstyle=\ttfamily]|test_get_time_and_node_event_RECV_MSG| vérifie que la fonction get\_time\_and\_node\_event renvoie bien le bon tuple en fonction du type de message. 
+    \item Le test \lstinline[basicstyle=\ttfamily]|test_get_time_and_node_event_MSG_DEPT| vérifie que la fonction get\_time\_and\_node\_event renvoie bien le bon tuple en fonction du type de message. 
+    \item Le test \lstinline[basicstyle=\ttfamily]|test_generateTraceOut_SEND_MSG| vérifie que la fonction generateTraceOut affiche les bonnes informations en fonction du type de message. 
+    \item Le test \lstinline[basicstyle=\ttfamily]|test_generateTraceOut_RECV_MSG| vérifie que la fonction generateTraceOut affiche les bonnes informations en fonction du type de message. 
+    \item Le test \lstinline[basicstyle=\ttfamily]|test_generateTraceOut_MSG_DEPT| vérifie que la fonction generateTraceOut affiche les bonnes informations en fonction du type de message. 
+    \item Le test \lstinline[basicstyle=\ttfamily]|test_generateTraceCSV| vérifie que la fonction generateTraceCSV crée le fichier "trace.csv" avec les bonnes valeurs pour plusieurs messages. 
+\end{itemize}
+
 \bigskip
 
 \subsection{Exécution des tests}
