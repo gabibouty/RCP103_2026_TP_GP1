@@ -15,7 +15,7 @@ def get_time_and_node(e: Event):
     return node, time
 
 
-def generateTraceOut(self, t_event: list[Event]):
+def generateTraceOut(t_event: list[Event]):
     print(f"time\tnode\tevent\tsrc\tdst\tmsgID")
 
     for e in t_event:
@@ -30,7 +30,7 @@ def generateTraceOut(self, t_event: list[Event]):
         )
 
 
-def generateTraceCSV(self, t_event: list[Event]):
+def generateTraceCSV(t_event: list[Event]):
     # https://docs.python.org/fr/3/library/csv.html
     with open("trace.csv", mode="w", newline="", encoding="utf-8") as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=";", quotechar='"')
