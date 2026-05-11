@@ -43,7 +43,7 @@
     backgroundcolor=\color{backcolour},
     commentstyle=\color{codegreen},
     numberstyle=\tiny\color{codegray},
-    basicstyle=\ttfamily\small,
+    basicstyle=\ttfamily,
     breaklines=true,
     numbers=left,
     numbersep=5pt,
@@ -51,7 +51,7 @@
 }
 
 \lstset{
-    basicstyle=\ttfamily\scriptsize,
+    basicstyle=\ttfamily,
     backgroundcolor=\color{gray!10},
     frame=single,
     breaklines=true,
@@ -177,20 +177,20 @@ Le dossier fournit s'organise ainsi:
 Comme évoqué précédemment, la classe \emph{Message} est l'unité d'échange entre \emph{Client} et \emph{Server}.
 Cette classe contient:
 \begin{itemize}
-    \item L'identifiant du message: \lstinline[basicstyle=\ttfamily]|message_id|
-    \item L'identifiant du nœud émetteur: \lstinline[basicstyle=\ttfamily]|source|
-    \item L'identifiant du nœud destination: \lstinline[basicstyle=\ttfamily]|destination|
-    \item L'instant auquel le message est envoyé par le client: \lstinline[basicstyle=\ttfamily]|send_time|
-    \item L'instant auquel le message arrive à la passerelle: \lstinline[basicstyle=\ttfamily]|arrival_time|
-    \item L'instant auquel le traitement du message commence par le serveur : \lstinline[basicstyle=\ttfamily]|server_start|
+    \item L'identifiant du message: \lstinline|message_id|
+    \item L'identifiant du nœud émetteur: \lstinline|source|
+    \item L'identifiant du nœud destination: \lstinline|destination|
+    \item L'instant auquel le message est envoyé par le client: \lstinline|send_time|
+    \item L'instant auquel le message arrive à la passerelle: \lstinline|arrival_time|
+    \item L'instant auquel le traitement du message commence par le serveur : \lstinline|server_start|
 \end{itemize}
 
 Ce \emph{Message} est encapsulé dans un \emph{Event}, dont les attributs sont les suivants:
 \begin{itemize}
-    \item L'identifiant de l'event: \lstinline[basicstyle=\ttfamily]|id|
-    \item Le type de l'event: \lstinline[basicstyle=\ttfamily]|type|
-    \item Le timestamp de l'event: \lstinline[basicstyle=\ttfamily]|timestamp|
-    \item Le \emph{Message} encapsulé: \lstinline[basicstyle=\ttfamily]|message|
+    \item L'identifiant de l'event: \lstinline|id|
+    \item Le type de l'event: \lstinline|type|
+    \item Le timestamp de l'event: \lstinline|timestamp|
+    \item Le \emph{Message} encapsulé: \lstinline|message|
 \end{itemize}
 
 \bigskip
@@ -199,27 +199,27 @@ Ce \emph{Message} est encapsulé dans un \emph{Event}, dont les attributs sont l
 
 La classe Scheduler est chargée de gérer les futurs événements du simulateur. Elle contient une liste d'événements triés par ordre chronologique.
 
-Lorsqu'un nouvel événement est ajouté, la méthode parcourt la liste depuis la fin afin de trouver la bonne position d'insertion. Tant que le temps de l'évènement déjà présent est supérieur au temps du nouvel événement, on remonte la liste. Lorsque la bonne position est trouvée, le nouvel événement est inséré avec insert. Cela permet de garder la liste triée sans utiliser \lstinline[basicstyle=\ttfamily]|sort| après chaque ajout.
+Lorsqu'un nouvel événement est ajouté, la méthode parcourt la liste depuis la fin afin de trouver la bonne position d'insertion. Tant que le temps de l'évènement déjà présent est supérieur au temps du nouvel événement, on remonte la liste. Lorsque la bonne position est trouvée, le nouvel événement est inséré avec insert. Cela permet de garder la liste triée sans utiliser \lstinline|sort| après chaque ajout.
 
-La méthode \lstinline[basicstyle=\ttfamily]|pop_event| retire et retourne le premier événement de la liste. Comme la liste est maintenue triée par temps d'exécution, cet évènement correspond toujours au prochain événement à traiter.
+La méthode \lstinline|pop_event| retire et retourne le premier événement de la liste. Comme la liste est maintenue triée par temps d'exécution, cet évènement correspond toujours au prochain événement à traiter.
 
-La méthode \lstinline[basicstyle=\ttfamily]|get_current_time| retourne le temps du premier événement de la liste, c'est-à-dire le temps courant du simulateur. Si la liste est vide, la méthode retourne 0.
+La méthode \lstinline|get_current_time| retourne le temps du premier événement de la liste, c'est-à-dire le temps courant du simulateur. Si la liste est vide, la méthode retourne 0.
 
-Enfin, la méthode \lstinline[basicstyle=\ttfamily]|has_events| permet de savoir s'il reste encore des événements à traiter.
+Enfin, la méthode \lstinline|has_events| permet de savoir s'il reste encore des événements à traiter.
 
 \bigskip
 
 \subsection{Les fonctions de logs: functions Trace}
 
-Le module \lstinline[basicstyle=\ttfamily]|trace| contient trois fonctions fournissant un système de journalisation au simulateur, permettant de visualiser et d'enregistrer les évènements.
+Le module \lstinline|trace| contient trois fonctions fournissant un système de journalisation au simulateur, permettant de visualiser et d'enregistrer les évènements.
 
 Voici le prototype et la description de chaque fonction :
 
-\lstinline[basicstyle=\ttfamily]|def get_time_and_node(e: Event)|:  prend un évènement en paramètre et retourne un tuple constitué du numéro de node et du temps en fonction du type d'évènement.
+\lstinline|def get_time_and_node(e: Event)|:  prend un évènement en paramètre et retourne un tuple constitué du numéro de node et du temps en fonction du type d'évènement.
 
-\lstinline[basicstyle=\ttfamily]|def generateTraceOut(t_event: list[Event])|:  prend une liste d'évènements en paramètre et écrit sur la sortie standard l'ensemble des évènements contenu dans la liste.
+\lstinline|def generateTraceOut(t_event: list[Event])|:  prend une liste d'évènements en paramètre et écrit sur la sortie standard l'ensemble des évènements contenu dans la liste.
 
-\lstinline[basicstyle=\ttfamily]|def generateTraceCSV(t_event: list[Event])|: prend une liste d'évènements en paramètre et écrit dans un fichier nommé \lstinline[basicstyle=\ttfamily]|trace.csv| l'ensemble des évènements contenu dans la liste au format CSV. Le délimiteur utilisé est le caractère '\lstinline[basicstyle=\ttfamily]|;|'.
+\lstinline|def generateTraceCSV(t_event: list[Event])|: prend une liste d'évènements en paramètre et écrit dans un fichier nommé \lstinline|trace.csv| l'ensemble des évènements contenu dans la liste au format CSV. Le délimiteur utilisé est le caractère '\lstinline|;|'.
 
 \bigskip
 \subsection{Le cœur du système: class Engine}
@@ -232,34 +232,60 @@ Voici le prototype et la description de chaque fonction :
 % -------------------------------------------------
 \section{Tests des premières classes}
 \subsection{Le système de test: Pytest}
-Afin de vérifier le bon fonctionnement des classes implémentées, des tests unitaires ont été réalisés avec l'aide de l'utilitaire \lstinline[basicstyle=\ttfamily]|Pytest|. L'objectif est de tester chaque classe séparément avant de l'intégrer dans le simulateur. L'ensemble des tests sont regroupés dans le répertoire \lstinline[basicstyle=\ttfamily]|tests|.
+Afin de vérifier le bon fonctionnement des classes implémentées, des tests unitaires ont été réalisés avec l'aide de l'utilitaire \lstinline|Pytest|. L'objectif est de tester chaque classe séparément avant de l'intégrer dans le simulateur. L'ensemble des tests sont regroupés dans le répertoire \lstinline|tests|.
 
 \bigskip
 \subsection{Présentation des tests rédigés}
 
-Test de Message:
+Test de \emph{Message}:
 \begin{itemize}
-    \item Le test \lstinline[basicstyle=\ttfamily]|test_message| vérifie que le constructeur initialise correctement les attributs du message (l'identifiant, la source et la destination, temps).
-    \item Le test \lstinline[basicstyle=\ttfamily]|test_message_setters| vérifie que les setters modifient correctement les valeurs internes de l'objet, après modification de l'identifiant, de la source, de la destination, et des différents temps, les getters sont utilisés pour vérifier que les nouvelles valeurs ont bien été enregistrées.
-    \item Le test \lstinline[basicstyle=\ttfamily]|test_message_str| vérifie la méthode d'affichage de la classe message. Cette méthode est utile pour le débogage, car elle permet d'afficher rapidement les informations principales d'un message.
+    \item Le test \lstinline|test_message| vérifie que le constructeur initialise correctement les attributs du message (l'identifiant, la source et la destination, temps).
+    \item Le test \lstinline|test_message_setters| vérifie que les setters modifient correctement les valeurs internes de l'objet, après modification de l'identifiant, de la source, de la destination, et des différents temps, les getters sont utilisés pour vérifier que les nouvelles valeurs ont bien été enregistrées.
+    \item Le test \lstinline|test_message_str| vérifie la méthode d'affichage de la classe message. Cette méthode est utile pour le débogage, car elle permet d'afficher rapidement les informations principales d'un message.
 \end{itemize}
 
-Test de Trace:
+\bigskip
+
+Test de \emph{Event}:
 \begin{itemize}
-    \item Le test \lstinline[basicstyle=\ttfamily]|test_get_time_and_node_event_SEND_MSG| vérifie que la fonction get\_time\_and\_node\_event renvoie bien le bon tuple en fonction du type de message. 
-    \item Le test \lstinline[basicstyle=\ttfamily]|test_get_time_and_node_event_RECV_MSG| vérifie que la fonction get\_time\_and\_node\_event renvoie bien le bon tuple en fonction du type de message. 
-    \item Le test \lstinline[basicstyle=\ttfamily]|test_get_time_and_node_event_MSG_DEPT| vérifie que la fonction get\_time\_and\_node\_event renvoie bien le bon tuple en fonction du type de message. 
-    \item Le test \lstinline[basicstyle=\ttfamily]|test_generateTraceOut_SEND_MSG| vérifie que la fonction generateTraceOut affiche les bonnes informations en fonction du type de message. 
-    \item Le test \lstinline[basicstyle=\ttfamily]|test_generateTraceOut_RECV_MSG| vérifie que la fonction generateTraceOut affiche les bonnes informations en fonction du type de message. 
-    \item Le test \lstinline[basicstyle=\ttfamily]|test_generateTraceOut_MSG_DEPT| vérifie que la fonction generateTraceOut affiche les bonnes informations en fonction du type de message. 
-    \item Le test \lstinline[basicstyle=\ttfamily]|test_generateTraceCSV| vérifie que la fonction generateTraceCSV crée le fichier "trace.csv" avec les bonnes valeurs pour plusieurs messages. 
+    \item Le test \lstinline|test_event_init| vérifie que le constructeur initialise correctement le temps de l'événement et son type. Un événement de type \lstinline|SEND_MSG| est créé avec un temps égal à 1.5, puis les getters permettent de vérifier que ces valeurs sont bien stockées.
+    \item Le test \lstinline|test_event_setters| vérifie que le temps et le type d'un événement peuvent être modifiés correctement. Par exemple, un événement initialement de type \lstinline|SEND_MSG| est modifié en \lstinline|RECV_MSG|, et son temps est changé de 5.5 à 8.0.
+    \item Le test \lstinline|test_event_message_content| vérifie que l'événement conserve bien le message qui lui est associé. Après avoir récupéré le message depuis l'événement, le test vérifie que son identifiant, sa source et sa destination sont corrects.
+    \item Le test \lstinline|test_event_str| vérifie la méthode d'affichage de la classe \emph{Event}. Cette méthode affiche l'identifiant de l'événement, son type, son temps et le message associé. Elle permet donc de faciliter le suivi des événements.
+\end{itemize}
+
+\bigskip
+
+Test de \emph{Scheduler}:
+\begin{itemize}
+    \item Le test \lstinline|test_sheduler| vérifie que les temps des événements récupérés sont toujours dans l'ordre chronologique croissant. Cela permet de valider le rôle principal du \emph{Scheduler} : maintenir les événements futurs triés par temps d'exécution.
+\end{itemize}
+
+\bigskip
+
+Test de \emph{Trace}:
+\begin{itemize}
+    \item Le test définit par \lstinline|test_get_time_and_node_event_SEND_MSG| vérifie que la fonction \lstinline|get_time_and_node_event| renvoie bien le bon tuple en fonction du type de message.
+    \item Le test définit par \lstinline|test_get_time_and_node_event_RECV_MSG| vérifie que la fonction \lstinline|get_time_and_node_event| renvoie bien le bon tuple en fonction du type de message.
+    \item Le test définit par \lstinline|test_get_time_and_node_event_MSG_DEPT| vérifie que la fonction \lstinline|get_time_and_node_event| renvoie bien le bon tuple en fonction du type de message.
+    \item Le test définit par \lstinline|test_generateTraceOut_SEND_MSG(capsys)| vérifie que la fonction \lstinline|generateTraceOut| affiche les bonnes informations en fonction du type de message.
+    \item Le test définit par \lstinline|test_generateTraceOut_RECV_MSG(capsys)| vérifie que la fonction \lstinline|generateTraceOut| affiche les bonnes informations en fonction du type de message.
+    \item Le test définit par \lstinline|test_generateTraceOut_MSG_DEPT(capsys)| vérifie que la fonction \lstinline|generateTraceOut| affiche les bonnes informations en fonction du type de message.
+    \item Le test définit par \lstinline|test_generateTraceCSV| vérifie que la fonction \lstinline|generateTraceCSV| crée le fichier "trace.csv" avec les bonnes valeurs pour plusieurs messages.
+\end{itemize}
+
+\bigskip
+
+Test de \emph{Engine}:
+\begin{itemize}
+    \item Le test \lstinline|test_engine_complete| vérifie que l'execution du \lstinline|run| de \emph{Engine} ne tombe pas dans une boucle sans fin, et que l'ensemble des \emph{Message} et \emph{Event} sont bien consommés à l'issus de l'exécution.
 \end{itemize}
 
 \bigskip
 
 \subsection{Exécution des tests}
-Les tests peuvent être lancés depuis le répertoire principal en tappant la commande '\lstinline[basicstyle=\ttfamily]|pytest|' (attention, \lstinline[basicstyle=\ttfamily]|Pytest| doit être préalablement installé).
-L'ensemble des tests présents dans le répertoire \lstinline[basicstyle=\ttfamily]|tests| seroint exécutés.
+Les tests peuvent être lancés depuis le répertoire principal en tappant la commande '\lstinline|pytest|' (attention, \lstinline|Pytest| doit être préalablement installé).
+L'ensemble des tests présents dans le répertoire \lstinline|tests| seroint exécutés.
 
 \bigskip
 
