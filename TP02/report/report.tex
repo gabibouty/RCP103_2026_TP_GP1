@@ -87,14 +87,12 @@
 \maketitle
 
 \bigskip
-\bigskip
 
 \begin{abstract}
     Ce TP a pour objectif de créer un programme permettant de simuler un système simple de type Client(s)/Serveur asynchrones. Ce simulateur nous permettra de réaliser des mesures variées pour qualifier notre système (nombre instantané de requêtes, temps d'attente, etc.), sans avoir à mettre en œuvre concrètement ce dernier.
     Ce premier document présente l'initialisation du projet, la schématisation du simulateur, et la description de la réalisation des premiers composants.
 \end{abstract}
 
-\bigskip
 \bigskip
 
 % ---------------------------------------------
@@ -131,7 +129,7 @@ La configuration du simulateur est définie comme suit:
 \end{itemize}
 
 \bigskip
-
+\bigskip
 \bigskip
 
 % ---------------------------------------------
@@ -161,14 +159,15 @@ L'ensemble de ces composants seront encapsulés dans un \emph{Engine}, dont la b
 
 Le dossier fourni s'organise ainsi:
 \begin{itemize}
-    \item \emph{Root}: Le point d'entrée du programme principal (\emph{tp02\_main.py}), et les fichiers de configurations de lancement des tests
-    \item Dossier \emph{sources}: Le code applicatif.
-    \item Dossier \emph{tests}: Le code relatif aux tests unitaires.
-    \item Dossiers \emph{report} et \emph{images}: Le présent rapport et les images associées.
+    \item \lstinline|root|: Le point d'entrée du programme principal (\lstinline|tp02_main.py|), les fichiers de configurations de lancement des tests, ainsi que les dépendances Python.
+    \item Dossier \lstinline|sources|: Le code applicatif.
+    \item Dossier \lstinline|tests|: Le code relatif aux tests unitaires.
+    \item Dossiers \lstinline|report| et \lstinline|images|: Le présent rapport et les images associées.
 \end{itemize}
 
 \bigskip
-
+\bigskip
+\bigskip
 \bigskip
 
 % ---------------------------------------------
@@ -225,16 +224,21 @@ Voici le prototype et la description de chaque fonction :
 
 \subsection{Le cœur du système: class Engine}
 
-La classe \emph{Engine}
+La classe \emph{Engine} représente le cœur du simulateur. Elle définit les instances des différents composants (Client(s), Serveur, etc.) lors de son initialisation, et simule les transactions entre chacuns d'entre eux durant l'exécution de la simulation.
+
+Comme cette classe repose sur les imlémentations des autres composants, elle ne préente, pour l'heure, que peu d'intêret. Cependant, elle expose d'ores et déjà ses principales fonctionnalitées, à savoir l'initialisation, et la boucle d'exécution.
 
 \bigskip
 
 \subsection{Le point d'entrée: function main}
 
-Le point d'entrée du programme se trouve dans \emph{tp02\_main.py}.
+Le point d'entrée du programme se trouve dans \lstinline|tp02_main.py|. Il permet d'executer le programme simplement en appelant \lstinline|python tp02_main.py| depuis le répertoire racine.
+
+En l'état, il se contente de créer une instance d'\emph{Engine},
+et de lancer l'execution de cette instance. Mais on pourrait par exemple imaginer y ajouter un parsing d'arguments pour configurer le simulateur dynamiquement.
 
 \bigskip
-
+\bigskip
 \bigskip
 
 % ---------------------------------------------
@@ -243,6 +247,8 @@ Le point d'entrée du programme se trouve dans \emph{tp02\_main.py}.
 Afin de vérifier le bon fonctionnement des classes implémentées, des tests unitaires ont été réalisés avec l'aide de l'utilitaire \lstinline|Pytest|. L'objectif est de tester chaque classe séparément avant de l'intégrer dans le simulateur. L'ensemble des tests sont regroupés dans le répertoire \lstinline|tests|.
 
 \bigskip
+\bigskip
+
 \subsection{Présentation des tests rédigés}
 
 Test de \emph{Message}:
@@ -292,11 +298,11 @@ Test de \emph{Engine}:
 \bigskip
 
 \subsection{Exécution des tests}
-Les tests peuvent être lancés depuis le répertoire principal en tapant la commande '\lstinline|pytest|' (attention, \lstinline|Pytest| doit être préalablement installé).
+Les tests peuvent être lancés depuis le répertoire principal en tapant la commande \lstinline|pytest| (attention, \lstinline|Pytest| doit être préalablement installé).
 L'ensemble des tests présents dans le répertoire \lstinline|tests| seront exécutés.
 
 \bigskip
-
+\bigskip
 \bigskip
 
 % ---------------------------------------------
