@@ -75,7 +75,7 @@
 % -------------------------------------------------
 % TITLE
 % -------------------------------------------------
-\title{\textbf{RCP103 -- Rapport de TP}\\TP02 - Création d'un simulateur de file d'attente\\Partie 1}
+\title{\textbf{RCP103 -- Rapport de TP}\\TP02 - Création d'un simulateur à évènements discrets\\Partie 1}
 \author{BOURDAYA Amina, BOUTY Gabriel, CLERC Julien}
 \date{\today}
 
@@ -90,7 +90,7 @@
 \bigskip
 
 \begin{abstract}
-    Ce TP à pour objectif de créer un programme permettant de simuler un système simple de type Client(s)/Server asynchrones.
+    Ce TP à pour objectif de créer un programme permettant de simuler un système simple de type Client(s)/Server asynchrones. Ce simulateur nous permettra de réaliser des mesures variées pour qualifier notre système (nombre instantané de requetes, temps d'attente, etc.), sans avoir à mettre en œuvre concrètement ce dernier.
     Ce premier document présente l'inititalisation du projet, la schématisation du simulateur, et la description de la réalisation des premiers composants.
 \end{abstract}
 
@@ -100,7 +100,7 @@
 % -------------------------------------------------
 \section{Description du système simulé}
 
-Comme évoqué en introduction, ce rapport présente la première phase de réalisation d'un simple simulateur Client(s)/Server:
+Comme évoqué en introduction, ce rapport présente la première phase de réalisation d'un simple simulateur à évènements discrets du type Client(s)/Server:
 
 Un ensemble de $N$ clients ($N >= 1$), envoient des messages à 1 serveur. Un portail sert d'intermédiaire entre les clients et le serveur. Compte tenu que le serveur ne peut traiter qu'un message à la fois, le portail permet de temporiser les messages en attente de traitement dans une file de taille fixe $K$.
 
@@ -294,6 +294,11 @@ L'ensemble des tests présents dans le répertoire \lstinline|tests| seroint ex�
 
 % -------------------------------------------------
 \section{Conclusion}
+Cette première partie du TP nous permet d'apréhender ce que peut être un simulateur à évènements discrets. Nous mettons en œuvre des concepts vus en cours tel que les files d'attentes ou encore les processus de Poisson.
+
+Il nous permet aussi de comprendre l'intêret que peut représenter la complémentarité qu'il peut exister entre modélisation mathématique et simulation. En effet, la modélisation mathématique nous fournit les outils (variables aléatoires, processus stochastiques, etc.) qui vont nous permettre de construire facilement un simulateur, et ainsi réaliser, tout aussi facilement, des mesures sur un système complexe. Établir et mettre en œuvre un protocole de mesures sur ce même système dans le monde réel aurait été bien plus lourd et couteux.
+
+Cette première itération dans la réalisation du simulateur, nous a permit de préparer les premiers composants nécessaires à son bon fonctionnement. Même si ces composants sont amenés à être plus ou moins modifiés au cours des prochaines itérations, le développement de tests unitaires sur chacunes des briques logicielles nous permettra de confirmer en continue la validité de ces dernières, mais aussi d'éviter les régressions lors des futures étapes de développement.
 
 
 \end{document}
