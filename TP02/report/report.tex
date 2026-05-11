@@ -1,36 +1,36 @@
 \documentclass[11pt,a4paper]{article}
 
-% -------------------------------------------------
+% ---------------------------------------------
 % ENCODAGE / LANGUE
-% -------------------------------------------------
+% ---------------------------------------------
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[french]{babel}
 
-% -------------------------------------------------
+% ---------------------------------------------
 % MISE EN PAGE
-% -------------------------------------------------
+% ---------------------------------------------
 \usepackage[a4paper,margin=2.5cm]{geometry}
 \usepackage{setspace}
 \usepackage{parskip}
 
-% -------------------------------------------------
+% ---------------------------------------------
 % MATHS / IMAGES / TABLEAUX
-% -------------------------------------------------
+% ---------------------------------------------
 \usepackage{amsmath,amssymb}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{float}
 
-% -------------------------------------------------
+% ---------------------------------------------
 % LIENS
-% -------------------------------------------------
+% ---------------------------------------------
 \usepackage[colorlinks=true,linkcolor=black,urlcolor=blue,citecolor=black]{hyperref}
 
-% -------------------------------------------------
+% ---------------------------------------------
 % CODE (optionnel)
-% -------------------------------------------------
+% ---------------------------------------------
 \usepackage{xcolor}
 \usepackage{listings}
 \renewcommand{\lstlistingname}{Code}
@@ -72,16 +72,16 @@
   {ç}{{\c{c}}}1 {Ç}{{\c{C}}}1 {¿}{{\textquestiondown}}1 {¡}{{\textexclamdown}}1
 }
 
-% -------------------------------------------------
+% ---------------------------------------------
 % TITLE
-% -------------------------------------------------
+% ---------------------------------------------
 \title{\textbf{RCP103 -- Rapport de TP}\\TP02 - Création d'un simulateur à évènements discrets\\Partie 1}
 \author{BOURDAYA Amina, BOUTY Gabriel, CLERC Julien}
 \date{\today}
 
-% -------------------------------------------------
+% ---------------------------------------------
 % DOCUMENT
-% -------------------------------------------------
+% ---------------------------------------------
 \begin{document}
 
 \maketitle
@@ -90,19 +90,19 @@
 \bigskip
 
 \begin{abstract}
-    Ce TP à pour objectif de créer un programme permettant de simuler un système simple de type Client(s)/Server asynchrones. Ce simulateur nous permettra de réaliser des mesures variées pour qualifier notre système (nombre instantané de requetes, temps d'attente, etc.), sans avoir à mettre en œuvre concrètement ce dernier.
-    Ce premier document présente l'inititalisation du projet, la schématisation du simulateur, et la description de la réalisation des premiers composants.
+    Ce TP a pour objectif de créer un programme permettant de simuler un système simple de type Client(s)/Serveur asynchrones. Ce simulateur nous permettra de réaliser des mesures variées pour qualifier notre système (nombre instantané de requêtes, temps d'attente, etc.), sans avoir à mettre en œuvre concrètement ce dernier.
+    Ce premier document présente l'initialisation du projet, la schématisation du simulateur, et la description de la réalisation des premiers composants.
 \end{abstract}
 
 \bigskip
 \bigskip
 
-% -------------------------------------------------
+% ---------------------------------------------
 \section{Description du système simulé}
 
-Comme évoqué en introduction, ce rapport présente la première phase de réalisation d'un simple simulateur à évènements discrets du type Client(s)/Server:
+Comme évoqué en introduction, ce rapport présente la première phase de réalisation d'un simple simulateur à évènements discrets du type Client(s)/Serveur:
 
-Un ensemble de $N$ clients ($N >= 1$), envoient des messages à 1 serveur. Un portail sert d'intermédiaire entre les clients et le serveur. Compte tenu que le serveur ne peut traiter qu'un message à la fois, le portail permet de temporiser les messages en attente de traitement dans une file de taille fixe $K$.
+Un ensemble de $N$ clients ($N \geq 1$), envoient des messages à 1 serveur. Un portail sert d'intermédiaire entre les clients et le serveur. Compte tenu que le serveur ne peut traiter qu'un message à la fois, le portail permet de temporiser les messages en attente de traitement dans une file de taille fixe $K$.
 
 \begin{figure}[H]
     \centering
@@ -117,7 +117,7 @@ Compte tenu du fait que nous n'avons pour l'instant qu'un seul serveur, nous pou
 \begin{itemize}
     \item M: Arrivées selon un processus de Poisson (Markovien).
     \item M: Temps de service selon une distribution exponentielle (Markovien).
-    \item 1: Nombres de serveurs (ici, 1).
+    \item 1: Nombre de serveurs (ici, 1).
     \item K: Capacité du système (ici, la taille de la file du portail de capacité K).
 \end{itemize}
 
@@ -134,21 +134,21 @@ La configuration du simulateur est définie comme suit:
 
 \bigskip
 
-% -------------------------------------------------
+% ---------------------------------------------
 \section{Architecture du simulateur}
 \subsection{Architecture initiale}
 
-Afin de simuler les transmissions et traitement de messages entre le ou les \emph{Client} et le \emph{Server} (à travers le \emph{Gateway}), chaques étapes de gestion du \emph{Message} seront encapsulées dans des \emph{Event}. Ces \emph{Event} pourront être, de fait, de 3 types différents:
+Afin de simuler les transmissions et traitement de messages entre le ou les \emph{Client} et le \emph{Server} (à travers le \emph{Gateway}), chaque étape de gestion du \emph{Message} sera encapsulée dans des \emph{Event}. Ces \emph{Event} pourront être, de fait, de 3 types différents:
 
 \begin{itemize}
-    \item SEND: Le message est envoyé par le client.
-    \item RECV: Le message est reçu par le portail.
-    \item DPT: Le message est transmis au serveur (si ce dernier est disponible).
+    \item \lstinline|SEND_MSG|: Le message est envoyé par le client.
+    \item \lstinline|RECV_MSG|: Le message est reçu par le portail.
+    \item \lstinline|MSG_DPT|: Le message est transmis au serveur (si ce dernier est disponible).
 \end{itemize}
 
-Chacuns de ces \emph{Event} sera timestampé et stocké chronologiquement dans un ordonnanceur (\emph{Scheduler}). Ainsi, en itérant progressivement sur les évènements enregistrés dans le \emph{Scheduler}, nous pourrons simuler l'écoulement du temps, en nous concentrant uniquement sur les échantillons temporelles qui nous interresse.
+Chacun de ces \emph{Event} sera timestampé et stocké chronologiquement dans un ordonnanceur (\emph{Scheduler}). Ainsi, en itérant progressivement sur les évènements enregistrés dans le \emph{Scheduler}, nous pourrons simuler l'écoulement du temps, en nous concentrant uniquement sur les échantillons temporels qui nous intéressent.
 
-L'ensemble de ces composants seront encapsulés dans un \emph{Engine}, dont la boucle principale viendra intéragir avec ces derniers afin de dérouler la simulation.
+L'ensemble de ces composants seront encapsulés dans un \emph{Engine}, dont la boucle principale viendra interagir avec ces derniers afin de dérouler la simulation.
 
 \begin{figure}[H]
     \centering
@@ -159,20 +159,20 @@ L'ensemble de ces composants seront encapsulés dans un \emph{Engine}, dont la b
 \bigskip
 \subsection{Organisation du code source}
 
-Le dossier fournit s'organise ainsi:
+Le dossier fourni s'organise ainsi:
 \begin{itemize}
     \item \emph{Root}: Le point d'entrée du programme principal (\emph{tp02\_main.py}), et les fichiers de configurations de lancement des tests
     \item Dossier \emph{sources}: Le code applicatif.
-    \item Dossier \emph{tests}: Le code relatifs aux tests unitaires.
-    \item Dossiers \emph{report} et \emph{images}: Le présent rapport les images associées.
+    \item Dossier \emph{tests}: Le code relatif aux tests unitaires.
+    \item Dossiers \emph{report} et \emph{images}: Le présent rapport et les images associées.
 \end{itemize}
 
 \bigskip
 
 \bigskip
 
-% -------------------------------------------------
-\section{Créations des premières classes}
+% ---------------------------------------------
+\section{Création des premières classes}
 \subsection{Les données: class Message et class Event}
 Comme évoqué précédemment, la classe \emph{Message} est l'unité d'échange entre \emph{Client} et \emph{Server}.
 Cette classe contient:
@@ -187,9 +187,9 @@ Cette classe contient:
 
 Ce \emph{Message} est encapsulé dans un \emph{Event}, dont les attributs sont les suivants:
 \begin{itemize}
-    \item L'identifiant de l'event: \lstinline|id|
-    \item Le type de l'event: \lstinline|type|
-    \item Le timestamp de l'event: \lstinline|timestamp|
+    \item L'identifiant de l'évènement: \lstinline|id|
+    \item Le type de l'évènement: \lstinline|type|
+    \item Le timestamp de l'évènement: \lstinline|timestamp|
     \item Le \emph{Message} encapsulé: \lstinline|message|
 \end{itemize}
 
@@ -197,15 +197,15 @@ Ce \emph{Message} est encapsulé dans un \emph{Event}, dont les attributs sont l
 
 \subsection{L'ordonnanceur: class Scheduler}
 
-La classe Scheduler est chargée de gérer les futurs événements du simulateur. Elle contient une liste d'événements triés par ordre chronologique.
+La classe \emph{Scheduler} est chargée de gérer les futurs évènements du simulateur. Elle contient une liste d'évènements triés par ordre chronologique.
 
-Lorsqu'un nouvel événement est ajouté, la méthode parcourt la liste depuis la fin afin de trouver la bonne position d'insertion. Tant que le temps de l'évènement déjà présent est supérieur au temps du nouvel événement, on remonte la liste. Lorsque la bonne position est trouvée, le nouvel événement est inséré avec insert. Cela permet de garder la liste triée sans utiliser \lstinline|sort| après chaque ajout.
+Lorsqu'un nouvel évènement est ajouté, la méthode parcourt la liste depuis la fin afin de trouver la bonne position d'insertion. Tant que le temps de l'évènement déjà présent est supérieur au temps du nouvel évènement, on remonte la liste. Lorsque la bonne position est trouvée, le nouvel évènement est inséré avec insert. Cela permet de garder la liste triée sans utiliser \lstinline|sort| après chaque ajout.
 
-La méthode \lstinline|pop_event| retire et retourne le premier événement de la liste. Comme la liste est maintenue triée par temps d'exécution, cet évènement correspond toujours au prochain événement à traiter.
+La méthode \lstinline|pop_event| retire et retourne le premier évènement de la liste. Comme la liste est maintenue triée par temps d'exécution, cet évènement correspond toujours au prochain évènement à traiter.
 
-La méthode \lstinline|get_current_time| retourne le temps du premier événement de la liste, c'est-à-dire le temps courant du simulateur. Si la liste est vide, la méthode retourne 0.
+La méthode \lstinline|get_current_time| retourne le temps du premier évènement de la liste, c'est-à-dire le temps courant du simulateur. Si la liste est vide, la méthode retourne 0.
 
-Enfin, la méthode \lstinline|has_events| permet de savoir s'il reste encore des événements à traiter.
+Enfin, la méthode \lstinline|has_events| permet de savoir s'il reste encore des évènements à traiter.
 
 \bigskip
 
@@ -215,21 +215,29 @@ Le module \lstinline|trace| contient trois fonctions fournissant un système de 
 
 Voici le prototype et la description de chaque fonction :
 
-\lstinline|def get_time_and_node(e: Event)|:  prend un évènement en paramètre et retourne un tuple constitué du numéro de node et du temps en fonction du type d'évènement.
+\lstinline|def get_time_and_node(e: Event)|:  prend un évènement en paramètre et retourne un tuple constitué du numéro de nœud et du temps en fonction du type d'évènement.
 
 \lstinline|def generateTraceOut(t_event: list[Event])|:  prend une liste d'évènements en paramètre et écrit sur la sortie standard l'ensemble des évènements contenu dans la liste.
 
 \lstinline|def generateTraceCSV(t_event: list[Event])|: prend une liste d'évènements en paramètre et écrit dans un fichier nommé \lstinline|trace.csv| l'ensemble des évènements contenu dans la liste au format CSV. Le délimiteur utilisé est le caractère '\lstinline|;|'.
 
 \bigskip
+
 \subsection{Le cœur du système: class Engine}
+
+La classe \emph{Engine}
+
 \bigskip
+
 \subsection{Le point d'entrée: function main}
-\bigskip
+
+Le point d'entrée du programme se trouve dans \emph{tp02\_main.py}.
 
 \bigskip
 
-% -------------------------------------------------
+\bigskip
+
+% ---------------------------------------------
 \section{Tests des premières classes}
 \subsection{Le système de test: Pytest}
 Afin de vérifier le bon fonctionnement des classes implémentées, des tests unitaires ont été réalisés avec l'aide de l'utilitaire \lstinline|Pytest|. L'objectif est de tester chaque classe séparément avant de l'intégrer dans le simulateur. L'ensemble des tests sont regroupés dans le répertoire \lstinline|tests|.
@@ -278,27 +286,25 @@ Test de \emph{Trace}:
 
 Test de \emph{Engine}:
 \begin{itemize}
-    \item Le test \lstinline|test_engine_complete| vérifie que l'execution du \lstinline|run| de \emph{Engine} ne tombe pas dans une boucle sans fin, et que l'ensemble des \emph{Message} et \emph{Event} sont bien consommés à l'issus de l'exécution.
+    \item Le test \lstinline|test_engine_complete| vérifie que l'exécution du \lstinline|run| de \emph{Engine} ne tombe pas dans une boucle sans fin, et que l'ensemble des \emph{Message} et \emph{Event} sont bien consommés à l'issue de l'exécution.
 \end{itemize}
 
 \bigskip
 
 \subsection{Exécution des tests}
-Les tests peuvent être lancés depuis le répertoire principal en tappant la commande '\lstinline|pytest|' (attention, \lstinline|Pytest| doit être préalablement installé).
-L'ensemble des tests présents dans le répertoire \lstinline|tests| seroint exécutés.
+Les tests peuvent être lancés depuis le répertoire principal en tapant la commande '\lstinline|pytest|' (attention, \lstinline|Pytest| doit être préalablement installé).
+L'ensemble des tests présents dans le répertoire \lstinline|tests| seront exécutés.
 
 \bigskip
 
 \bigskip
 
-
-% -------------------------------------------------
+% ---------------------------------------------
 \section{Conclusion}
-Cette première partie du TP nous permet d'apréhender ce que peut être un simulateur à évènements discrets. Nous mettons en œuvre des concepts vus en cours tel que les files d'attentes ou encore les processus de Poisson.
+Cette première partie du TP nous permet d'appréhender ce que peut être un simulateur à évènements discrets. Nous mettons en œuvre des concepts vus en cours tels que les files d'attente ou encore les processus de Poisson.
 
-Il nous permet aussi de comprendre l'intêret que peut représenter la complémentarité qu'il peut exister entre modélisation mathématique et simulation. En effet, la modélisation mathématique nous fournit les outils (variables aléatoires, processus stochastiques, etc.) qui vont nous permettre de construire facilement un simulateur, et ainsi réaliser, tout aussi facilement, des mesures sur un système complexe. Établir et mettre en œuvre un protocole de mesures sur ce même système dans le monde réel aurait été bien plus lourd et couteux.
+Il nous permet aussi de comprendre l'intérêt que peut représenter la complémentarité qu'il peut exister entre modélisation mathématique et simulation. En effet, la modélisation mathématique nous fournit les outils (variables aléatoires, processus stochastiques, etc.) qui vont nous permettre de construire facilement un simulateur, et ainsi réaliser, tout aussi facilement, des mesures sur un système complexe. Établir et mettre en œuvre un protocole de mesures sur ce même système dans le monde réel aurait été bien plus lourd et couteux.
 
-Cette première itération dans la réalisation du simulateur, nous a permit de préparer les premiers composants nécessaires à son bon fonctionnement. Même si ces composants sont amenés à être plus ou moins modifiés au cours des prochaines itérations, le développement de tests unitaires sur chacunes des briques logicielles nous permettra de confirmer en continue la validité de ces dernières, mais aussi d'éviter les régressions lors des futures étapes de développement.
-
+Cette première itération dans la réalisation du simulateur, nous a permis de préparer les premiers composants nécessaires à son bon fonctionnement. Même si ces composants sont amenés à être plus ou moins modifiés au cours des prochaines itérations, le développement de tests unitaires sur chacune des briques logicielles nous permettra de confirmer en continue la validité de ces dernières, mais aussi d'éviter les régressions lors des futures étapes de développement.
 
 \end{document}
