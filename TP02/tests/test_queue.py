@@ -16,7 +16,6 @@ def test_put():
 
     event1 = Event(1, EventType.SEND_MSG, message1)
     event2 = Event(2, EventType.SEND_MSG, message2)
-    t_event = [event1, event2]
 
     queue = Queue()
     queue.put(event1)
@@ -40,7 +39,6 @@ def test_get():
 
     event1 = Event(1, EventType.SEND_MSG, message1)
     event2 = Event(2, EventType.SEND_MSG, message2)
-    t_event = [event1, event2]
 
     queue = Queue()
     queue.put(event1)
@@ -66,7 +64,6 @@ def test_is_empty():
 
     event1 = Event(1, EventType.SEND_MSG, message1)
     event2 = Event(2, EventType.SEND_MSG, message2)
-    t_event = [event1, event2]
 
     queue = Queue()
     queue.put(event1)
@@ -92,7 +89,6 @@ def test_size():
 
     event1 = Event(1, EventType.SEND_MSG, message1)
     event2 = Event(2, EventType.SEND_MSG, message2)
-    t_event = [event1, event2]
 
     queue = Queue()
     queue.put(event1)
@@ -115,7 +111,6 @@ def test_str():
 
     event1 = Event(1, EventType.SEND_MSG, message1)
     event2 = Event(2, EventType.SEND_MSG, message2)
-    t_event = [event1, event2]
 
     queue = Queue()
     ret = str(queue)
