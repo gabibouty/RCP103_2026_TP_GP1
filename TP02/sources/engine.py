@@ -2,6 +2,7 @@ from enum import Enum
 
 from sources.client import Client
 from sources.events_and_messages import Message, Event, EventType
+from sources.queue import Queue
 from sources.scheduler import Scheduler
 from sources.server import Server
 from sources.trace import generateTraceOut, generateTraceCSV
@@ -33,6 +34,8 @@ class Engine:
         self.__client: Client = Client(
             CLIENT_ID, SERVER_ID, t_simulation_duration, LAMBDA
         )
+        # TODO: add queue limit when necessary
+        self.__queue: Queue = Queue()
 
         # TODO: generate client
         # TODO: generate gateway
@@ -64,7 +67,6 @@ class Engine:
 
             event = self.__scheduler.pop_event()
             time = event.get_event_time()
-            # trace
             if event.get_event_type() == EventType.SEND_MSG:
                 msg = event.get_message()
                 msg.set_message_arrival_time(time + TRANSMISSION_DURATION)
@@ -84,6 +86,9 @@ class Engine:
                     )
                     event_id += 1
                     self.__server.start_work(time)
+                # TODO
+                # else:
+                #    self.__queue.put(event)
                 # When queue will be ready, we can enqueue if server isn't free
 
             # TODO: call gateway process (== dequeue if server free, in this case add event)
