@@ -1,7 +1,6 @@
-from typing import List
 from enum import Enum
-import numpy as np
 
+from sources.client import Client
 from sources.events_and_messages import Message, Event, EventType
 from sources.scheduler import Scheduler
 from sources.server import Server
@@ -31,26 +30,15 @@ class Engine:
     def __init__(self, t_simulation_duration: float):
         self.__scheduler: Scheduler = Scheduler()
         self.__server: Server = Server(SERVER_ID, SERVER_AVG_TIME)
-        self.__mock_client: List[Message] = []
+        self.__client: Client = Client(
+            CLIENT_ID, SERVER_ID, t_simulation_duration, LAMBDA
+        )
 
         # TODO: generate client
         # TODO: generate gateway
 
-        # TODO: the following lines should be in client (don't forget to use unique id)
-        timestamp = 0.0
-        rng = np.random.default_rng(seed=1)
-        msg_id: int = 0
-        while timestamp < t_simulation_duration:
-            self.__mock_client.append(
-                Message(t_id=msg_id, t_source=CLIENT_ID, t_destination=SERVER_ID)
-            )
-            self.__mock_client[-1].set_message_send_time(t_timestamp=timestamp)
-            x = rng.exponential(scale=LAMBDA, size=1)
-            timestamp += x[0]
-            msg_id += 1
-
     def has_finished(self) -> bool:
-        return len(self.__mock_client) == 0 and not self.__scheduler.has_events()
+        return not self.__client.has_messages() and not self.__scheduler.has_events()
 
     def log(self, t_trace_type: TraceType):
         if t_trace_type == TraceType.STDIO:
@@ -64,11 +52,11 @@ class Engine:
         event_id: int = 0
         while not self.has_finished():
             if (not self.__scheduler.has_events()) or (
-                len(self.__mock_client) != 0
-                and self.__scheduler.get_current_time()
-                >= self.__mock_client[0].get_message_send_time()
+                self.__client.has_messages()
+                and self.__client.get_next_msg_time()
+                <= self.__scheduler.get_current_time()
             ):
-                msg = self.__mock_client.pop(0)
+                msg = self.__client.pop_message()
                 self.__scheduler.add_event(
                     t_event=Event(event_id, EventType.SEND_MSG, msg)
                 )
