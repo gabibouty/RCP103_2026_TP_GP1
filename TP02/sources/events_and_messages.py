@@ -87,7 +87,7 @@ class Event:
             f"Timestamp: {self.get_event_time()} | "
             f"Msg: {self.__message}"
         )
-    
+
     def __repr__(self) -> str:
         return (
             f"Event:: Id: {self.__id} | "

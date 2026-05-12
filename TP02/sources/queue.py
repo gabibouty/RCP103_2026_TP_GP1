@@ -1,6 +1,7 @@
 from sources.events_and_messages import Event
 from collections import deque
 
+
 class Queue:
 
     # https://docs.python.org/3.13/library/collections.html#deque-objects
@@ -22,12 +23,9 @@ class Queue:
 
     def size(self) -> int:
         return len(self.queue)
-        
+
     def index(self, t_event: Event) -> int:
         return self.queue.index(t_event)
-    
+
     def __str__(self) -> str:
-        return (
-            f"Size: {self.size()}\n"
-            f"Elements : {str(list(self.queue))}"
-        )
+        return f"Size: {self.size()}\n" f"Elements : {str(list(self.queue))}"

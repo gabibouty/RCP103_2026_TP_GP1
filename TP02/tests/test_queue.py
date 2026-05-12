@@ -2,6 +2,7 @@ from sources.events_and_messages import Message, Event, EventType
 from sources.queue import Queue
 import pytest
 
+
 def test_put():
     message1 = Message(1, 1, 2)
     message1.set_message_send_time(0.0)
@@ -20,7 +21,7 @@ def test_put():
     queue = Queue()
     queue.put(event1)
     queue.put(event2)
-    
+
     # https://docs.pytest.org/en/6.2.x/capture.html
     assert queue.index(event1) == 0
     assert queue.index(event2) == 1
@@ -44,7 +45,7 @@ def test_get():
     queue = Queue()
     queue.put(event1)
     queue.put(event2)
-    
+
     # https://docs.pytest.org/en/6.2.x/capture.html
     assert queue.get() == event1
     assert queue.get() == event2
@@ -70,15 +71,14 @@ def test_is_empty():
     queue = Queue()
     queue.put(event1)
     queue.put(event2)
-    
-    
+
     # https://docs.pytest.org/en/6.2.x/capture.html
     assert queue.is_empty() == False
     queue.get()
     queue.get()
     assert queue.is_empty() == True
-    
-    
+
+
 def test_size():
     message1 = Message(1, 1, 2)
     message1.set_message_send_time(0.0)
@@ -97,11 +97,10 @@ def test_size():
     queue = Queue()
     queue.put(event1)
     queue.put(event2)
-    
-    
+
     # https://docs.pytest.org/en/6.2.x/capture.html
     assert queue.size() == 2
-    
+
 
 def test_str():
     message1 = Message(1, 1, 2)
@@ -123,8 +122,10 @@ def test_str():
     assert ret == "Size: 0\nElements : []"
     queue.put(event1)
     queue.put(event2)
-    
-    
+
     # https://docs.pytest.org/en/6.2.x/capture.html
     ret = str(queue)
-    assert ret == "Size: 2\nElements : [Event:: Id: 1 | Type: EventType.SEND_MSG | Timestamp: 0.0 | Msg: Message:: Id: 1 | Source: 1 | Dest: 2, Event:: Id: 2 | Type: EventType.SEND_MSG | Timestamp: 0.2 | Msg: Message:: Id: 2 | Source: 1 | Dest: 3]"
+    assert (
+        ret
+        == "Size: 2\nElements : [Event:: Id: 1 | Type: EventType.SEND_MSG | Timestamp: 0.0 | Msg: Message:: Id: 1 | Source: 1 | Dest: 2, Event:: Id: 2 | Type: EventType.SEND_MSG | Timestamp: 0.2 | Msg: Message:: Id: 2 | Source: 1 | Dest: 3]"
+    )
