@@ -63,7 +63,7 @@ class Engine:
     def run(self):
         event_id: int = 0
         while not self.has_finished():
-            if not self.__scheduler.has_events() or (
+            if (not self.__scheduler.has_events()) or (
                 len(self.__mock_client) != 0
                 and self.__scheduler.get_current_time()
                 >= self.__mock_client[0].get_message_send_time()
