@@ -11,12 +11,12 @@ def get_time_and_node(e: Event):
 
 
 def generateTraceOut(t_event: list[Event]):
-    print(f"time\tnode\tevent\tsrc\tdst\tmsgID")
+    print(f"\ntime\tnode\tevent\t\tsrc\tdst\tmsgID")
 
     for e in t_event:
         node, time = get_time_and_node(e)
         print(
-            f"{time}\t"
+            f"{time:.4}\t"
             f"{node}\t"
             f"{e.get_event_type().name}\t"
             f"{e.get_message().get_message_source()}\t"

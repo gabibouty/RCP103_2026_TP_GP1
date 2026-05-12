@@ -53,7 +53,7 @@ def test_generateTraceOut_SEND_MSG(capsys):
 
     # https://docs.pytest.org/en/6.2.x/capture.html
     capture = capsys.readouterr()
-    assert f"time\tnode\tevent\tsrc\tdst\tmsgID" in capture.out
+    assert f"\ntime\tnode\tevent\t\tsrc\tdst\tmsgID" in capture.out
     assert f"0.0\t1\tSEND_MSG\t1\t2\t1" in capture.out
     assert f"0.2\t1\tSEND_MSG\t1\t3\t2" in capture.out
 
@@ -77,7 +77,7 @@ def test_generateTraceOut_RECV_MSG(capsys):
 
     # https://docs.pytest.org/en/6.2.x/capture.html
     capture = capsys.readouterr()
-    assert f"time\tnode\tevent\tsrc\tdst\tmsgID" in capture.out
+    assert f"\ntime\tnode\tevent\t\tsrc\tdst\tmsgID" in capture.out
     assert f"1.1\t2\tRECV_MSG\t1\t2\t42" in capture.out
     assert f"1.2\t3\tRECV_MSG\t1\t3\t43" in capture.out
 
@@ -101,7 +101,7 @@ def test_generateTraceOut_MSG_DEPT(capsys):
 
     # https://docs.pytest.org/en/6.2.x/capture.html
     capture = capsys.readouterr()
-    assert f"time\tnode\tevent\tsrc\tdst\tmsgID" in capture.out
+    assert f"\ntime\tnode\tevent\t\tsrc\tdst\tmsgID" in capture.out
     assert f"2.6\t2\tMSG_DEPT\t1\t2\t42" in capture.out
     assert f"4.6\t3\tMSG_DEPT\t1\t3\t43" in capture.out
 
