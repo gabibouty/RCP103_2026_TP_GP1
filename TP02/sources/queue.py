@@ -1,4 +1,4 @@
-from sources.events_and_messages import Event
+from sources.events_and_messages import Event, Message
 from collections import deque
 
 
@@ -8,11 +8,11 @@ class Queue:
     def __init__(self):
         self.queue = deque()
 
-    def put(self, t_event: Event):
+    def put(self, msg: Message):
         # append to the right of the queue
-        self.queue.append(t_event)
+        self.queue.append(msg)
 
-    def get(self) -> Event:
+    def get(self) -> Message:
         # remove form the left of the queue
         if self.is_empty():
             raise IndexError("Queue is empty")
@@ -24,8 +24,8 @@ class Queue:
     def size(self) -> int:
         return len(self.queue)
 
-    def index(self, t_event: Event) -> int:
-        return self.queue.index(t_event)
+    def index(self, msg: Message) -> int:
+        return self.queue.index(msg)
 
     def __str__(self) -> str:
         return f"Size: {self.size()}\n" f"Elements : {str(list(self.queue))}"

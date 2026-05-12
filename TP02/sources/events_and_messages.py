@@ -52,6 +52,13 @@ class Message:
             f"Source: {self.__source} | "
             f"Dest: {self.__destination}"
         )
+    
+    def __repr__(self) -> str:
+        return (
+            f"Message:: Id: {self.__id} | "
+            f"Source: {self.__source} | "
+            f"Dest: {self.__destination}"
+        )
 
 
 class EventType(Enum):

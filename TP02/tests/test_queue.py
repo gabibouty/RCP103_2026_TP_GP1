@@ -37,16 +37,13 @@ def test_get():
     message2.set_message_arrival_time(1.2)
     message2.set_message_server_time(4.6)
 
-    event1 = Event(1, EventType.SEND_MSG, message1)
-    event2 = Event(2, EventType.SEND_MSG, message2)
-
     queue = Queue()
-    queue.put(event1)
-    queue.put(event2)
+    queue.put(message1)
+    queue.put(message2)
 
     # https://docs.pytest.org/en/6.2.x/capture.html
-    assert queue.get() == event1
-    assert queue.get() == event2
+    assert queue.get() == message1
+    assert queue.get() == message2
     with pytest.raises(IndexError, match="Queue is empty"):
         queue.get()
 
@@ -62,12 +59,9 @@ def test_is_empty():
     message2.set_message_arrival_time(1.2)
     message2.set_message_server_time(4.6)
 
-    event1 = Event(1, EventType.SEND_MSG, message1)
-    event2 = Event(2, EventType.SEND_MSG, message2)
-
     queue = Queue()
-    queue.put(event1)
-    queue.put(event2)
+    queue.put(message1)
+    queue.put(message2)
 
     # https://docs.pytest.org/en/6.2.x/capture.html
     assert queue.is_empty() == False
@@ -87,12 +81,9 @@ def test_size():
     message2.set_message_arrival_time(1.2)
     message2.set_message_server_time(4.6)
 
-    event1 = Event(1, EventType.SEND_MSG, message1)
-    event2 = Event(2, EventType.SEND_MSG, message2)
-
     queue = Queue()
-    queue.put(event1)
-    queue.put(event2)
+    queue.put(message1)
+    queue.put(message2)
 
     # https://docs.pytest.org/en/6.2.x/capture.html
     assert queue.size() == 2
@@ -109,18 +100,15 @@ def test_str():
     message2.set_message_arrival_time(1.2)
     message2.set_message_server_time(4.6)
 
-    event1 = Event(1, EventType.SEND_MSG, message1)
-    event2 = Event(2, EventType.SEND_MSG, message2)
-
     queue = Queue()
     ret = str(queue)
     assert ret == "Size: 0\nElements : []"
-    queue.put(event1)
-    queue.put(event2)
+    queue.put(message1)
+    queue.put(message2)
 
     # https://docs.pytest.org/en/6.2.x/capture.html
     ret = str(queue)
     assert (
         ret
-        == "Size: 2\nElements : [Event:: Id: 1 | Type: EventType.SEND_MSG | Timestamp: 0.0 | Msg: Message:: Id: 1 | Source: 1 | Dest: 2, Event:: Id: 2 | Type: EventType.SEND_MSG | Timestamp: 0.2 | Msg: Message:: Id: 2 | Source: 1 | Dest: 3]"
+        == "Size: 2\nElements : [Message:: Id: 1 | Source: 1 | Dest: 2, Message:: Id: 2 | Source: 1 | Dest: 3]"
     )
