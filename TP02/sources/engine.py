@@ -84,19 +84,18 @@ class Engine:
                     t_event=Event(event_id, EventType.RECV_MSG, msg)
                 )
                 event_id += 1
-                # TODO: transmit msg to gateway
-
-            # TODO: for now, we don't have queue so if the server is free,
-            # we can handle the message, else we drop it
-            elif event.get_event_type() == EventType.RECV_MSG and self.__server.is_free(
-                time
-            ):
-                msg = event.get_message()
-                msg.set_message_server_time(time)
-                self.__scheduler.add_event(
-                    t_event=Event(event_id, EventType.MSG_DEPT, msg)
-                )
-                event_id += 1
-                self.__server.start_work(time)
+            elif event.get_event_type() == EventType.RECV_MSG:
+                # TODO: for now, we don't have queue so if the server is free,
+                # we can handle the message, else we drop it
+                # Please note, that we don't use destination_id for now...
+                if self.__server.is_free(time):
+                    msg = event.get_message()
+                    msg.set_message_server_time(time)
+                    self.__scheduler.add_event(
+                        t_event=Event(event_id, EventType.MSG_DEPT, msg)
+                    )
+                    event_id += 1
+                    self.__server.start_work(time)
+                # When queue will be ready, we can enqueue if server isn't free
 
             # TODO: call gateway process (== dequeue if server free, in this case add event)
