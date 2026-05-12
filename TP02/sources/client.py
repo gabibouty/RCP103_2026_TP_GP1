@@ -11,7 +11,9 @@ from sources.events_and_messages import Message
 
 
 class Client:
-    def __init__(self, t_id: int, t_destination,t_simulation_duration: float, t_lambda: float):
+    def __init__(
+        self, t_id: int, t_destination, t_simulation_duration: float, t_lambda: float
+    ):
         # TODO: generate Message list directly in Client __init__
         self.__id = t_id
         self.__messages = []
@@ -25,19 +27,17 @@ class Client:
             self.__messages[-1].set_message_send_time(t_timestamp=timestamp)
             x = rng.exponential(scale=t_lambda, size=1)
             timestamp += x[0]
-            msg_id += 1 
+            msg_id += 1
 
     def get_client_id(self) -> int:
         return self.__id
 
-
-
     # TODO: add a method to check if there is message
     def has_messages(self) -> bool:
-        return len(self.__messages) > 0 
+        return len(self.__messages) > 0
 
     def get_next_msg_time(self) -> float:
-        assert self.has_messages() 
+        assert self.has_messages()
         return self.__messages[0].get_message_send_time()
 
     def pop_message(self) -> Message:
