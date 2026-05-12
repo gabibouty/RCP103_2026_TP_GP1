@@ -1,9 +1,11 @@
 from typing import List
+from enum import Enum
 import numpy as np
 
 from sources.events_and_messages import Message, Event, EventType
 from sources.scheduler import Scheduler
 from sources.server import Server
+from sources.trace import generateTraceOut, generateTraceCSV
 
 # There is 4 message by time unit
 AVG_TIME: int = 4
@@ -19,6 +21,12 @@ SERVER_ID = 1
 TRANSMISSION_DURATION = 1.0
 
 
+class TraceType(Enum):
+    EVENT_LIST = 1
+    STDIO = 2
+    CSV = 3
+
+
 class Engine:
     def __init__(self, t_simulation_duration: float):
         self.__scheduler: Scheduler = Scheduler()
@@ -27,8 +35,6 @@ class Engine:
 
         # TODO: generate client
         # TODO: generate gateway
-        # TODO: generate server
-        # TODO: generate scheduler
 
         # TODO: the following lines should be in client (don't forget to use unique id)
         timestamp = 0.0
@@ -45,6 +51,14 @@ class Engine:
 
     def has_finished(self) -> bool:
         return len(self.__mock_client) == 0 and not self.__scheduler.has_events()
+
+    def log(self, t_trace_type: TraceType):
+        if t_trace_type == TraceType.STDIO:
+            generateTraceOut(self.__scheduler.get_passed_events())
+        elif t_trace_type == TraceType.CSV:
+            generateTraceCSV(self.__scheduler.get_passed_events())
+        else:
+            return self.__scheduler.get_passed_events()
 
     def run(self):
         event_id: int = 0
@@ -82,6 +96,7 @@ class Engine:
                 self.__scheduler.add_event(
                     t_event=Event(event_id, EventType.MSG_DEPT, msg)
                 )
+                event_id += 1
                 self.__server.start_work(time)
 
             # TODO: call gateway process (== dequeue if server free, in this case add event)

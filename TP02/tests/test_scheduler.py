@@ -24,3 +24,5 @@ def test_sheduler():
     while sch.has_events():
         assert time < sch.get_current_time()
         time = sch.pop_event().get_event_time()
+
+    assert len(sch.get_passed_events()) == EVENT_COUNT
