@@ -10,7 +10,7 @@ def test_get_time_and_node_event_SEND_MSG():
     message.set_message_arrival_time(1.1)
     message.set_message_server_time(2.6)
 
-    event = Event(1, EventType.SEND_MSG, 0.0, message)
+    event = Event(1, EventType.SEND_MSG, message)
     assert get_time_and_node(event) == (1, 0.0)
 
 
@@ -20,7 +20,7 @@ def test_get_time_and_node_event_RECV_MSG():
     message.set_message_arrival_time(1.1)
     message.set_message_server_time(2.6)
 
-    event = Event(1, EventType.RECV_MSG, 0.0, message)
+    event = Event(1, EventType.RECV_MSG, message)
     assert get_time_and_node(event) == (2, 1.1)
 
 
@@ -30,7 +30,7 @@ def test_get_time_and_node_event_MSG_DEPT():
     message.set_message_arrival_time(1.1)
     message.set_message_server_time(2.6)
 
-    event = Event(1, EventType.MSG_DEPT, 0.0, message)
+    event = Event(1, EventType.MSG_DEPT, message)
     assert get_time_and_node(event) == (2, 2.6)
 
 
@@ -45,8 +45,8 @@ def test_generateTraceOut_SEND_MSG(capsys):
     message2.set_message_arrival_time(1.2)
     message2.set_message_server_time(4.6)
 
-    event1 = Event(1, EventType.SEND_MSG, 0.0, message1)
-    event2 = Event(2, EventType.SEND_MSG, 0.0, message2)
+    event1 = Event(1, EventType.SEND_MSG, message1)
+    event2 = Event(2, EventType.SEND_MSG, message2)
     t_event = [event1, event2]
 
     generateTraceOut(t_event)
@@ -69,8 +69,8 @@ def test_generateTraceOut_RECV_MSG(capsys):
     message2.set_message_arrival_time(1.2)
     message2.set_message_server_time(4.6)
 
-    event1 = Event(1, EventType.RECV_MSG, 0.0, message1)
-    event2 = Event(2, EventType.RECV_MSG, 0.0, message2)
+    event1 = Event(1, EventType.RECV_MSG, message1)
+    event2 = Event(2, EventType.RECV_MSG, message2)
     t_event = [event1, event2]
 
     generateTraceOut(t_event)
@@ -93,8 +93,8 @@ def test_generateTraceOut_MSG_DEPT(capsys):
     message2.set_message_arrival_time(1.2)
     message2.set_message_server_time(4.6)
 
-    event1 = Event(1, EventType.MSG_DEPT, 0.0, message1)
-    event2 = Event(2, EventType.MSG_DEPT, 0.0, message2)
+    event1 = Event(1, EventType.MSG_DEPT, message1)
+    event2 = Event(2, EventType.MSG_DEPT, message2)
     t_event = [event1, event2]
 
     generateTraceOut(t_event)
@@ -117,8 +117,8 @@ def test_generateTraceCSV():
     message2.set_message_arrival_time(1.2)
     message2.set_message_server_time(4.6)
 
-    event1 = Event(1, EventType.SEND_MSG, 0.0, message1)
-    event2 = Event(2, EventType.MSG_DEPT, 0.0, message2)
+    event1 = Event(1, EventType.SEND_MSG, message1)
+    event2 = Event(2, EventType.MSG_DEPT, message2)
     t_event = [event1, event2]
 
     generateTraceCSV(t_event)

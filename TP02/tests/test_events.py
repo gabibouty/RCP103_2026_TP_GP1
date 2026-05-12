@@ -3,26 +3,16 @@ from sources.events_and_messages import Event, EventType, Message
 
 def test_event_init():
     msg = Message(1, 2, 3)
-    event = Event(10, EventType.SEND_MSG, 1.5, msg)
+    msg.set_message_send_time(1.5)
+    event = Event(10, EventType.SEND_MSG, msg)
 
     assert event.get_event_time() == 1.5
     assert event.get_event_type() == EventType.SEND_MSG
 
 
-def test_event_setters():
-    msg = Message(1, 2, 3)
-    event = Event(10, EventType.SEND_MSG, 5.5, msg)
-
-    event.set_event_time(8.0)
-    event.set_event_type(EventType.RECV_MSG)
-
-    assert event.get_event_time() == 8.0
-    assert event.get_event_type() == EventType.RECV_MSG
-
-
 def test_event_message_content():
     msg = Message(1, 2, 3)
-    event = Event(10, EventType.MSG_DEPT, 4.0, msg)
+    event = Event(10, EventType.MSG_DEPT, msg)
 
     event_msg = event.get_message()
 
@@ -33,7 +23,8 @@ def test_event_message_content():
 
 def test_event_str():
     msg = Message(1, 2, 3)
-    event = Event(10, EventType.SEND_MSG, 5.5, msg)
+    msg.set_message_send_time(5.5)
+    event = Event(10, EventType.SEND_MSG, msg)
 
     assert str(event) == (
         "Event:: Id: 10 | "

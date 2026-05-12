@@ -44,16 +44,14 @@ class Engine:
     def run(self):
         event_id: int = 0
         while not self.has_finished():
-            if (
-                not self.__scheduler.has_events()
-                or self.__scheduler.get_current_time()
+            if not self.__scheduler.has_events() or (
+                len(self.__mock_client) != 0
+                and self.__scheduler.get_current_time()
                 >= self.__mock_client[0].get_message_send_time()
             ):
                 msg = self.__mock_client.pop(0)
                 self.__scheduler.add_event(
-                    t_event=Event(
-                        event_id, msg.get_message_send_time(), EventType.SEND_MSG, msg
-                    )
+                    t_event=Event(event_id, EventType.SEND_MSG, msg)
                 )
                 event_id += 1
 
@@ -67,7 +65,6 @@ class Engine:
                 self.__scheduler.add_event(
                     t_event=Event(
                         event_id,
-                        msg.get_message_arrival_time(),
                         EventType.RECV_MSG,
                         msg,
                     )

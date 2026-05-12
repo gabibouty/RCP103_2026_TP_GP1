@@ -61,16 +61,18 @@ class EventType(Enum):
 
 
 class Event:
-    def __init__(
-        self, t_id: int, t_type: EventType, t_timestamp: float, t_message: Message
-    ):
+    def __init__(self, t_id: int, t_type: EventType, t_message: Message):
         self.__id: int = t_id
         self.__type: EventType = t_type
-        self.__timestamp: float = t_timestamp
         self.__message: Message = t_message
 
     def get_event_time(self) -> float:
-        return self.__timestamp
+        if self.__type == EventType.SEND_MSG:
+            return self.__message.get_message_send_time()
+        elif self.__type == EventType.RECV_MSG:
+            return self.__message.get_message_arrival_time()
+        else:
+            return self.__message.get_message_server_time()
 
     def get_event_type(self) -> EventType:
         return self.__type
@@ -78,16 +80,10 @@ class Event:
     def get_message(self) -> Message:
         return self.__message
 
-    def set_event_time(self, t_timestamp: float):
-        self.__timestamp = t_timestamp
-
-    def set_event_type(self, t_type: EventType):
-        self.__type = t_type
-
     def __str__(self) -> str:
         return (
             f"Event:: Id: {self.__id} | "
             f"Type: {self.__type} | "
-            f"Timestamp: {self.__timestamp} | "
+            f"Timestamp: {self.get_event_time()} | "
             f"Msg: {self.__message}"
         )

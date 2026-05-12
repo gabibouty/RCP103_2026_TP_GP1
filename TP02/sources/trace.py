@@ -5,14 +5,9 @@ import csv
 def get_time_and_node(e: Event):
     if e.get_event_type() == EventType.SEND_MSG:
         node = e.get_message().get_message_source()
-        time = e.get_message().get_message_send_time()
-    elif e.get_event_type() == EventType.RECV_MSG:
-        node = e.get_message().get_message_destination()
-        time = e.get_message().get_message_arrival_time()
     else:
         node = e.get_message().get_message_destination()
-        time = e.get_message().get_message_server_time()
-    return node, time
+    return node, e.get_event_time()
 
 
 def generateTraceOut(t_event: list[Event]):
