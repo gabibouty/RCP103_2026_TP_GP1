@@ -1,3 +1,5 @@
+import numpy as np
+
 from typing import List
 from sources.events_and_messages import Message
 
@@ -12,13 +14,16 @@ from sources.events_and_messages import Message
 
 class Client:
     def __init__(
-        self, t_id: int, t_destination, t_simulation_duration: float, t_lambda: float
+        self,
+        t_id: int,
+        t_destination: int,
+        t_simulation_duration: float,
+        t_lambda: float,
     ):
-        # TODO: generate Message list directly in Client __init__
         self.__id = t_id
-        self.__messages = []
+        self.__messages: List[Message] = []
         timestamp = 0.0
-        rng = np.random.default_rng(seed=1)
+        rng = np.random.default_rng(seed=t_id)
         msg_id: int = 0
         while timestamp < t_simulation_duration:
             self.__messages.append(
@@ -32,7 +37,6 @@ class Client:
     def get_client_id(self) -> int:
         return self.__id
 
-    # TODO: add a method to check if there is message
     def has_messages(self) -> bool:
         return len(self.__messages) > 0
 
