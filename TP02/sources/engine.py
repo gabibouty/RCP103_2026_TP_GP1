@@ -3,10 +3,14 @@ import numpy as np
 
 from sources.events_and_messages import Message, Event, EventType
 from sources.scheduler import Scheduler
+from sources.server import Server
 
-# There is 2 message by time unit
-AVG_TIME: int = 2
+# There is 4 message by time unit
+AVG_TIME: int = 4
 LAMBDA: float = 1.0 / AVG_TIME
+
+# The server can handle 1 message by time unit
+SERVER_AVG_TIME: int = 2
 
 
 # TODO: Temp Constants
@@ -18,6 +22,7 @@ TRANSMISSION_DURATION = 1.0
 class Engine:
     def __init__(self, t_simulation_duration: float):
         self.__scheduler: Scheduler = Scheduler()
+        self.__server: Server = Server(SERVER_ID, SERVER_AVG_TIME)
         self.__mock_client: List[Message] = []
 
         # TODO: generate client
@@ -56,20 +61,27 @@ class Engine:
                 event_id += 1
 
             event = self.__scheduler.pop_event()
+            time = event.get_event_time()
             # trace
             if event.get_event_type() == EventType.SEND_MSG:
                 msg = event.get_message()
-                msg.set_message_arrival_time(
-                    event.get_event_time() + TRANSMISSION_DURATION
-                )
+                msg.set_message_arrival_time(time + TRANSMISSION_DURATION)
                 self.__scheduler.add_event(
-                    t_event=Event(
-                        event_id,
-                        EventType.RECV_MSG,
-                        msg,
-                    )
+                    t_event=Event(event_id, EventType.RECV_MSG, msg)
                 )
                 event_id += 1
                 # TODO: transmit msg to gateway
+
+            # TODO: for now, we don't have queue so if the server is free,
+            # we can handle the message, else we drop it
+            elif event.get_event_type() == EventType.RECV_MSG and self.__server.is_free(
+                time
+            ):
+                msg = event.get_message()
+                msg.set_message_server_time(time)
+                self.__scheduler.add_event(
+                    t_event=Event(event_id, EventType.MSG_DEPT, msg)
+                )
+                self.__server.start_work(time)
 
             # TODO: call gateway process (== dequeue if server free, in this case add event)
