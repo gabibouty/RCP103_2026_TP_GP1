@@ -9,6 +9,7 @@ def test_client_init():
     assert client.has_messages()
     assert client.get_next_msg_time() == 0.0
 
+
 def test_get_next_msg_time():
     client = Client(t_id=1, t_destination=2, t_simulation_duration=10.0, t_lambda=1.0)
 
@@ -17,4 +18,4 @@ def test_get_next_msg_time():
 
 
 def test_pop_message():
-    client = Client(t_id=1, t_destination=2, t_simulation_duration=10.0, t_lambda=1.0)  
+    client = Client(t_id=1, t_destination=2, t_simulation_duration=10.0, t_lambda=1.0)

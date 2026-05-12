@@ -40,6 +40,12 @@ class Engine:
         # TODO: generate client
         # TODO: generate gateway
 
+    def is_queue_empty(self) -> bool:
+        return self.__queue.is_empty()
+
+    def get_all_messages_count(self) -> int:
+        return self.__client.get_messages_count()
+
     def has_finished(self) -> bool:
         return not self.__client.has_messages() and not self.__scheduler.has_events()
 
@@ -95,5 +101,17 @@ class Engine:
                     self.__server.start_work(time)
                 else:
                     self.__queue.put(event.get_message())
+
+        while not self.__queue.is_empty():
+            time = self.__server.get_work_end()
+            assert self.__server.is_free(time)
+            msg = self.__queue.get()
+            msg.set_message_server_time(time)
+            self.__scheduler.add_event(t_event=Event(event_id, EventType.MSG_DEPT, msg))
+            event_id += 1
+            self.__server.start_work(time)
+
+        while self.__scheduler.has_events():
+            self.__scheduler.pop_event()
 
             # TODO: call gateway process (== dequeue if server free, in this case add event)

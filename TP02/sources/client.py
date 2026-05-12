@@ -47,3 +47,6 @@ class Client:
     def pop_message(self) -> Message:
         assert self.has_messages()
         return self.__messages.pop(0)
+
+    def get_messages_count(self) -> int:
+        return len(self.__messages)
