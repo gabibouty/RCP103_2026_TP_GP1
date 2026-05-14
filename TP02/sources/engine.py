@@ -54,9 +54,8 @@ class Engine:
     def run(self):
         event_id: int = 0
 
-        # MAIN PART
+        # MAIN LOOP
         while self.__scheduler.get_current_time() < self.__simulation_duration:
-
             current_time = self.__scheduler.get_current_time()
 
             while (

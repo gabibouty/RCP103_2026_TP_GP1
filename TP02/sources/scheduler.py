@@ -15,6 +15,7 @@ class Scheduler:
             i -= 1
         self.__events.insert(i + 1, t_event)
         assert len(self.__events) != 0
+        self.__time = self.__events[0].get_event_time()
 
     def pop_event(self) -> Event:
         e: Event = self.__events.pop(0)

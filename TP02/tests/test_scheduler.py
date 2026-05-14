@@ -12,6 +12,7 @@ def test_sheduler():
     random_x = np.random.default_rng(seed=1).uniform(
         low=0.01, high=EVENT_COUNT, size=EVENT_COUNT
     )
+
     for id, x in enumerate(random_x):
         msg = Message(id, 1, 0)
         msg.set_message_send_time(x)
@@ -20,11 +21,11 @@ def test_sheduler():
 
     assert sch.has_events()
 
-    time: float = sch.get_current_time()
+    e: Event = sch.pop_event()
     while sch.has_events():
-        e: Event = sch.pop_event()
-        assert e.get_event_time() == sch.get_current_time()
-        assert time < sch.get_current_time()
         time = sch.get_current_time()
+        assert e.get_event_time() == time
+        e = sch.pop_event()
+        assert time < sch.get_current_time()
 
     assert len(sch.get_passed_events()) == EVENT_COUNT

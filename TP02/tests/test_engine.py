@@ -26,3 +26,7 @@ def test_engine_complete():
 
     assert len(send_events) > len(recv_events)
     assert len(recv_events) > len(dept_events)
+    engine.log(TraceType.STDIO)
+
+    # for i in range (len(events) - 1):
+    # assert events[i].get_event_time() <= events[i + 1].get_event_time()
