@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import List
 
 from sources.client import Client
 from sources.events_and_messages import Message, Event, EventType
@@ -8,8 +9,7 @@ from sources.server import Server
 from sources.trace import generateTraceOut, generateTraceCSV
 
 # There is 4 message by time unit
-AVG_TIME: int = 4
-LAMBDA: float = 1.0 / AVG_TIME
+CLIENT_AVG_TIME: int = 4
 
 # The server can handle 1 message by time unit
 SERVER_AVG_TIME: int = 2
@@ -29,25 +29,19 @@ class TraceType(Enum):
 
 class Engine:
     def __init__(self, t_simulation_duration: float):
+        self.__simulation_duration: float = t_simulation_duration
+        self.__message_count: int = 0
+
         self.__scheduler: Scheduler = Scheduler()
         self.__server: Server = Server(SERVER_ID, SERVER_AVG_TIME)
-        self.__client: Client = Client(
-            CLIENT_ID, SERVER_ID, t_simulation_duration, LAMBDA
-        )
+        self.__client: Client = Client(CLIENT_ID, SERVER_ID, CLIENT_AVG_TIME)
         # TODO: add queue limit when necessary
         self.__queue: Queue = Queue()
 
-        # TODO: generate client
         # TODO: generate gateway
 
-    def is_queue_empty(self) -> bool:
-        return self.__queue.is_empty()
-
     def get_all_messages_count(self) -> int:
-        return self.__client.get_messages_count()
-
-    def has_finished(self) -> bool:
-        return not self.__client.has_messages() and not self.__scheduler.has_events()
+        return self.__message_count
 
     def log(self, t_trace_type: TraceType):
         if t_trace_type == TraceType.STDIO:
@@ -59,59 +53,39 @@ class Engine:
 
     def run(self):
         event_id: int = 0
-        while not self.has_finished():
-            if (not self.__scheduler.has_events()) or (
-                self.__client.has_messages()
-                and self.__client.get_next_msg_time()
-                <= self.__scheduler.get_current_time()
+
+        # MAIN PART
+        while self.__scheduler.get_current_time() < self.__simulation_duration:
+
+            current_time = self.__scheduler.get_current_time()
+
+            while (
+                not self.__scheduler.has_events()
+                or self.__client.get_next_msg_time() <= current_time
             ):
                 msg = self.__client.pop_message()
                 self.__scheduler.add_event(
                     t_event=Event(event_id, EventType.SEND_MSG, msg)
                 )
+                self.__message_count += 1
                 event_id += 1
 
-            event = self.__scheduler.pop_event()
-            time = event.get_event_time()
-
-            if not self.__queue.is_empty() and self.__server.is_free(time):
+            if not self.__queue.is_empty() and self.__server.is_free(current_time):
                 msg = self.__queue.get()
-                msg.set_message_server_time(time)
+                msg.set_message_server_time(current_time)
                 self.__scheduler.add_event(
                     t_event=Event(event_id, EventType.MSG_DEPT, msg)
                 )
                 event_id += 1
-                self.__server.start_work(time)
+                self.__server.start_work(current_time)
 
+            event = self.__scheduler.pop_event()
             if event.get_event_type() == EventType.SEND_MSG:
                 msg = event.get_message()
-                msg.set_message_arrival_time(time + TRANSMISSION_DURATION)
+                msg.set_message_arrival_time(current_time + TRANSMISSION_DURATION)
                 self.__scheduler.add_event(
                     t_event=Event(event_id, EventType.RECV_MSG, msg)
                 )
                 event_id += 1
             elif event.get_event_type() == EventType.RECV_MSG:
-                if self.__server.is_free(time):
-                    msg = event.get_message()
-                    msg.set_message_server_time(time)
-                    self.__scheduler.add_event(
-                        t_event=Event(event_id, EventType.MSG_DEPT, msg)
-                    )
-                    event_id += 1
-                    self.__server.start_work(time)
-                else:
-                    self.__queue.put(event.get_message())
-
-        while not self.__queue.is_empty():
-            time = self.__server.get_work_end()
-            assert self.__server.is_free(time)
-            msg = self.__queue.get()
-            msg.set_message_server_time(time)
-            self.__scheduler.add_event(t_event=Event(event_id, EventType.MSG_DEPT, msg))
-            event_id += 1
-            self.__server.start_work(time)
-
-        while self.__scheduler.has_events():
-            self.__scheduler.pop_event()
-
-            # TODO: call gateway process (== dequeue if server free, in this case add event)
+                self.__queue.put(event.get_message())

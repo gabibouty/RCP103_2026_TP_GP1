@@ -7,6 +7,7 @@ class Scheduler:
     def __init__(self):
         self.__events: List[Event] = []
         self.__passed_events: List[Event] = []
+        self.__time: float = 0
 
     def add_event(self, t_event: Event):
         i = len(self.__events) - 1
@@ -18,10 +19,11 @@ class Scheduler:
     def pop_event(self) -> Event:
         e: Event = self.__events.pop(0)
         self.__passed_events.append(e)
+        self.__time = e.get_event_time()
         return e
 
     def get_current_time(self) -> float:
-        return self.__events[0].get_event_time() if self.has_events() else 0
+        return self.__time
 
     def has_events(self) -> bool:
         return len(self.__events) != 0

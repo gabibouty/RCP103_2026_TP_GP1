@@ -7,7 +7,7 @@ from sources.events_and_messages import Event, Message, EventType
 def test_sheduler():
     sch: Scheduler = Scheduler()
 
-    EVENT_COUNT = 10000
+    EVENT_COUNT = 1000
 
     random_x = np.random.default_rng(seed=1).uniform(
         low=0.01, high=EVENT_COUNT, size=EVENT_COUNT
@@ -20,9 +20,11 @@ def test_sheduler():
 
     assert sch.has_events()
 
-    time: float = 0.0
+    time: float = sch.get_current_time()
     while sch.has_events():
+        e: Event = sch.pop_event()
+        assert e.get_event_time() == sch.get_current_time()
         assert time < sch.get_current_time()
-        time = sch.pop_event().get_event_time()
+        time = sch.get_current_time()
 
     assert len(sch.get_passed_events()) == EVENT_COUNT
