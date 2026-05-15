@@ -58,6 +58,7 @@ class Engine:
         while self.__scheduler.get_current_time() < self.__simulation_duration:
             current_time = self.__scheduler.get_current_time()
 
+            # Add messages to send if needed
             while (
                 not self.__scheduler.has_events()
                 or self.__client.get_next_msg_time() <= current_time
@@ -69,6 +70,7 @@ class Engine:
                 self.__message_count += 1
                 event_id += 1
 
+            # Try to dequeue if needed
             if not self.__queue.is_empty() and self.__server.is_free(current_time):
                 msg = self.__queue.get()
                 msg.set_message_server_time(current_time)
@@ -78,6 +80,7 @@ class Engine:
                 event_id += 1
                 self.__server.start_work(current_time)
 
+            # Update scheduler
             event = self.__scheduler.pop_event()
             if event.get_event_type() == EventType.SEND_MSG:
                 msg = event.get_message()

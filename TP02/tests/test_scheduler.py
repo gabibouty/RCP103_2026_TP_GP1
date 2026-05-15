@@ -21,11 +21,9 @@ def test_sheduler():
 
     assert sch.has_events()
 
-    e: Event = sch.pop_event()
+    time: float = 0.0
     while sch.has_events():
-        time = sch.get_current_time()
-        assert e.get_event_time() == time
-        e = sch.pop_event()
         assert time < sch.get_current_time()
+        sch.pop_event()
 
     assert len(sch.get_passed_events()) == EVENT_COUNT

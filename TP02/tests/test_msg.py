@@ -3,7 +3,6 @@ from sources.events_and_messages import Message
 
 def test_message():
     msg = Message(1, 2, 3)
-    print(msg)
     assert msg.get_message_id() == 1
     assert msg.get_message_source() == 2
     assert msg.get_message_destination() == 3
