@@ -29,3 +29,19 @@ def test_engine_complete():
 
     for i in range(len(events) - 1):
         assert events[i].get_event_time() <= events[i + 1].get_event_time()
+
+    for dpt_event in dept_events:
+        msg_id = dpt_event.get_message().get_message_id()
+        rcv_event: Event = next(
+            filter(lambda x: x.get_message().get_message_id() == msg_id, recv_events)
+        )
+        assert rcv_event != None
+        assert rcv_event.get_event_time() <= dpt_event.get_event_time()
+
+    for rcv_event in recv_events:
+        msg_id = rcv_event.get_message().get_message_id()
+        send_event: Event = next(
+            filter(lambda x: x.get_message().get_message_id() == msg_id, send_events)
+        )
+        assert send_event != None
+        assert rcv_event.get_event_time() == send_event.get_event_time() + 1
