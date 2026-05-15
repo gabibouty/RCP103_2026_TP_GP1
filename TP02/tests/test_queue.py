@@ -4,12 +4,12 @@ import pytest
 
 
 def test_put():
-    message1 = Message(1, 1, 2)
+    message1 = Message(1, 2)
     message1.set_message_send_time(0.0)
     message1.set_message_arrival_time(1.1)
     message1.set_message_server_time(2.6)
 
-    message2 = Message(2, 1, 3)
+    message2 = Message(1, 3)
     message2.set_message_send_time(0.2)
     message2.set_message_arrival_time(1.2)
     message2.set_message_server_time(4.6)
@@ -24,15 +24,16 @@ def test_put():
     # https://docs.pytest.org/en/6.2.x/capture.html
     assert queue.index(event1) == 0
     assert queue.index(event2) == 1
+    Message.reset_ids()
 
 
 def test_get():
-    message1 = Message(1, 1, 2)
+    message1 = Message(1, 2)
     message1.set_message_send_time(0.0)
     message1.set_message_arrival_time(1.1)
     message1.set_message_server_time(2.6)
 
-    message2 = Message(2, 1, 3)
+    message2 = Message(1, 3)
     message2.set_message_send_time(0.2)
     message2.set_message_arrival_time(1.2)
     message2.set_message_server_time(4.6)
@@ -46,15 +47,16 @@ def test_get():
     assert queue.get() == message2
     with pytest.raises(IndexError, match="Queue is empty"):
         queue.get()
+    Message.reset_ids()
 
 
 def test_is_empty():
-    message1 = Message(1, 1, 2)
+    message1 = Message(1, 2)
     message1.set_message_send_time(0.0)
     message1.set_message_arrival_time(1.1)
     message1.set_message_server_time(2.6)
 
-    message2 = Message(2, 1, 3)
+    message2 = Message(1, 3)
     message2.set_message_send_time(0.2)
     message2.set_message_arrival_time(1.2)
     message2.set_message_server_time(4.6)
@@ -68,15 +70,16 @@ def test_is_empty():
     queue.get()
     queue.get()
     assert queue.is_empty() == True
+    Message.reset_ids()
 
 
 def test_size():
-    message1 = Message(1, 1, 2)
+    message1 = Message(1, 2)
     message1.set_message_send_time(0.0)
     message1.set_message_arrival_time(1.1)
     message1.set_message_server_time(2.6)
 
-    message2 = Message(2, 1, 3)
+    message2 = Message(1, 3)
     message2.set_message_send_time(0.2)
     message2.set_message_arrival_time(1.2)
     message2.set_message_server_time(4.6)
@@ -88,14 +91,16 @@ def test_size():
     # https://docs.pytest.org/en/6.2.x/capture.html
     assert queue.size() == 2
 
+    Message.reset_ids()
+
 
 def test_str():
-    message1 = Message(1, 1, 2)
+    message1 = Message(1, 2)
     message1.set_message_send_time(0.0)
     message1.set_message_arrival_time(1.1)
     message1.set_message_server_time(2.6)
 
-    message2 = Message(2, 1, 3)
+    message2 = Message(1, 3)
     message2.set_message_send_time(0.2)
     message2.set_message_arrival_time(1.2)
     message2.set_message_server_time(4.6)
@@ -110,5 +115,7 @@ def test_str():
     ret = str(queue)
     assert (
         ret
-        == "Size: 2\nElements : [Message:: Id: 1 | Source: 1 | Dest: 2, Message:: Id: 2 | Source: 1 | Dest: 3]"
+        == "Size: 2\nElements : [Message:: Id: 0 | Source: 1 | Dest: 2, Message:: Id: 1 | Source: 1 | Dest: 3]"
     )
+
+    Message.reset_ids()

@@ -14,7 +14,7 @@ def test_sheduler():
     )
 
     for id, x in enumerate(random_x):
-        msg = Message(id, 1, 0)
+        msg = Message(1, 0)
         msg.set_message_send_time(x)
         event: Event = Event(id, EventType.SEND_MSG, msg)
         sch.add_event(event)

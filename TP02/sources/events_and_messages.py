@@ -2,8 +2,14 @@ from enum import Enum
 
 
 class Message:
-    def __init__(self, t_id: int, t_source: int, t_destination: int):
-        self.__id: int = t_id
+    __global_id: int = 0
+
+    def reset_ids():
+        Message.__global_id = 0
+
+    def __init__(self, t_source: int, t_destination: int):
+        self.__id: int = Message.__global_id
+        Message.__global_id += 1
         self.__source: int = t_source
         self.__destination: int = t_destination
         self.__send_time: float = 0
@@ -27,9 +33,6 @@ class Message:
 
     def get_message_destination(self) -> int:
         return self.__destination
-
-    def set_message_id(self, t_id: int):
-        self.__id = t_id
 
     def set_message_send_time(self, t_timestamp: float) -> float:
         self.__send_time = t_timestamp

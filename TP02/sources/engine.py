@@ -91,3 +91,5 @@ class Engine:
                 event_id += 1
             elif event.get_event_type() == EventType.RECV_MSG:
                 self.__queue.put(event.get_message())
+
+        Message.reset_ids()
