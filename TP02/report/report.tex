@@ -75,7 +75,7 @@
 % ---------------------------------------------
 % TITLE
 % ---------------------------------------------
-\title{\textbf{RCP103 -- Rapport de TP}\\TP02 - Création d'un simulateur à évènements discrets\\Partie 1}
+\title{\textbf{RCP103 -- Rapport de TP}\\TP02 - Création d'un simulateur à évènements discrets}
 \author{BOURDAYA Amina, BOUTY Gabriel, CLERC Julien}
 \date{\today}
 
@@ -90,7 +90,6 @@
 
 \begin{abstract}
     Ce TP a pour objectif de créer un programme permettant de simuler un système simple de type Client(s)/Serveur asynchrones. Ce simulateur nous permettra de réaliser des mesures variées pour qualifier notre système (nombre instantané de requêtes, temps d'attente, etc.), sans avoir à mettre en œuvre concrètement ce dernier.
-    Ce premier document présente l'initialisation du projet, la schématisation du simulateur, et la description de la réalisation des premiers composants.
 \end{abstract}
 
 \bigskip
@@ -98,7 +97,7 @@
 % ---------------------------------------------
 \section{Description du système simulé}
 
-Comme évoqué en introduction, ce rapport présente la première phase de réalisation d'un simple simulateur à évènements discrets du type Client(s)/Serveur:
+Comme évoqué en introduction, ce rapport présente la réalisation d'un simple simulateur à évènements discrets du type Client(s)/Serveur:
 
 Un ensemble de $N$ clients ($N \geq 1$), envoient des messages à 1 serveur. Un portail sert d'intermédiaire entre les clients et le serveur. Compte tenu que le serveur ne peut traiter qu'un message à la fois, le portail permet de temporiser les messages en attente de traitement dans une file de taille fixe $K$.
 
@@ -144,7 +143,7 @@ Afin de simuler les transmissions et traitement de messages entre le ou les \emp
     \item \lstinline|MSG_DPT|: Le message est transmis au serveur (si ce dernier est disponible).
 \end{itemize}
 
-Chacun de ces \emph{Event} sera timestampé et stocké chronologiquement dans un ordonnanceur (\emph{Scheduler}). Ainsi, en itérant progressivement sur les évènements enregistrés dans le \emph{Scheduler}, nous pourrons simuler l'écoulement du temps, en nous concentrant uniquement sur les échantillons temporels qui nous intéressent.
+Chacun de ces \emph{Event} sera timestampé et stocké chronologiquement dans un ordonnanceur (\emph{Scheduler}). Ainsi, en ajoutant progressivement des évènements à notre \emph{Scheduler}, et en itérant  sur ces derniers, nous pourrons simuler l'écoulement du temps, en nous concentrant uniquement sur les échantillons temporels qui nous intéressent.
 
 L'ensemble de ces composants seront encapsulés dans un \emph{Engine}, dont la boucle principale viendra interagir avec ces derniers afin de dérouler la simulation.
 
@@ -154,7 +153,14 @@ L'ensemble de ces composants seront encapsulés dans un \emph{Engine}, dont la b
     \caption{Schéma de principe du simulateur}
 \end{figure}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.68\textwidth]{../images/run_algo.png}
+    \caption{Algorithme de la boucle principale de l'\emph{Engine}}
+\end{figure}
+
 \bigskip
+
 \subsection{Organisation du code source}
 
 Le dossier fourni s'organise ainsi:
@@ -188,9 +194,9 @@ Ce \emph{Message} est encapsulé dans un \emph{Event}, dont les attributs sont l
 \begin{itemize}
     \item L'identifiant de l'évènement: \lstinline|id|
     \item Le type de l'évènement: \lstinline|type|
-    \item Le timestamp de l'évènement: \lstinline|timestamp|
     \item Le \emph{Message} encapsulé: \lstinline|message|
 \end{itemize}
+\emph{Event} possède par ailleur un accesseur permettant de déterminer son timestamp, en fonction de son type.
 
 \bigskip
 
@@ -202,9 +208,31 @@ Lorsqu'un nouvel évènement est ajouté, la méthode parcourt la liste depuis l
 
 La méthode \lstinline|pop_event| retire et retourne le premier évènement de la liste. Comme la liste est maintenue triée par temps d'exécution, cet évènement correspond toujours au prochain évènement à traiter.
 
-La méthode \lstinline|get_current_time| retourne le temps du premier évènement de la liste, c'est-à-dire le temps courant du simulateur. Si la liste est vide, la méthode retourne 0.
+La méthode \lstinline|get_current_time| retourne le temps du premier évènement de la liste, c'est-à-dire le temps courant du simulateur. Le \emph{Scheduler} possède une mémoire du timestamp du dernier évènement retiré, afin de fournir toujours un temps de référence, même si sa liste d'évènement est vide.
 
-Enfin, la méthode \lstinline|has_events| permet de savoir s'il reste encore des évènements à traiter.
+La méthode \lstinline|has_events| permet de savoir s'il reste encore des évènements à traiter.
+
+Enfin, le \emph{Scheduler} enregistre progressivement les évènements retirés, afin de pouvoir garder une trace de ces derniers.
+
+\bigskip
+
+\subsection{Les composants simulés: class Client et Server}
+
+Les classes \emph{Client} et \emph{Server} représentent les composants princiaux du système simulé. \emph{Client} émet les messages qui seront traités par \emph{Server}.
+
+Comme décrit précédemment, les temps d'émissions comme les temps de traitement sont définis par une distribution exponentielle. Ainsi, on pourra définir pour chaques instances de \emph{Client} et \emph{Server}, une moyenne: pour \emph{Client}, cette valeur correspond au nombre moyen de message émis par unité de temps, et pour \emph{Server}, cette valeur correspond au nombre moyen de message traités par unité de temps.
+
+\emph{Client} expose quelques fonctions minimales:
+\begin{itemize}
+ \item \lstinline|get_next_msg_time|: permettant de connaitre le timestamp du prochain envoi de \emph{Message} émis par le \emph{Client}.
+ \item \lstinline|pop_message|: permettant de simuler l'envoi du \emph{Message}. Une instance préconfigurée de \emph{Message} est renvoyée, et le timestamp interne est incrémenté d'une valeur aléatoire, générée selon une distribution exponentielle.
+\end{itemize}
+\bigskip
+\emph{Server} expose aussi quelques fonctions minimales:
+\begin{itemize}
+ \item \lstinline|is_free|: permettant de savoir si le \emph{Server} est actuellement en train de traiter virtuellement un \emph{Message}.
+ \item \lstinline|start_work|: permettant de simuler le début du traitement d'un \emph{Message}. Un timestamp interne de fin de travail est définit selon le timestamp passé en argument, augmenté d'une valeur aléatoire, générée là aussi selon une distribution exponentielle.
+\end{itemize}
 
 \bigskip
 
@@ -224,9 +252,12 @@ Voici le prototype et la description de chaque fonction :
 
 \subsection{Le cœur du système: class Engine}
 
-La classe \emph{Engine} représente le cœur du simulateur. Elle définit les instances des différents composants (Client(s), Serveur, etc.) lors de son initialisation, et simule les transactions entre chacuns d'entre eux durant l'exécution de la simulation.
+La classe \emph{Engine} représente le cœur du simulateur. Elle définit les instances des différents composants (\emph{Client}, \emph{Server}, etc.) lors de son initialisation, et simule les transactions entre chacuns d'entre eux durant l'exécution de la simulation.
 
-Comme cette classe repose sur les implémentations des autres composants, elle ne présente, pour l'heure, que peu d'intêret. Cependant, elle expose d'ores et déjà ses principales fonctionnalités, à savoir l'initialisation, et la boucle d'exécution.
+Sa fonction \lstinline|run| permet de lancer l'execution. Celle-ci s'appuie sur un \emph{Scheduler} pour déterminer l'évolulution du temps. Son rôle principale est de forcer les comportements de chacuns des composants (\emph{Client}, \emph{Server}, \emph{Queue}, etc.) et d'encapsuler les \emph{Message} émis, reçu, traités dans des \emph{Event}, afin d'alimenter le \emph{Scheduler}.
+
+La classe \emph{Engine} propose aussi une fonction \lstinline|log| permettant d'afficher les \emph{Event} déjà passés, grâce aux fonctions
+proposées par le module \emph{trace}.
 
 \bigskip
 
@@ -253,7 +284,7 @@ Afin de vérifier le bon fonctionnement des classes implémentées, des tests un
 
 Test de \emph{Message}:
 \begin{itemize}
-    \item Le test \lstinline|test_message| vérifie que le constructeur initialise correctement les attributs du message (l'identifiant, la source et la destination, temps).
+    \item Le test \lstinline|test_message| vérifie que le constructeur initialise correctement les attributs du message (l'identifiant, la source et la destination, les différents timestamp).
     \item Le test \lstinline|test_message_setters| vérifie que les setters modifient correctement les valeurs internes de l'objet, après modification de l'identifiant, de la source, de la destination, et des différents temps, les getters sont utilisés pour vérifier que les nouvelles valeurs ont bien été enregistrées.
     \item Le test \lstinline|test_message_str| vérifie la méthode d'affichage de la classe message. Cette méthode est utile pour le débogage, car elle permet d'afficher rapidement les informations principales d'un message.
 \end{itemize}
@@ -270,9 +301,23 @@ Test de \emph{Event}:
 
 \bigskip
 
+Test de \emph{Server}:
+\begin{itemize}
+    \item Le test \lstinline|test_server| vérifie que la classe \emph{Server} rempli bien son rôle de simulation de serveur, à savoir pouvoir démarrer un job, rester occupé pendant une période de temps aléatoire, puis être à nouveau libre à la fin de cette période de temps.
+\end{itemize}
+
+\bigskip
+
+Test de \emph{Client}:
+\begin{itemize}
+    \item TODO
+\end{itemize}
+
+\bigskip
+
 Test de \emph{Scheduler}:
 \begin{itemize}
-    \item Le test \lstinline|test_sheduler| vérifie que les temps des événements récupérés sont toujours dans l'ordre chronologique croissant. Cela permet de valider le rôle principal du \emph{Scheduler} : maintenir les événements futurs triés par temps d'exécution.
+    \item Le test \lstinline|test_sheduler| vérifie que les temps des événements récupérés sont toujours dans l'ordre chronologique croissant. Cela permet de valider le rôle principal du \emph{Scheduler} : maintenir les événements futurs triés par temps d'exécution. Le test vérifie aussi que les évènements passés sont bien enregistrés dans la liste des évènements passés.
 \end{itemize}
 
 \bigskip
@@ -307,10 +352,10 @@ L'ensemble des tests présents dans le répertoire \lstinline|tests| seront exé
 
 % ---------------------------------------------
 \section{Conclusion}
-Cette première partie du TP nous permet d'appréhender ce que peut être un simulateur à évènements discrets. Nous mettons en œuvre des concepts vus en cours tels que les files d'attente ou encore les processus de Poisson.
+Ce TP nous permet d'appréhender ce que peut être un simulateur à évènements discrets. Nous mettons en œuvre des concepts vus en cours tels que les files d'attente ou encore les processus de Poisson.
 
-Il nous permet aussi de comprendre l'intérêt que peut représenter la complémentarité qu'il peut exister entre modélisation mathématique et simulation. En effet, la modélisation mathématique nous fournit les outils (variables aléatoires, processus stochastiques, etc.) qui vont nous permettre de construire facilement un simulateur, et ainsi réaliser, tout aussi facilement, des mesures sur un système complexe. Établir et mettre en œuvre un protocole de mesures sur ce même système dans le monde réel aurait été bien plus lourd et couteux.
+Il nous permet aussi de comprendre l'intérêt que peut représenter la complémentarité qu'il peut exister entre modélisation mathématique et simulation. En effet, la modélisation mathématique nous fournit les outils (variables aléatoires, processus stochastiques, etc.) qui vont nous permettre de construire facilement un simulateur, et ainsi réaliser, tout aussi facilement, des mesures théoriques sur un système complexe. Établir et mettre en œuvre un protocole de mesures sur ce même système dans le monde réel aurait été bien plus lourd et couteux.
 
-Cette première itération dans la réalisation du simulateur, nous a permis de préparer les premiers composants nécessaires à son bon fonctionnement. Même si ces composants sont amenés à être plus ou moins modifiés au cours des prochaines itérations, le développement de tests unitaires sur chacune des briques logicielles nous permettra de confirmer en continue la validité de ces dernières, mais aussi d'éviter les régressions lors des futures étapes de développement.
+D'un point de vue du développement logiciel, les différentes itérations de réalisation, basées sur une approche TDD (Test Driven Developpement), nous permettent de valider progressivement nos composants logiciels. Cela facilite ensuite l'assemblage, et permet aussi d'éviter les régressions.
 
 \end{document}

@@ -2,9 +2,9 @@ import numpy as np
 
 
 class Server:
-    def __init__(self, t_id: int, t_avgWorkTime: float):
+    def __init__(self, t_id: int, t_avg_req_by_time_unit: float):
         self.__id: int = t_id
-        self.__avg_work_time = t_avgWorkTime
+        self.__avg_work_time = 1.0/t_avg_req_by_time_unit
         self.__work_end: float = None
         self.__random_engine = np.random.default_rng(seed=1)
 
@@ -16,7 +16,7 @@ class Server:
 
     def start_work(self, t_timestamp: float) -> None:
         self.__work_end = t_timestamp + self.__random_engine.exponential(
-            scale=1.0 / self.__avg_work_time
+            scale=self.__avg_work_time
         )
 
     def get_work_end(self) -> float:
