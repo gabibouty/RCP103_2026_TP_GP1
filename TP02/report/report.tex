@@ -269,6 +269,25 @@ En l'état, il se contente de créer une instance d'\emph{Engine},
 et de lancer l'execution de cette instance. Mais on pourrait par exemple imaginer y ajouter un parsing d'arguments pour configurer le simulateur dynamiquement.
 
 \bigskip
+
+\subsection{La file d'attente des évènements: class Queue}
+
+La classe \lstinline|Queue| est une structure de donnée de type FIFO (First In First Out). Elle va garder les messages dans l'attente de leur prise en compte par le serveur.
+
+Voici le prototype et la description de chaque méthodes :
+
+\lstinline|def put(self, msg: Message)|: ajoute un message dans la file.
+
+\lstinline|def get(self)|: récupère le message le plus ancien ajouté dans la file.
+
+\lstinline|def is_empty(self)|: indique si la file est vide.
+
+\lstinline|def size(self)|: renvoie la taille de la file c'est-à-dire le nombre de message.
+
+\lstinline|def index(self, msg: Message)|: renvoie l'index d'un message dans la file. Cette méthode est utile pour les tests.
+
+\bigskip
+
 \bigskip
 \bigskip
 
@@ -339,6 +358,17 @@ Test de \emph{Trace}:
 Test de \emph{Engine}:
 \begin{itemize}
     \item Le test \lstinline|test_engine_complete| vérifie que l'exécution du \lstinline|run| de \emph{Engine} ne tombe pas dans une boucle sans fin. Il vérifie ensuite que les \emph{Event} reçus suivent bien une logique temporelle incrémentale, et qu'ils soient bien cohérents les uns avec les autres. Par exemple, un \lstinline|MSG_DEPT| doit avoir un \lstinline|RECV_MSG|, ainsi qu'un \lstinline|SEND_MSG| correspondants avec des timestamp tel que $t\textsubscript{MSG\_DEPT} \geq t\textsubscript{RECV\_MSG} \geq t\textsubscript{SEND\_MSG}$.
+\end{itemize}
+
+\bigskip
+
+Test de \emph{Queue}:
+\begin{itemize}
+    \item Le test définit par \lstinline|test_put| vérifie que la méthode \lstinline|put| ajoute correctement un message.
+    \item Le test définit par \lstinline|test_get| vérifie que la méthode \lstinline|get| renvoie correctement un message et le supprime de la file d'attente.
+    \item Le test définit par \lstinline|test_is_empty| vérifie que la méthode \lstinline|is_empty| renvoie le booléen True si la file est vide
+    \item Le test définit par \lstinline|test_size| vérifie que la méthode \lstinline|size| renvoie la taille de la file.
+    \item Le test définit par \lstinline|test_str| vérifie que la méthode \lstinline|__str__| renvoie la chaîne de caractère comprenant l'ensemble des éléments de la file d'attente.
 \end{itemize}
 
 \bigskip
