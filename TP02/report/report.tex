@@ -224,14 +224,14 @@ Comme décrit précédemment, les temps d'émissions comme les temps de traiteme
 
 \emph{Client} expose quelques fonctions minimales:
 \begin{itemize}
- \item \lstinline|get_next_msg_time|: permettant de connaitre le timestamp du prochain envoi de \emph{Message} émis par le \emph{Client}.
- \item \lstinline|pop_message|: permettant de simuler l'envoi du \emph{Message}. Une instance préconfigurée de \emph{Message} est renvoyée, et le timestamp interne est incrémenté d'une valeur aléatoire, générée selon une distribution exponentielle.
+    \item \lstinline|get_next_msg_time|: permettant de connaitre le timestamp du prochain envoi de \emph{Message} émis par le \emph{Client}.
+    \item \lstinline|pop_message|: permettant de simuler l'envoi du \emph{Message}. Une instance préconfigurée de \emph{Message} est renvoyée, et le timestamp interne est incrémenté d'une valeur aléatoire, générée selon une distribution exponentielle.
 \end{itemize}
 \bigskip
 \emph{Server} expose aussi quelques fonctions minimales:
 \begin{itemize}
- \item \lstinline|is_free|: permettant de savoir si le \emph{Server} est actuellement en train de traiter virtuellement un \emph{Message}.
- \item \lstinline|start_work|: permettant de simuler le début du traitement d'un \emph{Message}. Un timestamp interne de fin de travail est définit selon le timestamp passé en argument, augmenté d'une valeur aléatoire, générée là aussi selon une distribution exponentielle.
+    \item \lstinline|is_free|: permettant de savoir si le \emph{Server} est actuellement en train de traiter virtuellement un \emph{Message}.
+    \item \lstinline|start_work|: permettant de simuler le début du traitement d'un \emph{Message}. Un timestamp interne de fin de travail est définit selon le timestamp passé en argument, augmenté d'une valeur aléatoire, générée là aussi selon une distribution exponentielle.
 \end{itemize}
 
 \bigskip
@@ -310,7 +310,8 @@ Test de \emph{Server}:
 
 Test de \emph{Client}:
 \begin{itemize}
-    \item TODO
+    \item Le test \lstinline|test_client_init| vérifie l'état initial d'un \emph{Client}.
+    \item Les tests \lstinline|test_get_next_msg_time| et \lstinline|test_pop_message| vérifient que \emph{Client} renvoi bien un temps qui s'incrémente au fur et à mesure que les \emph{Message} sont virtuellement émis par le \emph{Client}.
 \end{itemize}
 
 \bigskip
@@ -337,7 +338,7 @@ Test de \emph{Trace}:
 
 Test de \emph{Engine}:
 \begin{itemize}
-    \item Le test \lstinline|test_engine_complete| vérifie que l'exécution du \lstinline|run| de \emph{Engine} ne tombe pas dans une boucle sans fin, et que l'ensemble des \emph{Message} et \emph{Event} sont bien consommés à l'issue de l'exécution.
+    \item Le test \lstinline|test_engine_complete| vérifie que l'exécution du \lstinline|run| de \emph{Engine} ne tombe pas dans une boucle sans fin. Il vérifie ensuite que les \emph{Event} reçus suivent bien une logique temporelle incrémentale, et qu'ils soient bien cohérents les uns avec les autres. Par exemple, un \lstinline|MSG_DEPT| doit avoir un \lstinline|RECV_MSG|, ainsi qu'un \lstinline|SEND_MSG| correspondants avec des timestamp tel que $t\textsubscript{MSG\_DEPT} \geq t\textsubscript{RECV\_MSG} \geq t\textsubscript{SEND\_MSG}$.
 \end{itemize}
 
 \bigskip

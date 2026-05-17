@@ -14,7 +14,19 @@ def test_get_next_msg_time():
 
     next_msg_time = client.get_next_msg_time()
     assert next_msg_time == 0.0
+    client.pop_message()
+    assert next_msg_time < client.get_next_msg_time()
 
 
 def test_pop_message():
     client = Client(t_id=1, t_destination=2, t_average=1.0)
+    time: float = client.pop_message().get_message_send_time()
+    assert time == 0.0
+
+    TEST_DURATION = 10000.0
+
+    while time < TEST_DURATION:
+        assert client.get_next_msg_time() > time
+        time = client.get_next_msg_time()
+        msg = client.pop_message()
+        assert time == msg.get_message_send_time()
