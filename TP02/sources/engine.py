@@ -28,13 +28,26 @@ class TraceType(Enum):
 
 
 class Engine:
-    def __init__(self, t_simulation_duration: float, t_flush_at_end: bool):
+    def __init__(
+        self,
+        t_simulation_duration: float,
+        t_flush_at_end: bool,
+        t_server_count: int,
+        t_client_count: int,
+    ):
         self.__simulation_duration: float = t_simulation_duration
         self.__flush_at_end: bool = t_flush_at_end
 
         self.__scheduler: Scheduler = Scheduler()
-        self.__server: Server = Server(SERVER_ID, SERVER_AVG_TIME)
-        self.__client: Client = Client(CLIENT_ID, SERVER_ID, CLIENT_AVG_TIME)
+
+        self.__servers: List[Server] = []
+        for i in range(t_client_count):
+            self.__servers.append(Server(i, SERVER_AVG_TIME))
+
+        self.__clients: List[Client] = []
+        for i in range(t_client_count):
+            self.__clients.append(Client(t_server_count + i, CLIENT_AVG_TIME))
+
         # TODO: add queue limit when necessary
         self.__queue: Queue = Queue()
 
@@ -47,6 +60,18 @@ class Engine:
             generateTraceCSV(self.__scheduler.get_passed_events())
         else:
             return self.__scheduler.get_passed_events()
+
+    def __get_free_server(self, t_timestamp: float) -> Server:
+        for server in self.__servers:
+            if server.is_free(t_timestamp):
+                return server
+        return None
+
+    def __get_next_workend(self, t_timestamp: float) -> Server:
+        work_end = self.__servers[0].get_work_end()
+        for server in self.__servers:
+            work_end = min(work_end, server.get_work_end())
+        return
 
     def run(self):
         event_id: int = 0
@@ -66,16 +91,20 @@ class Engine:
                 event_id += 1
 
             # Try to dequeue if needed
-            if not self.__queue.is_empty() and self.__server.is_free(
+            # TODO: for now we just study if the first server is free
+            # but we have to check if one of them is free
+            if not self.__queue.is_empty() and self.__servers[0].is_free(
                 self.__scheduler.get_current_time()
             ):
-                msg = self.__queue.get()
-                msg.set_message_server_time(self.__scheduler.get_current_time())
-                self.__scheduler.add_event(
-                    t_event=Event(event_id, EventType.MSG_DEPT, msg)
-                )
-                event_id += 1
-                self.__server.start_work(self.__scheduler.get_current_time())
+                server = self.__get_free_server(self.__scheduler.get_current_time())
+                if server != None:
+                    msg = self.__queue.get()
+                    msg.set_message_server_time(self.__scheduler.get_current_time())
+                    self.__scheduler.add_event(
+                        t_event=Event(event_id, EventType.MSG_DEPT, msg)
+                    )
+                    event_id += 1
+                    server.start_work(self.__scheduler.get_current_time())
 
             # Update scheduler
             event = self.__scheduler.pop_event()
@@ -98,18 +127,20 @@ class Engine:
                 time = (
                     self.__scheduler.get_current_time()
                     if self.__scheduler.has_events()
-                    else self.__server.get_work_end()
+                    else self.__get_next_workend()
                 )
 
                 # Try to dequeue if needed
-                if not self.__queue.is_empty() and self.__server.is_free(time):
-                    msg = self.__queue.get()
-                    msg.set_message_server_time(time)
-                    self.__scheduler.add_event(
-                        t_event=Event(event_id, EventType.MSG_DEPT, msg)
-                    )
-                    event_id += 1
-                    self.__server.start_work(time)
+                if not self.__queue.is_empty() and self.__get_free_server(time) != None:
+                    server = self.__get_free_server(time)
+                    if server != None:
+                        msg = self.__queue.get()
+                        msg.set_message_server_time(time)
+                        self.__scheduler.add_event(
+                            t_event=Event(event_id, EventType.MSG_DEPT, msg)
+                        )
+                        event_id += 1
+                        server.start_work(time)
 
                 # Update scheduler
                 if self.__scheduler.has_events():

@@ -7,7 +7,7 @@ from sources.events_and_messages import Event, EventType
 
 def test_engine_with_flush():
     SIMULATION_DURATION = 10
-    engine: Engine = Engine(SIMULATION_DURATION, True)
+    engine: Engine = Engine(SIMULATION_DURATION, True, 1, 1)
 
     engine.run()
 
@@ -49,7 +49,7 @@ def test_engine_with_flush():
 
 def test_engine_without_flush():
     SIMULATION_DURATION = 10
-    engine: Engine = Engine(SIMULATION_DURATION, False)
+    engine: Engine = Engine(SIMULATION_DURATION, False, 1, 1)
 
     engine.run()
 
