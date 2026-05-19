@@ -41,12 +41,12 @@ class Engine:
         self.__scheduler: Scheduler = Scheduler()
 
         self.__servers: List[Server] = []
-        for i in range(t_client_count):
-            self.__servers.append(Server(i, SERVER_AVG_TIME))
+        for i in range(t_server_count):
+            self.__servers.append(Server(i + 1, SERVER_AVG_TIME))
 
         self.__clients: List[Client] = []
         for i in range(t_client_count):
-            self.__clients.append(Client(t_server_count + i, CLIENT_AVG_TIME))
+            self.__clients.append(Client(t_server_count + i + 1, CLIENT_AVG_TIME))
 
         # TODO: add queue limit when necessary
         self.__queue: Queue = Queue()
@@ -67,28 +67,39 @@ class Engine:
                 return server
         return None
 
-    def __get_next_workend(self, t_timestamp: float) -> Server:
+    def __get_next_workend(self) -> float:
         work_end = self.__servers[0].get_work_end()
         for server in self.__servers:
             work_end = min(work_end, server.get_work_end())
-        return
+        return work_end
+
+    def __get_next_messages_sending_time(self) -> float:
+        next_sending_time = self.__clients[0].get_next_msg_time()
+        for client in self.__clients:
+            next_sending_time = min(next_sending_time, client.get_next_msg_time())
+        return next_sending_time
+
+    def __pop_messages_from_clients(self, t_event_id: int) -> int:
+        time = (
+            self.__scheduler.get_current_time()
+            if self.__scheduler.has_events()
+            else self.__get_next_messages_sending_time()
+        )
+        for client in self.__clients:
+            while client.get_next_msg_time() <= time:
+                msg = client.pop_message()
+                self.__scheduler.add_event(
+                    t_event=Event(t_event_id, EventType.SEND_MSG, msg)
+                )
+                t_event_id += 1
+        return t_event_id
 
     def run(self):
         event_id: int = 0
-
         # MAIN LOOP
         while self.__scheduler.get_current_time() < self.__simulation_duration:
             # Add messages to send if needed
-            while (
-                not self.__scheduler.has_events()
-                or self.__client.get_next_msg_time()
-                <= self.__scheduler.get_current_time()
-            ):
-                msg = self.__client.pop_message()
-                self.__scheduler.add_event(
-                    t_event=Event(event_id, EventType.SEND_MSG, msg)
-                )
-                event_id += 1
+            event_id = self.__pop_messages_from_clients(event_id)
 
             # Try to dequeue if needed
             # TODO: for now we just study if the first server is free
@@ -100,6 +111,7 @@ class Engine:
                 if server != None:
                     msg = self.__queue.get()
                     msg.set_message_server_time(self.__scheduler.get_current_time())
+                    msg.set_message_destination(server.get_id())
                     self.__scheduler.add_event(
                         t_event=Event(event_id, EventType.MSG_DEPT, msg)
                     )
@@ -136,6 +148,7 @@ class Engine:
                     if server != None:
                         msg = self.__queue.get()
                         msg.set_message_server_time(time)
+                        msg.set_message_destination(server.get_id())
                         self.__scheduler.add_event(
                             t_event=Event(event_id, EventType.MSG_DEPT, msg)
                         )
