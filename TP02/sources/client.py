@@ -7,18 +7,17 @@ from sources.events_and_messages import Message
 class Client:
     # There is 4 message by time unit
     __CLIENT_AVG_TIMES: List[int] = [4, 6, 8, 12]
-    __avg_time_random_generator = np.random.default_rng(seed=0)
+    __avg_time_selector = 0
 
-    def __get_random_average_time():
-        return Client.__CLIENT_AVG_TIMES[
-            Client.__avg_time_random_generator.integers(
-                low=0, high=len(Client.__CLIENT_AVG_TIMES)
-            )
-        ]
+    def __get_average_time():
+        Client.__avg_time_selector = (Client.__avg_time_selector + 1) % len(
+            Client.__CLIENT_AVG_TIMES
+        )
+        return Client.__CLIENT_AVG_TIMES[Client.__avg_time_selector]
 
     def __init__(self, t_id: int):
         self.__id: int = t_id
-        self.__average: float = Client.__get_random_average_time()
+        self.__average: float = Client.__get_average_time()
         self.__random_generator = np.random.default_rng(seed=t_id)
         self.__next_message_time: float = 0.0
 

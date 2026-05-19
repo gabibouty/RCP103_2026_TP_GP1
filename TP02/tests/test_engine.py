@@ -179,6 +179,8 @@ def test_engine_with_flush_and_multiple_server_and_client():
 
     engine.run()
 
+    engine.log(TraceType.STDIO)
+
     events: List[Event] = engine.log(TraceType.EVENT_LIST)
 
     send_events: List[Event] = []
