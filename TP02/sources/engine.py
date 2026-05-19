@@ -27,6 +27,7 @@ class Engine:
         t_flush_at_end: bool,
         t_server_count: int,
         t_client_count: int,
+        t_queue_limit: int = 4096,
     ):
         Message.reset_ids()
         self.__simulation_duration: float = t_simulation_duration
@@ -42,7 +43,7 @@ class Engine:
         for i in range(t_server_count):
             self.__servers.append(Server(t_client_count + i + 1, SERVER_AVG_TIME))
 
-        self.__queue: Queue = Queue(size=1024)
+        self.__queue: Queue = Queue(size=t_queue_limit)
 
         # TODO: generate gateway
 
