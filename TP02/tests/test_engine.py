@@ -213,5 +213,3 @@ def test_engine_with_flush_and_multiple_server_and_client():
         )
         assert rcv_event.get_event_time() <= dpt_event.get_event_time()
         assert send_event.get_event_time() <= rcv_event.get_event_time()
-
-    engine.log(TraceType.STDIO)

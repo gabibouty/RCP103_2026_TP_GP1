@@ -8,16 +8,9 @@ from sources.scheduler import Scheduler
 from sources.server import Server
 from sources.trace import generateTraceOut, generateTraceCSV
 
-# There is 4 message by time unit
-CLIENT_AVG_TIME: int = 4
-
 # The server can handle 1 message by time unit
 SERVER_AVG_TIME: int = 2
 
-
-# TODO: Temp Constants
-CLIENT_ID = 0
-SERVER_ID = 1
 TRANSMISSION_DURATION = 1.0
 
 
@@ -46,7 +39,7 @@ class Engine:
 
         self.__clients: List[Client] = []
         for i in range(t_client_count):
-            self.__clients.append(Client(t_server_count + i + 1, CLIENT_AVG_TIME))
+            self.__clients.append(Client(t_server_count + i + 1))
 
         # TODO: add queue limit when necessary
         self.__queue: Queue = Queue()
