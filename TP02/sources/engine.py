@@ -28,21 +28,21 @@ class Engine:
         t_server_count: int,
         t_client_count: int,
     ):
+        Message.reset_ids()
         self.__simulation_duration: float = t_simulation_duration
         self.__flush_at_end: bool = t_flush_at_end
 
         self.__scheduler: Scheduler = Scheduler()
 
-        self.__servers: List[Server] = []
-        for i in range(t_server_count):
-            self.__servers.append(Server(i + 1, SERVER_AVG_TIME))
-
         self.__clients: List[Client] = []
         for i in range(t_client_count):
-            self.__clients.append(Client(t_server_count + i + 1))
+            self.__clients.append(Client(i + 1))
 
-        # TODO: add queue limit when necessary
-        self.__queue: Queue = Queue()
+        self.__servers: List[Server] = []
+        for i in range(t_server_count):
+            self.__servers.append(Server(t_client_count + i + 1, SERVER_AVG_TIME))
+
+        self.__queue: Queue = Queue(size=1024)
 
         # TODO: generate gateway
 
@@ -125,8 +125,6 @@ class Engine:
             elif event.get_event_type() == EventType.RECV_MSG:
                 self.__queue.put(event.get_message())
 
-        Message.reset_ids()
-
         if self.__flush_at_end:
             while self.__scheduler.has_events() or not self.__queue.is_empty():
                 time = (
@@ -162,3 +160,5 @@ class Engine:
                         event_id += 1
                     elif event.get_event_type() == EventType.RECV_MSG:
                         self.__queue.put(event.get_message())
+
+        Message.reset_ids()

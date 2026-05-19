@@ -44,7 +44,7 @@ def test_engine_with_flush():
             == dpt_event.get_message().get_message_id()
         )
         assert rcv_event.get_event_time() <= dpt_event.get_event_time()
-        assert send_event.get_event_time() <= rcv_event.get_event_time()
+        assert math.isclose(send_event.get_event_time(), rcv_event.get_event_time() - 1)
 
 
 def test_engine_without_flush():
@@ -128,7 +128,7 @@ def test_engine_with_flush_and_multiple_server():
             == dpt_event.get_message().get_message_id()
         )
         assert rcv_event.get_event_time() <= dpt_event.get_event_time()
-        assert send_event.get_event_time() <= rcv_event.get_event_time()
+        assert math.isclose(send_event.get_event_time(), rcv_event.get_event_time() - 1)
 
 
 def test_engine_with_flush_and_multiple_client():
@@ -170,7 +170,7 @@ def test_engine_with_flush_and_multiple_client():
             == dpt_event.get_message().get_message_id()
         )
         assert rcv_event.get_event_time() <= dpt_event.get_event_time()
-        assert send_event.get_event_time() <= rcv_event.get_event_time()
+        assert math.isclose(send_event.get_event_time(), rcv_event.get_event_time() - 1)
 
 
 def test_engine_with_flush_and_multiple_server_and_client():
@@ -212,4 +212,4 @@ def test_engine_with_flush_and_multiple_server_and_client():
             == dpt_event.get_message().get_message_id()
         )
         assert rcv_event.get_event_time() <= dpt_event.get_event_time()
-        assert send_event.get_event_time() <= rcv_event.get_event_time()
+        assert math.isclose(send_event.get_event_time(), rcv_event.get_event_time() - 1)
