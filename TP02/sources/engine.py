@@ -28,9 +28,9 @@ class TraceType(Enum):
 
 
 class Engine:
-    def __init__(self, t_simulation_duration: float):
+    def __init__(self, t_simulation_duration: float, t_flush_at_end: bool):
         self.__simulation_duration: float = t_simulation_duration
-        self.__message_count: int = 0
+        self.__flush_at_end: bool = t_flush_at_end
 
         self.__scheduler: Scheduler = Scheduler()
         self.__server: Server = Server(SERVER_ID, SERVER_AVG_TIME)
@@ -39,9 +39,6 @@ class Engine:
         self.__queue: Queue = Queue()
 
         # TODO: generate gateway
-
-    def get_all_messages_count(self) -> int:
-        return self.__message_count
 
     def log(self, t_trace_type: TraceType):
         if t_trace_type == TraceType.STDIO:
@@ -66,7 +63,6 @@ class Engine:
                 self.__scheduler.add_event(
                     t_event=Event(event_id, EventType.SEND_MSG, msg)
                 )
-                self.__message_count += 1
                 event_id += 1
 
             # Try to dequeue if needed
@@ -96,3 +92,36 @@ class Engine:
                 self.__queue.put(event.get_message())
 
         Message.reset_ids()
+
+        if self.__flush_at_end:
+            while self.__scheduler.has_events() or not self.__queue.is_empty():
+                time = (
+                    self.__scheduler.get_current_time()
+                    if self.__scheduler.has_events()
+                    else self.__server.get_work_end()
+                )
+
+                # Try to dequeue if needed
+                if not self.__queue.is_empty() and self.__server.is_free(time):
+                    msg = self.__queue.get()
+                    msg.set_message_server_time(time)
+                    self.__scheduler.add_event(
+                        t_event=Event(event_id, EventType.MSG_DEPT, msg)
+                    )
+                    event_id += 1
+                    self.__server.start_work(time)
+
+                # Update scheduler
+                if self.__scheduler.has_events():
+                    event = self.__scheduler.pop_event()
+                    if event.get_event_type() == EventType.SEND_MSG:
+                        msg = event.get_message()
+                        msg.set_message_arrival_time(
+                            event.get_event_time() + TRANSMISSION_DURATION
+                        )
+                        self.__scheduler.add_event(
+                            t_event=Event(event_id, EventType.RECV_MSG, msg)
+                        )
+                        event_id += 1
+                    elif event.get_event_type() == EventType.RECV_MSG:
+                        self.__queue.put(event.get_message())
