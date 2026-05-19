@@ -5,12 +5,14 @@ from collections import deque
 class Queue:
 
     # https://docs.python.org/3.13/library/collections.html#deque-objects
-    def __init__(self):
+    def __init__(self, size: int = 4):
         self.queue = deque()
+        self.__size = size
 
     def put(self, msg: Message):
         # append to the right of the queue
-        self.queue.append(msg)
+        if self.size() < self.__size:
+            self.queue.append(msg)
 
     def get(self) -> Message:
         # remove form the left of the queue
