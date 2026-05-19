@@ -4,7 +4,7 @@ import numpy as np
 class Server:
     def __init__(self, t_id: int, t_avg_req_by_time_unit: float):
         self.__id: int = t_id
-        self.__avg_work_time = 1.0/t_avg_req_by_time_unit
+        self.__avg_work_time = 1.0 / t_avg_req_by_time_unit
         self.__work_end: float = None
         self.__random_engine = np.random.default_rng(seed=1)
 
