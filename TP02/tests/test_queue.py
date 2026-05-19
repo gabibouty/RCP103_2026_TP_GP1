@@ -119,7 +119,7 @@ def test_str():
     )
 
     Message.reset_ids()
-    
+
 
 def test_put_size1():
     message1 = Message(1, 2)
@@ -131,7 +131,7 @@ def test_put_size1():
     message2.set_message_send_time(0.2)
     message2.set_message_arrival_time(1.2)
     message2.set_message_server_time(4.6)
-    
+
     event1 = Event(1, EventType.SEND_MSG, message1)
     event2 = Event(2, EventType.SEND_MSG, message2)
     event3 = Event(3, EventType.SEND_MSG, message2)
