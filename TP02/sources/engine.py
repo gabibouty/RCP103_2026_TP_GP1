@@ -24,14 +24,13 @@ class Engine:
     def __init__(
         self,
         t_simulation_duration: float,
-        t_flush_at_end: bool,
         t_server_count: int,
         t_client_count: int,
         t_queue_limit: int = 4096,
     ):
         Message.reset_ids()
+        Client.reset_avg_time_selector()
         self.__simulation_duration: float = t_simulation_duration
-        self.__flush_at_end: bool = t_flush_at_end
 
         self.__scheduler: Scheduler = Scheduler()
 
@@ -61,12 +60,6 @@ class Engine:
                 return server
         return None
 
-    def __get_next_workend(self) -> float:
-        work_end = self.__servers[0].get_work_end()
-        for server in self.__servers:
-            work_end = min(work_end, server.get_work_end())
-        return work_end
-
     def __get_next_messages_sending_time(self) -> float:
         next_sending_time = self.__clients[0].get_next_msg_time()
         for client in self.__clients:
@@ -86,80 +79,45 @@ class Engine:
                     t_event=Event(t_event_id, EventType.SEND_MSG, msg)
                 )
                 t_event_id += 1
+
+                msg.set_message_arrival_time(
+                    msg.get_message_send_time() + TRANSMISSION_DURATION
+                )
+                self.__scheduler.add_event(
+                    t_event=Event(t_event_id, EventType.RECV_MSG, msg)
+                )
+                t_event_id += 1
+        return t_event_id
+
+    def __try_start_server_job(self, t_time: float, t_event_id: int) -> int:
+        server = self.__get_free_server(t_time)
+        while server != None and not self.__queue.is_empty():
+            msg = self.__queue.get()
+            msg.set_message_server_time(t_time)
+            msg.set_message_destination(server.get_id())
+            self.__scheduler.add_event(
+                t_event=Event(t_event_id, EventType.MSG_DEPT, msg)
+            )
+            t_event_id += 1
+            server.start_work(t_time)
+            server = self.__get_free_server(t_time)
+
         return t_event_id
 
     def run(self):
         event_id: int = 0
         # MAIN LOOP
+        event_id = self.__pop_messages_from_clients(event_id)
         while self.__scheduler.get_current_time() < self.__simulation_duration:
-            # Add messages to send if needed
-            event_id = self.__pop_messages_from_clients(event_id)
+            time = self.__scheduler.get_current_time()
 
-            # Try to dequeue if needed
-            # TODO: for now we just study if the first server is free
-            # but we have to check if one of them is free
-            if not self.__queue.is_empty() and self.__servers[0].is_free(
-                self.__scheduler.get_current_time()
-            ):
-                server = self.__get_free_server(self.__scheduler.get_current_time())
-                if server != None:
-                    msg = self.__queue.get()
-                    msg.set_message_server_time(self.__scheduler.get_current_time())
-                    msg.set_message_destination(server.get_id())
-                    self.__scheduler.add_event(
-                        t_event=Event(event_id, EventType.MSG_DEPT, msg)
-                    )
-                    event_id += 1
-                    server.start_work(self.__scheduler.get_current_time())
-
-            # Update scheduler
             event = self.__scheduler.pop_event()
-            if event.get_event_type() == EventType.SEND_MSG:
-                msg = event.get_message()
-                msg.set_message_arrival_time(
-                    event.get_event_time() + TRANSMISSION_DURATION
-                )
-                self.__scheduler.add_event(
-                    t_event=Event(event_id, EventType.RECV_MSG, msg)
-                )
-                event_id += 1
-            elif event.get_event_type() == EventType.RECV_MSG:
+            if event.get_event_type() == EventType.RECV_MSG:
                 self.__queue.put(event.get_message())
 
-        if self.__flush_at_end:
-            while self.__scheduler.has_events() or not self.__queue.is_empty():
-                time = (
-                    self.__scheduler.get_current_time()
-                    if self.__scheduler.has_events()
-                    else self.__get_next_workend()
-                )
+            event_id = self.__try_start_server_job(time, event_id)
 
-                # Try to dequeue if needed
-                if not self.__queue.is_empty() and self.__get_free_server(time) != None:
-                    server = self.__get_free_server(time)
-                    if server != None:
-                        msg = self.__queue.get()
-                        msg.set_message_server_time(time)
-                        msg.set_message_destination(server.get_id())
-                        self.__scheduler.add_event(
-                            t_event=Event(event_id, EventType.MSG_DEPT, msg)
-                        )
-                        event_id += 1
-                        server.start_work(time)
-
-                # Update scheduler
-                if self.__scheduler.has_events():
-                    event = self.__scheduler.pop_event()
-                    if event.get_event_type() == EventType.SEND_MSG:
-                        msg = event.get_message()
-                        msg.set_message_arrival_time(
-                            event.get_event_time() + TRANSMISSION_DURATION
-                        )
-                        self.__scheduler.add_event(
-                            t_event=Event(event_id, EventType.RECV_MSG, msg)
-                        )
-                        event_id += 1
-                    elif event.get_event_type() == EventType.RECV_MSG:
-                        self.__queue.put(event.get_message())
+            event_id = self.__pop_messages_from_clients(event_id)
 
         Message.reset_ids()
+        Client.reset_avg_time_selector()

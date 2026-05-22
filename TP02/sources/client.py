@@ -9,6 +9,9 @@ class Client:
     __CLIENT_AVG_TIMES: List[int] = [4, 6, 8, 12]
     __avg_time_selector = 0
 
+    def reset_avg_time_selector():
+        Client.__avg_time_selector = 0
+
     def __get_average_time():
         Client.__avg_time_selector = (Client.__avg_time_selector + 1) % len(
             Client.__CLIENT_AVG_TIMES
