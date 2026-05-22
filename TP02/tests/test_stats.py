@@ -13,7 +13,7 @@ def test_all_stats():
     )
 
     engine.run()
-    
+
     # UNCOMMENT TO PRINT TRACE
     # engine.log(TraceType.STDIO)
 
@@ -54,9 +54,7 @@ def test_all_stats():
         transmit_count += _transmit_count
         dropped_count += _dropped_count
 
-        assert (
-            _sended_count == still_in_transmission
-        )
+        assert _sended_count == still_in_transmission
         assert (
             sended_count
             == transmit_count + dropped_count + still_in_queue + still_in_transmission
@@ -70,4 +68,3 @@ def test_all_stats():
     print(f"\tStill in queue = {still_in_queue}")
     print(f"\tTotal transmit = {transmit_count}")
     print(f"\tTotal dropped = {dropped_count}")
-
