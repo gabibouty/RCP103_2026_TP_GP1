@@ -7,11 +7,10 @@ from sources.queue import Queue
 from sources.scheduler import Scheduler
 from sources.server import Server
 from sources.trace import generateTraceOut, generateTraceCSV
+from sources.gateway import Gateway
+from sources.constants import SERVER_AVG_TIME, TRANSMISSION_DURATION
 
-# The server can handle 1 message by time unit
-SERVER_AVG_TIME: int = 2
 
-TRANSMISSION_DURATION = 1.0
 
 
 class TraceType(Enum):
@@ -38,13 +37,7 @@ class Engine:
         for i in range(t_client_count):
             self.__clients.append(Client(i + 1))
 
-        self.__servers: List[Server] = []
-        for i in range(t_server_count):
-            self.__servers.append(Server(t_client_count + i + 1, SERVER_AVG_TIME))
-
-        self.__queue: Queue = Queue(size=t_queue_limit)
-
-        # TODO: generate gateway
+        self.__gateway: Gateway = Gateway(t_server_count=t_server_count, t_server_starting_count=self.__clients[-1].get_client_id() + 1, t_queue_limit=t_queue_limit)
 
     def log(self, t_trace_type: TraceType):
         if t_trace_type == TraceType.STDIO:
@@ -53,12 +46,6 @@ class Engine:
             generateTraceCSV(self.__scheduler.get_passed_events())
         else:
             return self.__scheduler.get_passed_events()
-
-    def __get_free_server(self, t_timestamp: float) -> Server:
-        for server in self.__servers:
-            if server.is_free(t_timestamp):
-                return server
-        return None
 
     def __get_next_messages_sending_time(self) -> float:
         next_sending_time = self.__clients[0].get_next_msg_time()
@@ -89,19 +76,13 @@ class Engine:
                 t_event_id += 1
         return t_event_id
 
-    def __try_start_server_job(self, t_time: float, t_event_id: int) -> int:
-        server = self.__get_free_server(t_time)
-        while server != None and not self.__queue.is_empty():
-            msg = self.__queue.get()
-            msg.set_message_server_time(t_time)
-            msg.set_message_destination(server.get_id())
-            self.__scheduler.add_event(
-                t_event=Event(t_event_id, EventType.MSG_DEPT, msg)
-            )
-            t_event_id += 1
-            server.start_work(t_time)
-            server = self.__get_free_server(t_time)
-
+    def __add_event(self,  msg_list: list[Message], t_event_id: int) -> int:
+        if len(msg_list) != 0:
+            for msg in msg_list:
+                self.__scheduler.add_event(
+                    t_event=Event(t_event_id, EventType.MSG_DEPT, msg)
+                )
+                t_event_id += 1
         return t_event_id
 
     def run(self):
@@ -113,9 +94,10 @@ class Engine:
 
             event = self.__scheduler.pop_event()
             if event.get_event_type() == EventType.RECV_MSG:
-                self.__queue.put(event.get_message())
+                self.__gateway.send_message(event.get_message())
 
-            event_id = self.__try_start_server_job(time, event_id)
+            msg_list = self.__gateway.try_start_server_job(time)
+            event_id = self.__add_event(msg_list, event_id)
 
             event_id = self.__pop_messages_from_clients(event_id)
 

@@ -3,6 +3,7 @@ from sources.stats import *
 import math
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
+from sources.constants import SERVER_AVG_TIME, TRANSMISSION_DURATION
 
 
 def main():
@@ -33,7 +34,8 @@ def main():
         )
 
         engine.run()
-
+        
+        # engine.log(TraceType.STDIO)
         events = engine.log(TraceType.EVENT_LIST)
         assert len(events) > 0
 
@@ -112,7 +114,8 @@ def main():
         plt.legend()
 
         plt.grid(True)
-        plt.show()
+        # add block=True in order to show graphical content on GNU/Linux
+        plt.show(block=True)
 
 
 if __name__ == "__main__":
