@@ -20,8 +20,8 @@ class SortedEvents:
         assert self.__is_valid()
 
     def __is_valid(self) -> bool:
-        return (len(self.__send_events) > len(self.__recv_events)) and (
-            len(self.__recv_events) > len(self.__dept_events)
+        return (len(self.__send_events) >= len(self.__recv_events)) and (
+            len(self.__recv_events) >= len(self.__dept_events)
         )
 
     def get_all_events_of_type(self, t_event_type: EventType) -> List[Event]:

@@ -11,7 +11,14 @@ class Scheduler:
 
     def add_event(self, t_event: Event):
         i = len(self.__events) - 1
-        while i >= 0 and self.__events[i].get_event_time() > t_event.get_event_time():
+        while i >= 0 and (
+            (self.__events[i].get_event_time() > t_event.get_event_time())
+            or (
+                self.__events[i].get_event_time() == t_event.get_event_time()
+                and self.__events[i].get_message().get_message_id()
+                > t_event.get_message().get_message_id()
+            )
+        ):
             i -= 1
         self.__events.insert(i + 1, t_event)
         assert len(self.__events) != 0
