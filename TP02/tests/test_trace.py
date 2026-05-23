@@ -1,5 +1,5 @@
 from sources.events_and_messages import Message, Event, EventType
-from sources.trace import get_time_and_node, generateTraceOut, generateTraceCSV
+from sources.trace import get_time_and_nodes, generateTraceOut, generateTraceCSV
 import csv
 import os
 
@@ -11,7 +11,7 @@ def test_get_time_and_node_event_SEND_MSG():
     message.set_message_server_time(2.6)
 
     event = Event(1, EventType.SEND_MSG, message)
-    assert get_time_and_node(event) == (1, 0.0)
+    assert get_time_and_nodes(event) == (1, 1, 0, 0.0)
     Message.reset_ids()
 
 
@@ -22,7 +22,7 @@ def test_get_time_and_node_event_RECV_MSG():
     message.set_message_server_time(2.6)
 
     event = Event(1, EventType.RECV_MSG, message)
-    assert get_time_and_node(event) == (2, 1.1)
+    assert get_time_and_nodes(event) == (0, 1, 0, 1.1)
     Message.reset_ids()
 
 
@@ -33,7 +33,7 @@ def test_get_time_and_node_event_MSG_DEPT():
     message.set_message_server_time(2.6)
 
     event = Event(1, EventType.MSG_DEPT, message)
-    assert get_time_and_node(event) == (2, 2.6)
+    assert get_time_and_nodes(event) == (0, 0, 2, 2.6)
     Message.reset_ids()
 
 
@@ -57,8 +57,8 @@ def test_generateTraceOut_SEND_MSG(capsys):
     # https://docs.pytest.org/en/6.2.x/capture.html
     capture = capsys.readouterr()
     assert f"\ntime\tnode\tevent\t\tsrc\tdst\tmsgID" in capture.out
-    assert f"0.0\t1\tSEND_MSG\t1\t2\t0" in capture.out
-    assert f"0.2\t1\tSEND_MSG\t1\t3\t1" in capture.out
+    assert f"0.0\t1\tSEND_MSG\t1\t0\t0" in capture.out
+    assert f"0.2\t1\tSEND_MSG\t1\t0\t1" in capture.out
 
     Message.reset_ids()
 
@@ -83,8 +83,8 @@ def test_generateTraceOut_RECV_MSG(capsys):
     # https://docs.pytest.org/en/6.2.x/capture.html
     capture = capsys.readouterr()
     assert f"\ntime\tnode\tevent\t\tsrc\tdst\tmsgID" in capture.out
-    assert f"1.1\t2\tRECV_MSG\t1\t2\t0" in capture.out
-    assert f"1.2\t3\tRECV_MSG\t1\t3\t1" in capture.out
+    assert f"1.1\t0\tRECV_MSG\t1\t0\t0" in capture.out
+    assert f"1.2\t0\tRECV_MSG\t1\t0\t1" in capture.out
 
     Message.reset_ids()
 
@@ -109,8 +109,8 @@ def test_generateTraceOut_MSG_DEPT(capsys):
     # https://docs.pytest.org/en/6.2.x/capture.html
     capture = capsys.readouterr()
     assert f"\ntime\tnode\tevent\t\tsrc\tdst\tmsgID" in capture.out
-    assert f"2.6\t2\tMSG_DEPT\t1\t2\t0" in capture.out
-    assert f"4.6\t3\tMSG_DEPT\t1\t3\t1" in capture.out
+    assert f"2.6\t0\tMSG_DEPT\t0\t2\t0" in capture.out
+    assert f"4.6\t0\tMSG_DEPT\t0\t3\t1" in capture.out
 
     Message.reset_ids()
 
@@ -137,8 +137,8 @@ def test_generateTraceCSV():
         spamreader = csv.reader(csvfile, delimiter=";", quotechar='"')
         rows = list(spamreader)
     assert rows[0] == ["time", "node", "event", "src", "dst", "msgID"]
-    assert rows[1] == ["0.0", "1", "SEND_MSG", "1", "2", "0"]
-    assert rows[2] == ["4.6", "3", "MSG_DEPT", "1", "3", "1"]
+    assert rows[1] == ["0.0", "1", "SEND_MSG", "1", "0", "0"]
+    assert rows[2] == ["4.6", "0", "MSG_DEPT", "0", "3", "1"]
     os.remove("trace.csv")
 
     Message.reset_ids()
