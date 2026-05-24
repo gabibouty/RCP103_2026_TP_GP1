@@ -13,7 +13,7 @@ class Gateway:
         self,
         t_server_count: int,
         t_server_starting_count: int,
-        t_queue_limit: int = None,
+        t_queue_limit: int,
     ):
         self.__servers: List[Server] = []
         for i in range(t_server_count):

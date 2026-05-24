@@ -7,7 +7,13 @@ from sources.events_and_messages import Event, EventType
 
 def test_engine():
     SIMULATION_DURATION = 10
-    engine: Engine = Engine(SIMULATION_DURATION, 1, 1)
+    engine: Engine = Engine(
+        t_simulation_duration=SIMULATION_DURATION,
+        t_client_count=1,
+        t_client_lambda=4,
+        t_server_count=1,
+        t_queue_limit=None,
+    )
 
     engine.run()
 
@@ -49,7 +55,13 @@ def test_engine():
 
 def test_engine_with_multiple_server():
     SIMULATION_DURATION = 10
-    engine: Engine = Engine(SIMULATION_DURATION, 4, 1)
+    engine: Engine = Engine(
+        t_simulation_duration=SIMULATION_DURATION,
+        t_client_count=1,
+        t_client_lambda=4,
+        t_server_count=4,
+        t_queue_limit=None,
+    )
 
     engine.run()
 
@@ -91,7 +103,13 @@ def test_engine_with_multiple_server():
 
 def test_engine_with_multiple_client():
     SIMULATION_DURATION = 10
-    engine: Engine = Engine(SIMULATION_DURATION, 1, 4)
+    engine: Engine = Engine(
+        t_simulation_duration=SIMULATION_DURATION,
+        t_client_count=4,
+        t_client_lambda=4,
+        t_server_count=1,
+        t_queue_limit=None,
+    )
 
     engine.run()
 
@@ -133,7 +151,13 @@ def test_engine_with_multiple_client():
 
 def test_engine_with_multiple_server_and_client():
     SIMULATION_DURATION = 10
-    engine: Engine = Engine(SIMULATION_DURATION, 4, 4)
+    engine: Engine = Engine(
+        t_simulation_duration=SIMULATION_DURATION,
+        t_client_count=4,
+        t_client_lambda=4,
+        t_server_count=4,
+        t_queue_limit=None,
+    )
 
     engine.run()
 

@@ -6,9 +6,10 @@ def test_all_stats():
     SIMULATION_DURATION = 10
     QUEUE_SIZE = 4
     engine: Engine = Engine(
-        SIMULATION_DURATION,
-        t_server_count=2,
+        t_simulation_duration=SIMULATION_DURATION,
         t_client_count=2,
+        t_client_lambda=4,
+        t_server_count=2,
         t_queue_limit=QUEUE_SIZE,
     )
 
@@ -93,9 +94,10 @@ def test_all_stats_with_different_combination():
         print(f"Test: Cli={_client_count}, Ser={_server_count}, Q={_queue_size}")
 
         engine: Engine = Engine(
-            SIMULATION_DURATION,
-            t_server_count=_server_count,
+            t_simulation_duration=SIMULATION_DURATION,
             t_client_count=_client_count,
+            t_client_lambda=4,
+            t_server_count=_server_count,
             t_queue_limit=_queue_size,
         )
 
@@ -147,9 +149,10 @@ def test_mean_queue_size():  # pas testée encore
     QUEUE_SIZE = 4
 
     engine: Engine = Engine(
-        SIMULATION_DURATION,
-        t_server_count=2,
+        t_simulation_duration=SIMULATION_DURATION,
         t_client_count=2,
+        t_client_lambda=4,
+        t_server_count=2,
         t_queue_limit=QUEUE_SIZE,
     )
 

@@ -21,17 +21,17 @@ class Engine:
         t_simulation_duration: float,
         t_server_count: int,
         t_client_count: int,
-        t_queue_limit: int = None,
+        t_client_lambda: int,
+        t_queue_limit: int,
     ):
         Message.reset_ids()
-        Client.reset_avg_time_selector()
         self.__simulation_duration: float = t_simulation_duration
 
         self.__scheduler: Scheduler = Scheduler()
 
         self.__clients: List[Client] = []
         for i in range(t_client_count):
-            self.__clients.append(Client(i + 1))
+            self.__clients.append(Client(i + 1, t_client_lambda))
 
         self.__gateway: Gateway = Gateway(
             t_server_count=t_server_count,
@@ -92,11 +92,10 @@ class Engine:
 
             # capture time before pop event
             time = self.__scheduler.get_current_time()
-            
+
             event = self.__scheduler.pop_event()
             if event.get_event_type() == EventType.RECV_MSG:
                 msg_list = self.__gateway.send_message(event.get_message(), time)
                 event_id = self.__add_dept_events(msg_list, event_id)
 
         Message.reset_ids()
-        Client.reset_avg_time_selector()
