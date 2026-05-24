@@ -88,14 +88,33 @@ def main():
                     )
 
                 # -----------------------------------------------------------
-                # PAGE 1: Draw bar graph
+                # Prepare draw environment
                 # -----------------------------------------------------------
-                fig, ax = plt.subplots(figsize=(11.69, 8.27))
+                fig = plt.figure(figsize=(11.69, 8.27))
+                _fontdict = {}
+                _fontdict["fontweight"] = "bold"
+                plt.title(f"{title}\n", fontdict=_fontdict)
+                plt.axis("off")
+
+                gs_main = gridspec.GridSpec(1, 2, figure=fig)
+                gs_left = gridspec.GridSpecFromSubplotSpec(
+                    2, 1, subplot_spec=gs_main[0, 0], height_ratios=[3, 1]
+                )
+
+                _left_top = fig.add_subplot(gs_left[0, 0])
+                _left_bottom = fig.add_subplot(gs_left[1, 0])
+                _left_bottom.axis("off")
+                _right = fig.add_subplot(gs_main[0, 1])
+                _right.axis("off")
+
+                # -----------------------------------------------------------
+                # Draw bar graph
+                # -----------------------------------------------------------
                 _bottom = [0] * (SIMULATION_DURATION)
                 assert len(_t) == len(_bottom)
                 assert len(_t) == len(still_in_transmission)
                 __add_bar(
-                    ax,
+                    _left_top,
                     _t,
                     still_in_transmission,
                     _bottom,
@@ -103,32 +122,32 @@ def main():
                     "#1f77b4",
                 )
                 _bottom = [a + b for a, b in zip(still_in_transmission, _bottom)]
-                __add_bar(ax, _t, still_in_queue, _bottom, "in queue", "#f1c62a")
+                __add_bar(_left_top, _t, still_in_queue, _bottom, "in queue", "#f1c62a")
                 _bottom = [a + b for a, b in zip(still_in_queue, _bottom)]
-                __add_bar(ax, _t, dropped_count, _bottom, "dropped", "#b4301f")
+                __add_bar(_left_top, _t, dropped_count, _bottom, "dropped", "#b4301f")
                 _bottom = [a + b for a, b in zip(dropped_count, _bottom)]
-                __add_bar(ax, _t, transmit_count, _bottom, "transmit", "#1fb42bd3")
+                __add_bar(
+                    _left_top, _t, transmit_count, _bottom, "transmit", "#1fb42bd3"
+                )
 
-                plt.xlabel("$time$")
-                plt.ylabel("Message count")
-                _fontdict = {}
-                _fontdict["fontweight"] = "bold"
-                plt.title(title, fontdict=_fontdict)
-                plt.legend()
-
-                plt.tight_layout()
-                pdf.savefig()
-                plt.close()
+                _left_top.set_xlabel("$time$")
+                _left_top.set_ylabel("Message count")
+                _left_top.legend()
 
                 # -----------------------------------------------------------
-                # PAGE 2
+                # Draw comments
                 # -----------------------------------------------------------
-                fig = plt.figure(figsize=(11.69, 8.27))
-                gs = gridspec.GridSpec(1, 2)
-                ax1 = plt.subplot(gs[0, 0])
-                ax2 = plt.subplot(gs[0, 1])
-                ax1.axis("off")
-                ax2.axis("off")
+                text = f"\nTotal message sended = {total_messages_sended(events, SIMULATION_DURATION)}"
+                text += f"\nTotal message transmitted = {total_messages_transmit(events, SIMULATION_DURATION)}"
+                text += f"\nTotal message dropped = {messages_dropped_at(events, _queue_size, SIMULATION_DURATION)}"
+                text += f"\n\nStill in transmission at end = {total_messages_still_in_transmission(events, SIMULATION_DURATION)}"
+                text += f"\nStill in queue at end = {messages_in_queue_at(events, _queue_size, SIMULATION_DURATION)}"
+                text += f"\n\nAverage time in queue = {average_time_in_queue(events):.4f} $t.u.$"
+                text += f"\nMaximum time in queue = {maximum_waiting_time_in_queue(events):.4f} $t.u.$"
+
+                _left_bottom.text(
+                    x=0, y=0.65, s=text, fontsize=10, va="center", ha="left"
+                )
 
                 # -----------------------------------------------------------
                 # Draw Trace
@@ -177,7 +196,7 @@ def main():
                 column_width[3] = 0.25
                 column_width[4] = 0.25
                 column_width[5] = 0.25
-                trace = ax1.table(
+                trace = _right.table(
                     cellText=table_data,
                     colLabels=column_titles,
                     colWidths=column_width,
@@ -195,19 +214,8 @@ def main():
                     cell.set_text_props(weight="bold", color="#FFFFFF")
 
                 # -----------------------------------------------------------
-                # Draw comments
+                # Close
                 # -----------------------------------------------------------
-                text = f"Configuration:\n{title}\n\n"
-                text += f"\nTotal message sended = {total_messages_sended(events, SIMULATION_DURATION)}"
-                text += f"\nTotal message transmitted = {total_messages_transmit(events, SIMULATION_DURATION)}"
-                text += f"\nTotal message dropped = {messages_dropped_at(events, _queue_size, SIMULATION_DURATION)}"
-                text += f"\n\nStill in transmission at end = {total_messages_still_in_transmission(events, SIMULATION_DURATION)}"
-                text += f"\nStill in queue at end = {messages_in_queue_at(events, _queue_size, SIMULATION_DURATION)}"
-                text += f"\n\nAverage time in queue = {average_time_in_queue(events):.4f} $t.u.$"
-                text += f"\nMaximum time in queue = {maximum_waiting_time_in_queue(events):.4f} $t.u.$"
-
-                ax2.text(x=0.1, y=0.5, s=text, fontsize=12, va="center", ha="left")
-
                 plt.tight_layout()
                 pdf.savefig()
                 plt.close()
