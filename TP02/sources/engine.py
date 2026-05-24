@@ -6,7 +6,7 @@ from sources.events_and_messages import Message, Event, EventType
 from sources.scheduler import Scheduler
 from sources.trace import generateTraceOut, generateTraceCSV
 from sources.gateway import Gateway
-from sources.constants import TRANSMISSION_DURATION
+from sources.constants import TRANSMISSION_DURATION, SERVER_LAMBDA
 
 
 class TraceType(Enum):
@@ -23,6 +23,7 @@ class Engine:
         t_client_count: int,
         t_client_lambda: int,
         t_queue_limit: int,
+        t_avg_req_by_time_unit: int = SERVER_LAMBDA,
     ):
         Message.reset_ids()
         self.__simulation_duration: float = t_simulation_duration
@@ -37,6 +38,7 @@ class Engine:
             t_server_count=t_server_count,
             t_server_starting_count=self.__clients[-1].get_client_id() + 1,
             t_queue_limit=t_queue_limit,
+            t_avg_req_by_time_unit=t_avg_req_by_time_unit,
         )
 
     def log(self, t_trace_type: TraceType):

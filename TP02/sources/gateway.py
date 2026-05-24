@@ -3,7 +3,6 @@ from typing import List
 from sources.events_and_messages import Message
 from sources.queue import Queue
 from sources.server import Server
-from sources.constants import SERVER_AVG_TIME
 
 
 class Gateway:
@@ -14,10 +13,13 @@ class Gateway:
         t_server_count: int,
         t_server_starting_count: int,
         t_queue_limit: int,
+        t_avg_req_by_time_unit: int,
     ):
         self.__servers: List[Server] = []
         for i in range(t_server_count):
-            self.__servers.append(Server(t_server_starting_count + i, SERVER_AVG_TIME))
+            self.__servers.append(
+                Server(t_server_starting_count + i, t_avg_req_by_time_unit)
+            )
 
         self.__queue: Queue = Queue(size=t_queue_limit)
 

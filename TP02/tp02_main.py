@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from matplotlib.backends.backend_pdf import PdfPages
 from sources.trace import get_time_and_nodes
+from sources.constants import SERVER_LAMBDA
 
 
 def __add_bar(area, t_range, t_data, t_bottom, t_label, t_color):
@@ -21,7 +22,7 @@ def __add_bar(area, t_range, t_data, t_bottom, t_label, t_color):
 
 
 def main():
-    SIMULATION_DURATION = 5
+    SIMULATION_DURATION = 10
     QUEUE_SIZES = [None, 4]
     CLIENTS_COUNT = [1]
     SERVERS_COUNT = [1]
@@ -45,6 +46,7 @@ def main():
                 t_server_count=_server_count,
                 t_client_count=_client_count,
                 t_queue_limit=_queue_size,
+                t_client_lambda=4
             )
 
             engine.run()
@@ -145,7 +147,7 @@ def main():
             table_data = []
 
             all_data_len = len(all_data)
-            MAX_ROWS = 45
+            MAX_ROWS = 44
             found_t1 = False
             last_row_index = len(all_data) - MAX_ROWS
             for i in range(all_data_len):
@@ -155,10 +157,16 @@ def main():
                     found_t1 = True
                     table_data.append(all_data[i])
                     table_data.append(["...", "...", "...", "...", "...", "..."])
+                    table_data.append(["...", "...", "...", "...", "...", "..."])
                     last_row_index = last_row_index + len(table_data)
 
-            column_titles = ["time", "node", "event", "src", "dst", "msgID"]
+            table_data.append(["$END$", "---", "---", "---", "---", "---"])
+            column_titles = ["$time$", "$node$", "$event$", "$src$", "$dst$", "$msgID$"]
             column_width = np.full(len(column_titles), 0.5)
+            column_width[1] = .25
+            column_width[3] = .25
+            column_width[4] = .25
+            column_width[5] = .25
             trace = plt.table(
                 cellText=table_data,
                 colLabels=column_titles,
