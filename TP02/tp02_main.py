@@ -1,25 +1,12 @@
-from sources.engine import Engine, TraceType
-from sources.stats import *
-from sources.constants import SERVER_LAMBDA
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from matplotlib.backends.backend_pdf import PdfPages
+from matplotlib.ticker import MultipleLocator
+
 from sources.trace import get_time_and_nodes
+from sources.engine import Engine, TraceType
+from sources.stats import *
 from sources.constants import SERVER_LAMBDA
-
-
-def __add_bar(area, t_range, t_data, t_bottom, t_label, t_color):
-    area.bar(
-        t_range,
-        t_data,
-        bottom=t_bottom,
-        label=t_label,
-        color=t_color,
-        align="edge",
-        width=1.0,
-        linewidth=0.5,
-        edgecolor="black",
-    )
 
 
 def main():
@@ -67,6 +54,7 @@ def main():
                 transmit_count = []
                 still_in_transmission = []
                 still_in_queue = []
+                total_in_system = []
                 _t = []
                 for t in range(0, SIMULATION_DURATION):
                     _time = float(t)
@@ -81,10 +69,16 @@ def main():
                         messages_dropped_at(events, _queue_size, _time) - previous
                     )
                     still_in_transmission.append(
-                        total_messages_still_in_transmission(events, _time) * 10
+                        total_messages_still_in_transmission(events, _time)
                     )
                     still_in_queue.append(
-                        messages_in_queue_at(events, _queue_size, _time) * 10
+                        messages_in_queue_at(events, _queue_size, _time)
+                    )
+                    total_in_system.append(
+                        transmit_count[-1]
+                        + dropped_count[-1]
+                        + still_in_transmission[-1]
+                        + still_in_queue[-1]
                     )
 
                 # -----------------------------------------------------------
@@ -110,25 +104,33 @@ def main():
                 # -----------------------------------------------------------
                 # Draw bar graph
                 # -----------------------------------------------------------
-                _bottom = [0] * (SIMULATION_DURATION)
-                assert len(_t) == len(_bottom)
-                assert len(_t) == len(still_in_transmission)
-                __add_bar(
-                    _left_top,
-                    _t,
-                    still_in_transmission,
-                    _bottom,
-                    "in transmission",
-                    "#1f77b4",
-                )
-                _bottom = [a + b for a, b in zip(still_in_transmission, _bottom)]
-                __add_bar(_left_top, _t, still_in_queue, _bottom, "in queue", "#f1c62a")
-                _bottom = [a + b for a, b in zip(still_in_queue, _bottom)]
-                __add_bar(_left_top, _t, dropped_count, _bottom, "dropped", "#b4301f")
-                _bottom = [a + b for a, b in zip(dropped_count, _bottom)]
-                __add_bar(
-                    _left_top, _t, transmit_count, _bottom, "transmit", "#1fb42bd3"
-                )
+                data_sets = [
+                    np.array(still_in_transmission),
+                    np.array(still_in_queue),
+                    np.array(dropped_count),
+                    np.array(transmit_count),
+                ]
+
+                current_bottom = np.zeros(len(_t))
+                labels = ["in transmission", "in queue", "dropped", "transmit"]
+                colors = ["#1f77b4", "#f1c62a", "#b4301f", "#1fb42bd3"]
+                for data, label, color in zip(data_sets, labels, colors):
+                    _left_top.bar(
+                        _t,
+                        data,
+                        bottom=current_bottom,
+                        label=label,
+                        color=color,
+                        align="edge",
+                        width=1.0,
+                        edgecolor="black",
+                    )
+                    current_bottom += data
+
+                div = np.ceil(max(total_in_system) / 20)
+                _left_top.yaxis.set_major_locator(MultipleLocator(div))
+                _left_top.grid(axis="y", linestyle="--", alpha=0.7)
+                _left_top.xaxis.set_major_locator(MultipleLocator(1))
 
                 _left_top.set_xlabel("$time$")
                 _left_top.set_ylabel("Message count")
