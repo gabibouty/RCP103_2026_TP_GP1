@@ -21,7 +21,7 @@ class Engine:
         t_simulation_duration: float,
         t_server_count: int,
         t_client_count: int,
-        t_queue_limit: int = 4096,
+        t_queue_limit: int = None,
     ):
         Message.reset_ids()
         Client.reset_avg_time_selector()

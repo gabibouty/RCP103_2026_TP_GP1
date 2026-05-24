@@ -21,22 +21,24 @@ def __add_bar(area, t_range, t_data, t_bottom, t_label, t_color):
 
 
 def main():
-    SIMULATION_DURATION = 10
-    QUEUE_SIZES = [4, 8]
-    CLIENTS_COUNT = [1, 2]
-    SERVERS_COUNT = [1, 2, 4]
+    SIMULATION_DURATION = 5
+    QUEUE_SIZES = [None, 4]
+    CLIENTS_COUNT = [1]
+    SERVERS_COUNT = [1]
 
-    combinations = []
+    configuration = []
     for c in CLIENTS_COUNT:
         for s in SERVERS_COUNT:
             for q in QUEUE_SIZES:
-                combinations.append((c, s, q))
+                configuration.append((c, s, q))
 
     with PdfPages("simulation_results.pdf") as pdf:
-        for _client_count, _server_count, _queue_size in combinations:
-            print(
-                f"Launch simulation: Cli={_client_count}, Ser={_server_count}, Q={_queue_size}, Duration={SIMULATION_DURATION}"
-            )
+        for _client_count, _server_count, _queue_size in configuration:
+            title = f"Duration={SIMULATION_DURATION}, "
+            title += f"Clients={_client_count}, Servers={_server_count}, "
+            title += f"Q={"inf." if _queue_size is None else _queue_size}, "
+            title += f"Duration={SIMULATION_DURATION}"
+            print(f"Launch simulation: {title}")
 
             engine: Engine = Engine(
                 SIMULATION_DURATION,
@@ -96,9 +98,7 @@ def main():
             # Legend
             ax1.set_xlabel("$time$")
             ax1.set_ylabel("Message count")
-            ax1.set_title(
-                f"Duration={SIMULATION_DURATION}, Clients={_client_count}, Servers={_server_count}, Q={_queue_size}"
-            )
+            ax1.set_title(title)
             ax1.legend()
 
             # Comment
@@ -126,8 +126,8 @@ def main():
 
             # Trace
             fig, ax = plt.subplots(figsize=(11.69, 8.27))
-            plt.subplots_adjust(top=.99, bottom=0.01, right=.75, left=0.25)
-            ax.axis('off')
+            plt.subplots_adjust(top=0.99, bottom=0.01, right=0.75, left=0.25)
+            ax.axis("off")
             all_data = []
             for e in events:
                 node, source, destination, time = get_time_and_nodes(e)
@@ -156,7 +156,6 @@ def main():
                     table_data.append(all_data[i])
                     table_data.append(["...", "...", "...", "...", "...", "..."])
                     last_row_index = last_row_index + len(table_data)
-            
 
             column_titles = ["time", "node", "event", "src", "dst", "msgID"]
             column_width = np.full(len(column_titles), 0.5)
@@ -166,10 +165,10 @@ def main():
                 colWidths=column_width,
                 loc="bottom",
                 cellLoc="center",
-                bbox=[0.0, 0.0, 1.0, 1.0]
+                bbox=[0.0, 0.0, 1.0, 1.0],
             )
             trace.auto_set_font_size(True)
-            
+
             pdf.savefig()
             plt.close()
 

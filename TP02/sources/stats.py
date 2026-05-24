@@ -118,7 +118,7 @@ def __messages_in_queue_and_dropped_at(
             break
         if e.get_event_type() == EventType.RECV_MSG:
             if e.get_event_time() <= t_time:
-                if len(queue) < t_queue_size:
+                if t_queue_size is None or len(queue) < t_queue_size:
                     queue.append(e.get_message().get_message_id())
                 else:
                     dropped += 1
@@ -171,9 +171,8 @@ def mean_queue_size(t_events: List[Event], t_queue_size: int, t_time: float) -> 
     return area / t_time # moyenne pondérée par le temps
 
 def rejection_rate(t_events: List[Event], t_queue_size: int, t_time: float) -> float:
-    total_received = total_messages_received(t_events, t_time) @
+    total_received = total_messages_received(t_events, t_time)
     if total_received == 0: # pour éviter la division par zéro
         return 0.0
     dropped = messages_dropped_at(t_events, t_queue_size, t_time)
-    return dropped / total_received
     return dropped / total_received

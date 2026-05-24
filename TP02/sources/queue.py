@@ -5,13 +5,13 @@ from collections import deque
 class Queue:
 
     # https://docs.python.org/3.13/library/collections.html#deque-objects
-    def __init__(self, size: int = 4):
+    def __init__(self, size: int = None):
         self.queue = deque()
         self.__size = size
 
     def put(self, msg: Message):
         # append to the right of the queue
-        if self.size() < self.__size:
+        if self.__size == None or self.size() < self.__size:
             self.queue.append(msg)
 
     def get(self) -> Message:
