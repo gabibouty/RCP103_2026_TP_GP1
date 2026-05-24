@@ -75,7 +75,7 @@ def total_messages_sended(t_events: List[Event], t_time: float) -> int:
     sorted_events = SortedEvents(t_events)
     count = 0
     for e in sorted_events.get_all_events_of_type(EventType.SEND_MSG):
-        if e.get_event_time() > t_time:
+        if e.get_event_time() >= t_time:
             break
         count += 1
     return count
@@ -85,7 +85,7 @@ def total_messages_received(t_events: List[Event], t_time: float) -> int:
     sorted_events = SortedEvents(t_events)
     count = 0
     for e in sorted_events.get_all_events_of_type(EventType.RECV_MSG):
-        if e.get_event_time() > t_time:
+        if e.get_event_time() >= t_time:
             break
         count += 1
     return count
@@ -101,7 +101,7 @@ def total_messages_transmit(t_events: List[Event], t_time: float) -> int:
     sorted_events = SortedEvents(t_events)
     count = 0
     for e in sorted_events.get_all_events_of_type(EventType.MSG_DEPT):
-        if e.get_event_time() > t_time:
+        if e.get_event_time() >= t_time:
             break
         count += 1
     return count
@@ -114,16 +114,16 @@ def __messages_in_queue_and_dropped_at(
     dropped = 0
 
     for e in t_events:
-        if e.get_event_time() > t_time:
+        if e.get_event_time() >= t_time:
             break
+
         if e.get_event_type() == EventType.RECV_MSG:
-            if e.get_event_time() <= t_time:
-                if t_queue_size is None or len(queue) < t_queue_size:
-                    queue.append(e.get_message().get_message_id())
-                else:
-                    dropped += 1
+            if t_queue_size is None or len(queue) < t_queue_size:
+                queue.append(e)
+            else:
+                dropped += 1
         elif e.get_event_type() == EventType.MSG_DEPT:
-            if queue:
+            if len(queue) > 0:
                 queue.popleft()
 
     return len(queue), dropped
@@ -133,7 +133,7 @@ def messages_in_queue_at(t_events: List[Event], t_queue_size: int, t_time: float
     return __messages_in_queue_and_dropped_at(t_events, t_queue_size, t_time)[0]
 
 
-def messages_dropped_at(t_events: List[Event], t_queue_size: int, t_time: float):
+def total_messages_dropped(t_events: List[Event], t_queue_size: int, t_time: float):
     return __messages_in_queue_and_dropped_at(t_events, t_queue_size, t_time)[1]
 
 
@@ -185,5 +185,5 @@ def rejection_rate(t_events: List[Event], t_queue_size: int, t_time: float) -> f
     total_received = total_messages_received(t_events, t_time)
     if total_received == 0:  # pour éviter la division par zéro
         return 0.0
-    dropped = messages_dropped_at(t_events, t_queue_size, t_time)
+    dropped = total_messages_dropped(t_events, t_queue_size, t_time)
     return dropped / total_received

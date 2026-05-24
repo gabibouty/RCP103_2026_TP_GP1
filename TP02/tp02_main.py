@@ -21,8 +21,8 @@ def main():
     ]
 
     with PdfPages("simulation_results.pdf") as pdf:
-        CLIENT_LAMBDAS = [4, 6, 8, 12]
         for _client_count, _server_count, _queue_size in configuration:
+            CLIENT_LAMBDAS = [4, 6, 8, 12]
             for _client_lambda in CLIENT_LAMBDAS:
                 title = f"Duration={SIMULATION_DURATION}, "
                 title += f"Clients count={_client_count}, "
@@ -56,17 +56,18 @@ def main():
                 still_in_queue = []
                 total_in_system = []
                 _t = []
-                for t in range(0, SIMULATION_DURATION):
-                    _time = float(t)
-                    _t.append(t)
+                STEP = 0.25
+                _time = STEP
 
-                    previous = 0 if len(transmit_count) == 0 else transmit_count[-1]
+                while _time <= SIMULATION_DURATION:
+                    _t.append(_time - STEP)
+
                     transmit_count.append(
-                        total_messages_transmit(events, _time) - previous
+                        total_messages_transmit(events, _time) - sum(transmit_count)
                     )
-                    previous = 0 if len(dropped_count) == 0 else dropped_count[-1]
                     dropped_count.append(
-                        messages_dropped_at(events, _queue_size, _time) - previous
+                        total_messages_dropped(events, _queue_size, _time)
+                        - sum(dropped_count)
                     )
                     still_in_transmission.append(
                         total_messages_still_in_transmission(events, _time)
@@ -80,6 +81,12 @@ def main():
                         + still_in_transmission[-1]
                         + still_in_queue[-1]
                     )
+                    _time += STEP
+
+                assert len(_t) == len(transmit_count)
+                assert len(_t) == len(still_in_transmission)
+                assert len(_t) == len(still_in_queue)
+                assert len(_t) == len(dropped_count)
 
                 # -----------------------------------------------------------
                 # Prepare draw environment
@@ -122,8 +129,8 @@ def main():
                         label=label,
                         color=color,
                         align="edge",
-                        width=1.0,
-                        edgecolor="black",
+                        width=STEP,
+                        edgecolor="grey",
                     )
                     current_bottom += data
 
@@ -133,7 +140,7 @@ def main():
                 _left_top.xaxis.set_major_locator(MultipleLocator(1))
 
                 _left_top.set_xlabel("$time$")
-                _left_top.set_ylabel("Message count")
+                _left_top.set_ylabel("Message counts during interval")
                 _left_top.legend()
 
                 # -----------------------------------------------------------
@@ -141,7 +148,7 @@ def main():
                 # -----------------------------------------------------------
                 text = f"\nTotal message sended = {total_messages_sended(events, SIMULATION_DURATION)}"
                 text += f"\nTotal message transmitted = {total_messages_transmit(events, SIMULATION_DURATION)}"
-                text += f"\nTotal message dropped = {messages_dropped_at(events, _queue_size, SIMULATION_DURATION)}"
+                text += f"\nTotal message dropped = {total_messages_dropped(events, _queue_size, SIMULATION_DURATION)}"
                 text += f"\n\nStill in transmission at end = {total_messages_still_in_transmission(events, SIMULATION_DURATION)}"
                 text += f"\nStill in queue at end = {messages_in_queue_at(events, _queue_size, SIMULATION_DURATION)}"
                 text += f"\n\nAverage time in queue = {average_time_in_queue(events):.4f} $t.u.$"
