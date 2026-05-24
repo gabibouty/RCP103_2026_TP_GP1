@@ -14,16 +14,14 @@ def test_put():
     message2.set_message_arrival_time(1.2)
     message2.set_message_server_time(4.6)
 
-    event1 = Event(1, EventType.SEND_MSG, message1)
-    event2 = Event(2, EventType.SEND_MSG, message2)
 
     queue = Queue()
-    queue.put(event1)
-    queue.put(event2)
+    queue.put(message1)
+    queue.put(message2)
 
     # https://docs.pytest.org/en/6.2.x/capture.html
-    assert queue.index(event1) == 0
-    assert queue.index(event2) == 1
+    assert queue.index(message1) == 0
+    assert queue.index(message2) == 1
     Message.reset_ids()
 
 
@@ -131,17 +129,18 @@ def test_put_size1():
     message2.set_message_send_time(0.2)
     message2.set_message_arrival_time(1.2)
     message2.set_message_server_time(4.6)
-
-    event1 = Event(1, EventType.SEND_MSG, message1)
-    event2 = Event(2, EventType.SEND_MSG, message2)
-    event3 = Event(3, EventType.SEND_MSG, message2)
+    
+    message3 = Message(1, 3)
+    message3.set_message_send_time(0.2)
+    message3.set_message_arrival_time(1.2)
+    message3.set_message_server_time(4.6)
 
     queue = Queue(1)
-    queue.put(event1)
-    queue.put(event2)
-    queue.put(event3)
+    queue.put(message1)
+    queue.put(message2)
+    queue.put(message3)
 
     # https://docs.pytest.org/en/6.2.x/capture.html
-    assert queue.index(event1) == 0
+    assert queue.index(message1) == 0
     assert queue.size() == 1
     Message.reset_ids()
