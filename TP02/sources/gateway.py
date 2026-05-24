@@ -23,7 +23,7 @@ class Gateway:
 
     def send_message(self, msg: Message, t_time: float) -> List[Message]:
         self.__queue.put(msg)
-        
+
         msg_list: List[Message] = []
         server = self.__get_free_server(t_time)
         while server != None and not self.__queue.is_empty():

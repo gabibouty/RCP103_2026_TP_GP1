@@ -138,41 +138,52 @@ def messages_dropped_at(t_events: List[Event], t_queue_size: int, t_time: float)
 
 
 def mean_queue_size(t_events: List[Event], t_queue_size: int, t_time: float) -> float:
-    if t_time == 0: # pour éviter la division par z&ro 
+    if t_time == 0:  # pour éviter la division par z&ro
         return 0.0
 
-    t_events = sorted(t_events, key=lambda e: e.get_event_time()) #les events triés par ordre chronologique 
+    t_events = sorted(
+        t_events, key=lambda e: e.get_event_time()
+    )  # les events triés par ordre chronologique
 
-    current_queue_size = 0 #la taille actuelle de la file d'attente
-    previous_time = 0.0 # temps du dernier événement traité
-    area = 0.0 # la somme des tailles de la file d'attente multipliées par les durées correspondantes
+    current_queue_size = 0  # la taille actuelle de la file d'attente
+    previous_time = 0.0  # temps du dernier événement traité
+    area = 0.0  # la somme des tailles de la file d'attente multipliées par les durées correspondantes
 
-    for e in t_events: # le temps de l'event courant
+    for e in t_events:  # le temps de l'event courant
         current_time = e.get_event_time()
 
-        if current_time > t_time: # si l'evénement dépasse le temps étudié, on arrête 
+        if current_time > t_time:  # si l'evénement dépasse le temps étudié, on arrête
             break
 
-        duration = current_time - previous_time # la durée où la file est restée avec la meme taille depuis le dernier event
+        duration = (
+            current_time - previous_time
+        )  # la durée où la file est restée avec la meme taille depuis le dernier event
         area += current_queue_size * duration
 
-        if e.get_event_type() == EventType.RECV_MSG: # si un msg arrive la taille augnmente
+        if (
+            e.get_event_type() == EventType.RECV_MSG
+        ):  # si un msg arrive la taille augnmente
             if current_queue_size < t_queue_size:
                 current_queue_size += 1
 
-        elif e.get_event_type() == EventType.MSG_DEPT:  #si msg quitte la taille diminue
+        elif (
+            e.get_event_type() == EventType.MSG_DEPT
+        ):  # si msg quitte la taille diminue
             if current_queue_size > 0:
                 current_queue_size -= 1
 
-        previous_time = current_time # on met à jour le temps du dernier event traité
+        previous_time = current_time  # on met à jour le temps du dernier event traité
 
-    area += current_queue_size * (t_time - previous_time)#on ajoute la dernière période, entre le dernier event et le temps étudié, multipliée par la taille actuelle de la file d'attente
+    area += current_queue_size * (
+        t_time - previous_time
+    )  # on ajoute la dernière période, entre le dernier event et le temps étudié, multipliée par la taille actuelle de la file d'attente
 
-    return area / t_time # moyenne pondérée par le temps
+    return area / t_time  # moyenne pondérée par le temps
+
 
 def rejection_rate(t_events: List[Event], t_queue_size: int, t_time: float) -> float:
     total_received = total_messages_received(t_events, t_time)
-    if total_received == 0: # pour éviter la division par zéro
+    if total_received == 0:  # pour éviter la division par zéro
         return 0.0
     dropped = messages_dropped_at(t_events, t_queue_size, t_time)
     return dropped / total_received

@@ -140,8 +140,9 @@ def test_all_stats_with_different_combination():
                 + still_in_queue
                 + still_in_transmission
             )
-            
-def test_mean_queue_size(): # pas testée encore
+
+
+def test_mean_queue_size():  # pas testée encore
     SIMULATION_DURATION = 10
     QUEUE_SIZE = 4
 
@@ -161,4 +162,3 @@ def test_mean_queue_size(): # pas testée encore
 
     assert mean_q_size >= 0.0
     assert mean_q_size <= QUEUE_SIZE
-
