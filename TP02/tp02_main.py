@@ -23,162 +23,179 @@ def __add_bar(area, t_range, t_data, t_bottom, t_label, t_color):
 
 def main():
     SIMULATION_DURATION = 10
-    QUEUE_SIZES = [None, 4]
-    CLIENTS_COUNT = [1]
-    SERVERS_COUNT = [1]
 
-    configuration = []
-    for c in CLIENTS_COUNT:
-        for s in SERVERS_COUNT:
-            for q in QUEUE_SIZES:
-                configuration.append((c, s, q))
+    # Client/Server/Q
+    configuration = [[1, 1, None]]
 
     with PdfPages("simulation_results.pdf") as pdf:
+        CLIENT_LAMBDAS = [4]
         for _client_count, _server_count, _queue_size in configuration:
-            title = f"Duration={SIMULATION_DURATION}, "
-            title += f"Clients={_client_count}, Servers={_server_count}, "
-            title += f"Q={"inf." if _queue_size is None else _queue_size}, "
-            title += f"Duration={SIMULATION_DURATION}"
-            print(f"Launch simulation: {title}")
+            for _client_lambda in CLIENT_LAMBDAS:
+                title = f"Duration={SIMULATION_DURATION}, "
+                title += f"Clients count={_client_count}, "
+                title += f"Client's λ={_client_lambda}, "
+                title += f"Servers count={_server_count}, "
+                title += f"Q={"inf." if _queue_size is None else _queue_size}"
+                print(f"Launch simulation: {title}")
 
-            engine: Engine = Engine(
-                SIMULATION_DURATION,
-                t_server_count=_server_count,
-                t_client_count=_client_count,
-                t_queue_limit=_queue_size,
-                t_client_lambda=4,
-            )
-
-            engine.run()
-
-            # engine.log(TraceType.STDIO)
-            events = engine.log(TraceType.EVENT_LIST)
-            assert len(events) > 0
-
-            dropped_count = []
-            transmit_count = []
-            still_in_transmission = []
-            still_in_queue = []
-            _t = []
-            for t in range(0, SIMULATION_DURATION):
-                _time = float(t)
-                _t.append(t)
-
-                previous = 0 if len(transmit_count) == 0 else transmit_count[-1]
-                transmit_count.append(total_messages_transmit(events, _time) - previous)
-                previous = 0 if len(dropped_count) == 0 else dropped_count[-1]
-                dropped_count.append(
-                    messages_dropped_at(events, _queue_size, _time) - previous
-                )
-                still_in_transmission.append(
-                    total_messages_still_in_transmission(events, _time) * 10
-                )
-                still_in_queue.append(
-                    messages_in_queue_at(events, _queue_size, _time) * 10
+                # -----------------------------------------------------------
+                # Launch simulation
+                # -----------------------------------------------------------
+                engine: Engine = Engine(
+                    SIMULATION_DURATION,
+                    t_server_count=_server_count,
+                    t_client_count=_client_count,
+                    t_queue_limit=_queue_size,
+                    t_client_lambda=_client_lambda,
                 )
 
-            # Graph
+                engine.run()
 
-            plt.figure(figsize=(11.69, 8.27))
-            gs = gridspec.GridSpec(2, 1, height_ratios=[1.8, 0.2])
-            ax1 = plt.subplot(gs[0, 0])
-            ax2 = plt.subplot(gs[1, 0])
+                events = engine.log(TraceType.EVENT_LIST)
+                assert len(events) > 0
 
-            _bottom = [0] * (SIMULATION_DURATION)
-            assert len(_t) == len(_bottom)
-            assert len(_t) == len(still_in_transmission)
-            __add_bar(
-                ax1, _t, still_in_transmission, _bottom, "in transmission", "#1f77b4"
-            )
-            _bottom = [a + b for a, b in zip(still_in_transmission, _bottom)]
-            __add_bar(ax1, _t, still_in_queue, _bottom, "in queue", "#f1c62a")
-            _bottom = [a + b for a, b in zip(still_in_queue, _bottom)]
-            __add_bar(ax1, _t, dropped_count, _bottom, "dropped", "#b4301f")
-            _bottom = [a + b for a, b in zip(dropped_count, _bottom)]
-            __add_bar(ax1, _t, transmit_count, _bottom, "transmit", "#1fb42bd3")
+                # -----------------------------------------------------------
+                # Compute stats
+                # -----------------------------------------------------------
+                dropped_count = []
+                transmit_count = []
+                still_in_transmission = []
+                still_in_queue = []
+                _t = []
+                for t in range(0, SIMULATION_DURATION):
+                    _time = float(t)
+                    _t.append(t)
 
-            # Legend
-            ax1.set_xlabel("$time$")
-            ax1.set_ylabel("Message count")
-            ax1.set_title(title)
-            ax1.legend()
+                    previous = 0 if len(transmit_count) == 0 else transmit_count[-1]
+                    transmit_count.append(
+                        total_messages_transmit(events, _time) - previous
+                    )
+                    previous = 0 if len(dropped_count) == 0 else dropped_count[-1]
+                    dropped_count.append(
+                        messages_dropped_at(events, _queue_size, _time) - previous
+                    )
+                    still_in_transmission.append(
+                        total_messages_still_in_transmission(events, _time) * 10
+                    )
+                    still_in_queue.append(
+                        messages_in_queue_at(events, _queue_size, _time) * 10
+                    )
 
-            # Comment
-            text = f"\nMessage sended = {total_messages_sended(events, SIMULATION_DURATION)}"
-            text += f"\nMessage transmitted = {total_messages_transmit(events, SIMULATION_DURATION)}"
-            text += f"\nMessage dropped = {messages_dropped_at(events, _queue_size, SIMULATION_DURATION)}"
-            text += f"\nStill in transmission = {total_messages_still_in_transmission(events, SIMULATION_DURATION)}"
-            text += f"\nStill in queue = {messages_in_queue_at(events, _queue_size, SIMULATION_DURATION)}"
-            text += f"\nAverage time in queue = {average_time_in_queue(events):.4f}"
-            text += (
-                f"\nMaximum time in queue = {maximum_waiting_time_in_queue(events):.4f}"
-            )
-
-            ax2.text(
-                x=0,
-                y=1,
-                s=text,
-                fontsize=12,
-            )
-            ax2.axis("off")
-
-            plt.tight_layout()
-            pdf.savefig()
-            plt.close()
-
-            # Trace
-            fig, ax = plt.subplots(figsize=(11.69, 8.27))
-            plt.subplots_adjust(top=0.99, bottom=0.01, right=0.75, left=0.25)
-            ax.axis("off")
-            all_data = []
-            for e in events:
-                node, source, destination, time = get_time_and_nodes(e)
-                all_data.append(
-                    [
-                        round(time, 4),
-                        node,
-                        e.get_event_type().name,
-                        source,
-                        destination,
-                        e.get_message().get_message_id(),
-                    ]
+                # -----------------------------------------------------------
+                # PAGE 1: Draw bar graph
+                # -----------------------------------------------------------
+                fig, ax = plt.subplots(figsize=(11.69, 8.27))
+                _bottom = [0] * (SIMULATION_DURATION)
+                assert len(_t) == len(_bottom)
+                assert len(_t) == len(still_in_transmission)
+                __add_bar(
+                    ax,
+                    _t,
+                    still_in_transmission,
+                    _bottom,
+                    "in transmission",
+                    "#1f77b4",
                 )
+                _bottom = [a + b for a, b in zip(still_in_transmission, _bottom)]
+                __add_bar(ax, _t, still_in_queue, _bottom, "in queue", "#f1c62a")
+                _bottom = [a + b for a, b in zip(still_in_queue, _bottom)]
+                __add_bar(ax, _t, dropped_count, _bottom, "dropped", "#b4301f")
+                _bottom = [a + b for a, b in zip(dropped_count, _bottom)]
+                __add_bar(ax, _t, transmit_count, _bottom, "transmit", "#1fb42bd3")
 
-            table_data = []
+                plt.xlabel("$time$")
+                plt.ylabel("Message count")
+                plt.title(title)
+                plt.legend()
 
-            all_data_len = len(all_data)
-            MAX_ROWS = 44
-            found_t1 = False
-            last_row_index = len(all_data) - MAX_ROWS
-            for i in range(all_data_len):
-                if all_data[i][0] <= 1.0 or i >= last_row_index:
-                    table_data.append(all_data[i])
-                elif not found_t1:
-                    found_t1 = True
-                    table_data.append(all_data[i])
-                    table_data.append(["...", "...", "...", "...", "...", "..."])
-                    table_data.append(["...", "...", "...", "...", "...", "..."])
-                    last_row_index = last_row_index + len(table_data)
+                plt.tight_layout()
+                pdf.savefig()
+                plt.close()
 
-            table_data.append(["$END$", "---", "---", "---", "---", "---"])
-            column_titles = ["$time$", "$node$", "$event$", "$src$", "$dst$", "$msgID$"]
-            column_width = np.full(len(column_titles), 0.5)
-            column_width[1] = 0.25
-            column_width[3] = 0.25
-            column_width[4] = 0.25
-            column_width[5] = 0.25
-            trace = plt.table(
-                cellText=table_data,
-                colLabels=column_titles,
-                colWidths=column_width,
-                loc="bottom",
-                cellLoc="center",
-                bbox=[0.0, 0.0, 1.0, 1.0],
-            )
-            trace.auto_set_font_size(True)
+                # -----------------------------------------------------------
+                # PAGE 2
+                # -----------------------------------------------------------
+                fig = plt.figure(figsize=(11.69, 8.27))
+                gs = gridspec.GridSpec(1, 2)
+                ax1 = plt.subplot(gs[0, 0])
+                ax2 = plt.subplot(gs[0, 1])
+                ax1.axis("off")
+                ax2.axis("off")
 
-            pdf.savefig()
-            plt.close()
+                # -----------------------------------------------------------
+                # Draw Trace
+                # -----------------------------------------------------------
+                all_data = []
+                for e in events:
+                    node, source, destination, time = get_time_and_nodes(e)
+                    all_data.append(
+                        [
+                            round(time, 4),
+                            node,
+                            e.get_event_type().name,
+                            source,
+                            destination,
+                            e.get_message().get_message_id(),
+                        ]
+                    )
+
+                table_data = []
+
+                all_data_len = len(all_data)
+                MAX_ROWS = 44
+                found_t1 = False
+                last_row_index = len(all_data) - MAX_ROWS
+                for i in range(all_data_len):
+                    if all_data[i][0] <= 1.0 or i >= last_row_index:
+                        table_data.append(all_data[i])
+                    elif not found_t1:
+                        found_t1 = True
+                        table_data.append(all_data[i])
+                        table_data.append(["...", "...", "...", "...", "...", "..."])
+                        table_data.append(["...", "...", "...", "...", "...", "..."])
+                        last_row_index = last_row_index + len(table_data)
+
+                table_data.append(["$END$", "---", "---", "---", "---", "---"])
+                column_titles = [
+                    "$time$",
+                    "$node$",
+                    "$event$",
+                    "$src$",
+                    "$dst$",
+                    "$msgID$",
+                ]
+                column_width = np.full(len(column_titles), 0.5)
+                column_width[1] = 0.25
+                column_width[3] = 0.25
+                column_width[4] = 0.25
+                column_width[5] = 0.25
+                trace = ax1.table(
+                    cellText=table_data,
+                    colLabels=column_titles,
+                    colWidths=column_width,
+                    loc="center",
+                    cellLoc="center",
+                    bbox=[0.0, 0.0, 1.0, 1.0],
+                )
+                trace.auto_set_font_size(True)
+
+                # -----------------------------------------------------------
+                # Draw comments
+                # -----------------------------------------------------------
+                text = f"Configuration:\n{title}\n\n"
+                text += f"\nTotal message sended = {total_messages_sended(events, SIMULATION_DURATION)}"
+                text += f"\nTotal message transmitted = {total_messages_transmit(events, SIMULATION_DURATION)}"
+                text += f"\nTotal message dropped = {messages_dropped_at(events, _queue_size, SIMULATION_DURATION)}"
+                text += f"\n\nStill in transmission at end = {total_messages_still_in_transmission(events, SIMULATION_DURATION)}"
+                text += f"\nStill in queue at end = {messages_in_queue_at(events, _queue_size, SIMULATION_DURATION)}"
+                text += f"\n\nAverage time in queue = {average_time_in_queue(events):.4f} $t.u.$"
+                text += f"\nMaximum time in queue = {maximum_waiting_time_in_queue(events):.4f} $t.u.$"
+
+                ax2.text(x=0.1, y=0.5, s=text, fontsize=12, va="center", ha="left")
+
+                plt.tight_layout()
+                pdf.savefig()
+                plt.close()
 
 
 if __name__ == "__main__":
