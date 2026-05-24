@@ -3,12 +3,10 @@ from typing import List
 
 from sources.client import Client
 from sources.events_and_messages import Message, Event, EventType
-from sources.queue import Queue
 from sources.scheduler import Scheduler
-from sources.server import Server
 from sources.trace import generateTraceOut, generateTraceCSV
 from sources.gateway import Gateway
-from sources.constants import SERVER_AVG_TIME, TRANSMISSION_DURATION
+from sources.constants import TRANSMISSION_DURATION
 
 
 class TraceType(Enum):
@@ -78,30 +76,27 @@ class Engine:
                 t_event_id += 1
         return t_event_id
 
-    def __add_event(self, msg_list: list[Message], t_event_id: int) -> int:
-        if len(msg_list) != 0:
-            for msg in msg_list:
-                self.__scheduler.add_event(
-                    t_event=Event(t_event_id, EventType.MSG_DEPT, msg)
-                )
-                t_event_id += 1
+    def __add_dept_events(self, msg_list: list[Message], t_event_id: int) -> int:
+        for msg in msg_list:
+            self.__scheduler.add_event(
+                t_event=Event(t_event_id, EventType.MSG_DEPT, msg)
+            )
+            t_event_id += 1
         return t_event_id
 
     def run(self):
         event_id: int = 0
         # MAIN LOOP
-        event_id = self.__pop_messages_from_clients(event_id)
         while self.__scheduler.get_current_time() < self.__simulation_duration:
-            time = self.__scheduler.get_current_time()
+            event_id = self.__pop_messages_from_clients(event_id)
 
+            # capture time before pop event
+            time = self.__scheduler.get_current_time()
+            
             event = self.__scheduler.pop_event()
             if event.get_event_type() == EventType.RECV_MSG:
-                self.__gateway.send_message(event.get_message())
-
-            msg_list = self.__gateway.try_start_server_job(time)
-            event_id = self.__add_event(msg_list, event_id)
-
-            event_id = self.__pop_messages_from_clients(event_id)
+                msg_list = self.__gateway.send_message(event.get_message(), time)
+                event_id = self.__add_dept_events(msg_list, event_id)
 
         Message.reset_ids()
         Client.reset_avg_time_selector()
