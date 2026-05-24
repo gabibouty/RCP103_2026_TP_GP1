@@ -1,5 +1,6 @@
 from sources.engine import Engine, TraceType
 from sources.stats import *
+from sources.constants import SERVER_LAMBDA
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from matplotlib.backends.backend_pdf import PdfPages
@@ -25,10 +26,15 @@ def main():
     SIMULATION_DURATION = 10
 
     # Client/Server/Q
-    configuration = [[1, 1, None]]
+    configuration = [
+        [1, 1, None],
+        [1, 1, 4],
+        [1, 1, 8],
+        [1, 3, 8],
+    ]
 
     with PdfPages("simulation_results.pdf") as pdf:
-        CLIENT_LAMBDAS = [4]
+        CLIENT_LAMBDAS = [4, 6, 8, 12]
         for _client_count, _server_count, _queue_size in configuration:
             for _client_lambda in CLIENT_LAMBDAS:
                 title = f"Duration={SIMULATION_DURATION}, "
@@ -105,7 +111,9 @@ def main():
 
                 plt.xlabel("$time$")
                 plt.ylabel("Message count")
-                plt.title(title)
+                _fontdict = {}
+                _fontdict["fontweight"] = "bold"
+                plt.title(title, fontdict=_fontdict)
                 plt.legend()
 
                 plt.tight_layout()
@@ -155,14 +163,14 @@ def main():
                         table_data.append(["...", "...", "...", "...", "...", "..."])
                         last_row_index = last_row_index + len(table_data)
 
-                table_data.append(["$END$", "---", "---", "---", "---", "---"])
+                table_data.append(["END", "---", "---", "---", "---", "---"])
                 column_titles = [
-                    "$time$",
-                    "$node$",
-                    "$event$",
-                    "$src$",
-                    "$dst$",
-                    "$msgID$",
+                    "time",
+                    "node",
+                    "event",
+                    "src",
+                    "dst",
+                    "msgID",
                 ]
                 column_width = np.full(len(column_titles), 0.5)
                 column_width[1] = 0.25
@@ -178,6 +186,13 @@ def main():
                     bbox=[0.0, 0.0, 1.0, 1.0],
                 )
                 trace.auto_set_font_size(True)
+                for col in range(len(column_titles)):
+                    cell = trace.get_celld()[(0, col)]
+                    cell.set_facecolor("#A30018")
+                    cell.set_text_props(weight="bold", color="#FFFFFF")
+                    cell = trace.get_celld()[(MAX_ROWS + 1, col)]
+                    cell.set_facecolor("#A30018")
+                    cell.set_text_props(weight="bold", color="#FFFFFF")
 
                 # -----------------------------------------------------------
                 # Draw comments
