@@ -3,6 +3,7 @@ from sources.stats import *
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from matplotlib.backends.backend_pdf import PdfPages
+from sources.trace import get_time_and_nodes
 
 
 def __add_bar(area, t_range, t_data, t_bottom, t_label, t_color):
@@ -21,17 +22,15 @@ def __add_bar(area, t_range, t_data, t_bottom, t_label, t_color):
 
 def main():
     SIMULATION_DURATION = 10
-    QUEUE_SIZES = [4, 8, 12, 16]
-    CLIENTS_COUNT = [1, 2, 4, 8]
-    SERVERS_COUNT = [1, 2, 4, 8]
+    QUEUE_SIZES = [4, 8]
+    CLIENTS_COUNT = [1, 2]
+    SERVERS_COUNT = [1, 2, 4]
 
     combinations = []
     for c in CLIENTS_COUNT:
         for s in SERVERS_COUNT:
             for q in QUEUE_SIZES:
                 combinations.append((c, s, q))
-
-    print()
 
     with PdfPages("simulation_results.pdf") as pdf:
         for _client_count, _server_count, _queue_size in combinations:
@@ -122,6 +121,55 @@ def main():
             ax2.axis("off")
 
             plt.tight_layout()
+            pdf.savefig()
+            plt.close()
+
+            # Trace
+            fig, ax = plt.subplots(figsize=(11.69, 8.27))
+            plt.subplots_adjust(top=.99, bottom=0.01, right=.75, left=0.25)
+            ax.axis('off')
+            all_data = []
+            for e in events:
+                node, source, destination, time = get_time_and_nodes(e)
+                all_data.append(
+                    [
+                        round(time, 4),
+                        node,
+                        e.get_event_type().name,
+                        source,
+                        destination,
+                        e.get_message().get_message_id(),
+                    ]
+                )
+
+            table_data = []
+
+            all_data_len = len(all_data)
+            MAX_ROWS = 45
+            found_t1 = False
+            last_row_index = len(all_data) - MAX_ROWS
+            for i in range(all_data_len):
+                if all_data[i][0] <= 1.0 or i >= last_row_index:
+                    table_data.append(all_data[i])
+                elif not found_t1:
+                    found_t1 = True
+                    table_data.append(all_data[i])
+                    table_data.append(["...", "...", "...", "...", "...", "..."])
+                    last_row_index = last_row_index + len(table_data)
+            
+
+            column_titles = ["time", "node", "event", "src", "dst", "msgID"]
+            column_width = np.full(len(column_titles), 0.5)
+            trace = plt.table(
+                cellText=table_data,
+                colLabels=column_titles,
+                colWidths=column_width,
+                loc="bottom",
+                cellLoc="center",
+                bbox=[0.0, 0.0, 1.0, 1.0]
+            )
+            trace.auto_set_font_size(True)
+            
             pdf.savefig()
             plt.close()
 
