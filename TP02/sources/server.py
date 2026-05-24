@@ -16,7 +16,7 @@ class Server:
 
     def start_work(self, t_timestamp: float) -> None:
         self.__work_end = t_timestamp + self.__random_engine.exponential(
-            scale=self.__avg_req_by_time_unit
+            scale=1.0 / self.__avg_req_by_time_unit
         )
 
     def get_work_end(self) -> float:

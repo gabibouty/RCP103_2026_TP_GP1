@@ -52,7 +52,7 @@ def main():
                     t_server_count=_server_count,
                     t_client_count=_client_count,
                     t_queue_limit=_queue_size,
-                    t_client_lambda=_client_lambda,
+                    t_client_avg_send_by_time_unit=_client_lambda,
                 )
 
                 engine.run()

@@ -8,7 +8,7 @@ def test_all_stats():
     engine: Engine = Engine(
         t_simulation_duration=SIMULATION_DURATION,
         t_client_count=2,
-        t_client_lambda=4,
+        t_client_avg_send_by_time_unit=4,
         t_server_count=2,
         t_queue_limit=QUEUE_SIZE,
     )
@@ -96,7 +96,7 @@ def test_all_stats_with_different_combination():
         engine: Engine = Engine(
             t_simulation_duration=SIMULATION_DURATION,
             t_client_count=_client_count,
-            t_client_lambda=4,
+            t_client_avg_send_by_time_unit=4,
             t_server_count=_server_count,
             t_queue_limit=_queue_size,
         )
@@ -151,7 +151,7 @@ def test_mean_queue_size():  # pas testée encore
     engine: Engine = Engine(
         t_simulation_duration=SIMULATION_DURATION,
         t_client_count=2,
-        t_client_lambda=4,
+        t_client_avg_send_by_time_unit=4,
         t_server_count=2,
         t_queue_limit=QUEUE_SIZE,
     )

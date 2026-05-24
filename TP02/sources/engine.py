@@ -21,7 +21,7 @@ class Engine:
         t_simulation_duration: float,
         t_server_count: int,
         t_client_count: int,
-        t_client_lambda: int,
+        t_client_avg_send_by_time_unit: int,
         t_queue_limit: int,
         t_avg_req_by_time_unit: int = SERVER_LAMBDA,
     ):
@@ -32,7 +32,7 @@ class Engine:
 
         self.__clients: List[Client] = []
         for i in range(t_client_count):
-            self.__clients.append(Client(i + 1, t_client_lambda))
+            self.__clients.append(Client(i + 1, t_client_avg_send_by_time_unit))
 
         self.__gateway: Gateway = Gateway(
             t_server_count=t_server_count,

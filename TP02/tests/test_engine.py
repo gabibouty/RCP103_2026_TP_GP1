@@ -10,7 +10,7 @@ def test_engine():
     engine: Engine = Engine(
         t_simulation_duration=SIMULATION_DURATION,
         t_client_count=1,
-        t_client_lambda=4,
+        t_client_avg_send_by_time_unit=4,
         t_server_count=1,
         t_queue_limit=None,
     )
@@ -58,7 +58,7 @@ def test_engine_with_multiple_server():
     engine: Engine = Engine(
         t_simulation_duration=SIMULATION_DURATION,
         t_client_count=1,
-        t_client_lambda=4,
+        t_client_avg_send_by_time_unit=4,
         t_server_count=4,
         t_queue_limit=None,
     )
@@ -106,7 +106,7 @@ def test_engine_with_multiple_client():
     engine: Engine = Engine(
         t_simulation_duration=SIMULATION_DURATION,
         t_client_count=4,
-        t_client_lambda=4,
+        t_client_avg_send_by_time_unit=4,
         t_server_count=1,
         t_queue_limit=None,
     )
@@ -154,7 +154,7 @@ def test_engine_with_multiple_server_and_client():
     engine: Engine = Engine(
         t_simulation_duration=SIMULATION_DURATION,
         t_client_count=4,
-        t_client_lambda=4,
+        t_client_avg_send_by_time_unit=4,
         t_server_count=4,
         t_queue_limit=None,
     )
@@ -175,7 +175,7 @@ def test_engine_with_multiple_server_and_client():
             dept_events.append(e)
 
     assert len(send_events) > len(recv_events)
-    assert len(recv_events) > len(dept_events)
+    assert len(recv_events) >= len(dept_events)
 
     for i in range(len(events) - 1):
         assert events[i].get_event_time() <= events[i + 1].get_event_time()
