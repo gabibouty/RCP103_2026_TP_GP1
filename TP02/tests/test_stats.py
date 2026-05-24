@@ -121,14 +121,18 @@ def test_all_stats_with_different_combination():
             still_in_transmission = total_messages_still_in_transmission(events, t)
             still_in_queue = messages_in_queue_at(events, _queue_size, t)
 
-            print(f"Test: _sended_count={_sended_count} - sended_count={sended_count} == still_in_transmission={still_in_transmission}")
+            print(
+                f"Test: _sended_count={_sended_count} - sended_count={sended_count} == still_in_transmission={still_in_transmission}"
+            )
             assert _sended_count - sended_count == still_in_transmission
 
             sended_count = _sended_count
             transmit_count = _transmit_count
             dropped_count = _dropped_count
 
-            print(f"sended_count={sended_count} == transmit_count={transmit_count} + dropped_count={dropped_count} + still_in_queue={still_in_queue} + still_in_transmission={still_in_transmission}")
+            print(
+                f"sended_count={sended_count} == transmit_count={transmit_count} + dropped_count={dropped_count} + still_in_queue={still_in_queue} + still_in_transmission={still_in_transmission}"
+            )
             assert (
                 sended_count
                 == transmit_count

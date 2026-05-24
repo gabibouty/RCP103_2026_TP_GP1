@@ -11,8 +11,6 @@ from sources.gateway import Gateway
 from sources.constants import SERVER_AVG_TIME, TRANSMISSION_DURATION
 
 
-
-
 class TraceType(Enum):
     EVENT_LIST = 1
     STDIO = 2
@@ -37,7 +35,11 @@ class Engine:
         for i in range(t_client_count):
             self.__clients.append(Client(i + 1))
 
-        self.__gateway: Gateway = Gateway(t_server_count=t_server_count, t_server_starting_count=self.__clients[-1].get_client_id() + 1, t_queue_limit=t_queue_limit)
+        self.__gateway: Gateway = Gateway(
+            t_server_count=t_server_count,
+            t_server_starting_count=self.__clients[-1].get_client_id() + 1,
+            t_queue_limit=t_queue_limit,
+        )
 
     def log(self, t_trace_type: TraceType):
         if t_trace_type == TraceType.STDIO:
@@ -76,7 +78,7 @@ class Engine:
                 t_event_id += 1
         return t_event_id
 
-    def __add_event(self,  msg_list: list[Message], t_event_id: int) -> int:
+    def __add_event(self, msg_list: list[Message], t_event_id: int) -> int:
         if len(msg_list) != 0:
             for msg in msg_list:
                 self.__scheduler.add_event(
