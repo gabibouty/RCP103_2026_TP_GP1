@@ -46,7 +46,7 @@ def main():
                 t_server_count=_server_count,
                 t_client_count=_client_count,
                 t_queue_limit=_queue_size,
-                t_client_lambda=4
+                t_client_lambda=4,
             )
 
             engine.run()
@@ -163,10 +163,10 @@ def main():
             table_data.append(["$END$", "---", "---", "---", "---", "---"])
             column_titles = ["$time$", "$node$", "$event$", "$src$", "$dst$", "$msgID$"]
             column_width = np.full(len(column_titles), 0.5)
-            column_width[1] = .25
-            column_width[3] = .25
-            column_width[4] = .25
-            column_width[5] = .25
+            column_width[1] = 0.25
+            column_width[3] = 0.25
+            column_width[4] = 0.25
+            column_width[5] = 0.25
             trace = plt.table(
                 cellText=table_data,
                 colLabels=column_titles,
