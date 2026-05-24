@@ -288,6 +288,18 @@ Voici le prototype et la description de chaque méthodes :
 
 \bigskip
 
+\subsection{La passerelle: class Gateway}
+
+La classe \lstinline|Gateway| est une classe dont le périmètre d'action est de gérer la file d'attente et les serveurs, elle manipule des messages. Elle teste la disponibilité des serveurs et envoie un message au premier serveur libre.
+
+Voici le prototype et la description de la principale méthode :
+
+\lstinline|send_message(self, msg: Message, t_time: float)|: ajoute un message dans la file puis tant qu'un serveur est disponible, elle consomme les messages qui se trouvent dans cette même file. Elle renvoie une liste contenant les messages consommés.
+
+\bigskip
+
+
+
 \bigskip
 \bigskip
 
@@ -371,6 +383,15 @@ Test de \emph{Queue}:
     \item Le test définit par \lstinline|test_str| vérifie que la méthode \lstinline|__str__| renvoie la chaîne de caractère comprenant l'ensemble des éléments de la file d'attente.
 \end{itemize}
 
+\bigskip
+
+
+Test de \emph{Gateway}:
+\begin{itemize}
+    \item Le test définit par \lstinline|test_send_message| vérifie que la méthode \lstinline|send_message| envoie un message à un serveur libre.
+    \item Le test définit par \lstinline|test_send_message_dropped_or_in_queue| vérifie que la méthode \lstinline|send_message| envoie un message à un serveur libre et que les messages suivants envoyés à la gateway sont soit droppés soit dans la queue dans le cas où aucun serveur n'est libre. 
+\end{itemize}
+ 
 \bigskip
 
 \subsection{Exécution des tests}
