@@ -169,3 +169,11 @@ def mean_queue_size(t_events: List[Event], t_queue_size: int, t_time: float) -> 
     area += current_queue_size * (t_time - previous_time)#on ajoute la dernière période, entre le dernier event et le temps étudié, multipliée par la taille actuelle de la file d'attente
 
     return area / t_time # moyenne pondérée par le temps
+
+def rejection_rate(t_events: List[Event], t_queue_size: int, t_time: float) -> float:
+    total_received = total_messages_received(t_events, t_time) @
+    if total_received == 0: # pour éviter la division par zéro
+        return 0.0
+    dropped = messages_dropped_at(t_events, t_queue_size, t_time)
+    return dropped / total_received
+    return dropped / total_received
