@@ -140,3 +140,25 @@ def test_all_stats_with_different_combination():
                 + still_in_queue
                 + still_in_transmission
             )
+            
+def test_mean_queue_size(): # pas testée encore
+    SIMULATION_DURATION = 10
+    QUEUE_SIZE = 4
+
+    engine: Engine = Engine(
+        SIMULATION_DURATION,
+        t_server_count=2,
+        t_client_count=2,
+        t_queue_limit=QUEUE_SIZE,
+    )
+
+    engine.run()
+
+    events = engine.log(TraceType.EVENT_LIST)
+
+    mean_q_size = mean_queue_size(events, QUEUE_SIZE, SIMULATION_DURATION)
+    print(f"Mean queue size at end of simulation = {mean_q_size}")
+
+    assert mean_q_size >= 0.0
+    assert mean_q_size <= QUEUE_SIZE
+
