@@ -2,8 +2,6 @@ from sources.engine import Engine, TraceType
 from sources.stats import *
 import math
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MultipleLocator
-from sources.constants import SERVER_AVG_TIME, TRANSMISSION_DURATION
 
 
 def main():
