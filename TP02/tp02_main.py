@@ -6,7 +6,7 @@ from matplotlib.ticker import MultipleLocator
 from sources.trace import get_time_and_nodes
 from sources.engine import Engine, TraceType
 from sources.stats import *
-from sources.constants import SERVER_LAMBDA
+from sources.constants import TRANSMISSION_DURATION
 
 
 def main():
@@ -151,12 +151,18 @@ def main():
                 text = f"\nTotal message sended = {total_messages_sended(events, SIMULATION_DURATION)}"
                 text += f"\nTotal message transmitted = {total_messages_transmit(events, SIMULATION_DURATION)}"
                 text += f"\nTotal message dropped = {total_messages_dropped(events, _queue_size, SIMULATION_DURATION)}"
-                text += f"\n\nStill in transmission at end = {messages_still_in_transmission_at(events, SIMULATION_DURATION)}"
+                text += "\n"
+                text += f"\nStill in transmission at end = {messages_still_in_transmission_at(events, SIMULATION_DURATION)}"
                 text += f"\nStill in queue at end = {messages_in_queue_at(events, _queue_size, SIMULATION_DURATION)}"
-                text += f"\n\nAverage queue size = {mean_queue_size(events, _queue_size, SIMULATION_DURATION):.4f}"
+                text += "\n"
+                text += f"\nAverage queue size = {mean_queue_size(events, _queue_size, SIMULATION_DURATION):.4f}"
                 text += f"\nAverage requests count in system = {mean_request_in_system(events, _queue_size, SIMULATION_DURATION):.4f}"
-                text += f"\n\nAverage time in queue = {average_time_in_queue(events):.4f} $t.u.$"
+                text += "\n"
+                text += f"\nAverage time in queue = {average_time_in_queue(events):.4f} $t.u.$"
                 text += f"\nMaximum time in queue = {maximum_waiting_time_in_queue(events):.4f} $t.u.$"
+                in_system = average_max_min_time_in_system(events)
+                text += f"\nAverage time in system (dropped included, in transmission @end ignored) = {in_system[0]:.4f} $t.u.$"
+                text += f"\nMaximum time in system (dropped included, in transmission @end ignored) = {in_system[1]:.4f} $t.u.$"
 
                 _left_bottom.text(
                     x=0, y=0.65, s=text, fontsize=9, va="center", ha="left"

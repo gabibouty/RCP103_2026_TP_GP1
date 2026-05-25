@@ -42,13 +42,15 @@ class SortedEvents:
             associated_list = self.__recv_events
         else:
             associated_list = self.__dept_events
-        return next(
+        result = next(
             filter(
                 lambda x: x.get_message().get_message_id()
                 == t_event.get_message().get_message_id(),
                 associated_list,
-            )
+            ),
+            None,
         )
+        return result
 
 
 def average_time_in_queue(t_events: List[Event]) -> float:
@@ -203,6 +205,20 @@ def mean_request_in_system(
     )
 
     return area / t_end_time
+
+
+def average_max_min_time_in_system(t_events: List[Event]) -> float:
+    times = []
+    sorted_events: SortedEvents = SortedEvents(t_events)
+    for send_event in sorted_events.get_all_events_of_type(EventType.SEND_MSG):
+        e = sorted_events.get_associated_event(send_event, EventType.MSG_DEPT)
+        if e != None:
+            times.append(e.get_event_time() - send_event.get_event_time())
+            continue
+        e = sorted_events.get_associated_event(send_event, EventType.RECV_MSG)
+        if e != None:
+            times.append(e.get_event_time() - send_event.get_event_time())
+    return np.mean(times), max(times), min(times)
 
 
 def rejection_rate(t_events: List[Event], t_queue_size: int, t_time: float) -> float:
