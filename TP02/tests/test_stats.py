@@ -165,3 +165,25 @@ def test_mean_queue_size():  # pas testée encore
 
     assert mean_q_size >= 0.0
     assert mean_q_size <= QUEUE_SIZE
+
+
+def test_mean_rqt_in_system():  # pas testée encore
+    SIMULATION_DURATION = 10
+    QUEUE_SIZE = 4
+
+    engine: Engine = Engine(
+        t_simulation_duration=SIMULATION_DURATION,
+        t_client_count=2,
+        t_client_avg_send_by_time_unit=4,
+        t_server_count=2,
+        t_queue_limit=QUEUE_SIZE,
+    )
+
+    engine.run()
+
+    events = engine.log(TraceType.EVENT_LIST)
+
+    mean_rqt = mean_request_in_system(events, QUEUE_SIZE, SIMULATION_DURATION)
+    print(f"Mean request in system at end of simulation = {mean_rqt}")
+
+    assert mean_rqt >= 0.0

@@ -137,23 +137,15 @@ def total_messages_dropped(t_events: List[Event], t_queue_size: int, t_time: flo
     return __messages_in_queue_and_dropped_at(t_events, t_queue_size, t_time)[1]
 
 
-def mean_queue_size(t_events: List[Event], t_queue_size: int, t_time: float) -> float:
-    if t_time == 0:  # pour éviter la division par z&ro
-        return 0.0
-
-    t_events = sorted(
-        t_events, key=lambda e: e.get_event_time()
-    )  # les events triés par ordre chronologique
-
+def mean_queue_size(
+    t_events: List[Event], t_queue_size: int, t_end_time: float
+) -> float:
     current_queue_size = 0  # la taille actuelle de la file d'attente
     previous_time = 0.0  # temps du dernier événement traité
     area = 0.0  # la somme des tailles de la file d'attente multipliées par les durées correspondantes
 
     for e in t_events:  # le temps de l'event courant
         current_time = e.get_event_time()
-
-        if current_time > t_time:  # si l'evénement dépasse le temps étudié, on arrête
-            break
 
         duration = (
             current_time - previous_time
@@ -163,22 +155,54 @@ def mean_queue_size(t_events: List[Event], t_queue_size: int, t_time: float) -> 
         if (
             e.get_event_type() == EventType.RECV_MSG
         ):  # si un msg arrive la taille augnmente
-            if current_queue_size < t_queue_size:
+            if t_queue_size is None or current_queue_size < t_queue_size:
                 current_queue_size += 1
-
         elif (
             e.get_event_type() == EventType.MSG_DEPT
         ):  # si msg quitte la taille diminue
-            if current_queue_size > 0:
-                current_queue_size -= 1
+            assert current_queue_size > 0
+            current_queue_size -= 1
 
         previous_time = current_time  # on met à jour le temps du dernier event traité
 
     area += current_queue_size * (
-        t_time - previous_time
+        t_end_time - previous_time
     )  # on ajoute la dernière période, entre le dernier event et le temps étudié, multipliée par la taille actuelle de la file d'attente
 
-    return area / t_time  # moyenne pondérée par le temps
+    return area / t_end_time  # moyenne pondérée par le temps
+
+
+def mean_request_in_system(
+    t_events: List[Event], t_queue_size: int, t_end_time: float
+) -> float:
+    current_queue_size = 0
+    current_in_transmission = 0
+    previous_time = 0.0
+    area = 0.0
+
+    for e in t_events:
+        current_time = e.get_event_time()
+
+        duration = current_time - previous_time
+        area += (current_queue_size + current_in_transmission) * duration
+
+        if e.get_event_type() == EventType.SEND_MSG:
+            current_in_transmission += 1
+        elif e.get_event_type() == EventType.RECV_MSG:
+            current_in_transmission -= 1
+            if t_queue_size is None or current_queue_size < t_queue_size:
+                current_queue_size += 1
+        elif e.get_event_type() == EventType.MSG_DEPT:
+            assert current_queue_size > 0
+            current_queue_size -= 1
+
+        previous_time = current_time
+
+    area += (current_queue_size + current_in_transmission) * (
+        t_end_time - previous_time
+    )
+
+    return area / t_end_time
 
 
 def rejection_rate(t_events: List[Event], t_queue_size: int, t_time: float) -> float:

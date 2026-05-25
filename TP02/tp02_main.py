@@ -153,11 +153,13 @@ def main():
                 text += f"\nTotal message dropped = {total_messages_dropped(events, _queue_size, SIMULATION_DURATION)}"
                 text += f"\n\nStill in transmission at end = {messages_still_in_transmission_at(events, SIMULATION_DURATION)}"
                 text += f"\nStill in queue at end = {messages_in_queue_at(events, _queue_size, SIMULATION_DURATION)}"
+                text += f"\n\nAverage queue size = {mean_queue_size(events, _queue_size, SIMULATION_DURATION):.4f}"
+                text += f"\nAverage requests count in system = {mean_request_in_system(events, _queue_size, SIMULATION_DURATION):.4f}"
                 text += f"\n\nAverage time in queue = {average_time_in_queue(events):.4f} $t.u.$"
                 text += f"\nMaximum time in queue = {maximum_waiting_time_in_queue(events):.4f} $t.u.$"
 
                 _left_bottom.text(
-                    x=0, y=0.65, s=text, fontsize=10, va="center", ha="left"
+                    x=0, y=0.65, s=text, fontsize=9, va="center", ha="left"
                 )
 
                 # -----------------------------------------------------------
