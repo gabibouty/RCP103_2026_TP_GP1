@@ -110,7 +110,7 @@ def total_messages_transmit(t_events: List[Event], t_time: float) -> int:
 def __messages_in_queue_and_dropped_at(
     t_events: List[Event], t_queue_size: int, t_time: float
 ):
-    queue = deque()
+    queue = 0
     dropped = 0
 
     for e in t_events:
@@ -118,15 +118,15 @@ def __messages_in_queue_and_dropped_at(
             break
 
         if e.get_event_type() == EventType.RECV_MSG:
-            if t_queue_size is None or len(queue) < t_queue_size:
-                queue.append(e)
+            if t_queue_size is None or queue < t_queue_size:
+                queue += 1
             else:
                 dropped += 1
         elif e.get_event_type() == EventType.MSG_DEPT:
-            if len(queue) > 0:
-                queue.popleft()
+            assert queue > 0
+            queue -= 1
 
-    return len(queue), dropped
+    return queue, dropped
 
 
 def messages_in_queue_at(t_events: List[Event], t_queue_size: int, t_time: float):

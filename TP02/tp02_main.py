@@ -140,7 +140,9 @@ def main():
                 _left_top.xaxis.set_major_locator(MultipleLocator(1))
 
                 _left_top.set_xlabel("$time$")
-                _left_top.set_ylabel("Message counts during interval")
+                _left_top.set_ylabel(
+                    "Message counts during interval (in_system = in_transmission + in_queue)"
+                )
                 _left_top.legend()
 
                 # -----------------------------------------------------------
