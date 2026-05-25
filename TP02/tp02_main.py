@@ -70,7 +70,7 @@ def main():
                         - sum(dropped_count)
                     )
                     still_in_transmission.append(
-                        total_messages_still_in_transmission(events, _time)
+                        messages_still_in_transmission_at(events, _time)
                     )
                     still_in_queue.append(
                         messages_in_queue_at(events, _queue_size, _time)
@@ -149,7 +149,7 @@ def main():
                 text = f"\nTotal message sended = {total_messages_sended(events, SIMULATION_DURATION)}"
                 text += f"\nTotal message transmitted = {total_messages_transmit(events, SIMULATION_DURATION)}"
                 text += f"\nTotal message dropped = {total_messages_dropped(events, _queue_size, SIMULATION_DURATION)}"
-                text += f"\n\nStill in transmission at end = {total_messages_still_in_transmission(events, SIMULATION_DURATION)}"
+                text += f"\n\nStill in transmission at end = {messages_still_in_transmission_at(events, SIMULATION_DURATION)}"
                 text += f"\nStill in queue at end = {messages_in_queue_at(events, _queue_size, SIMULATION_DURATION)}"
                 text += f"\n\nAverage time in queue = {average_time_in_queue(events):.4f} $t.u.$"
                 text += f"\nMaximum time in queue = {maximum_waiting_time_in_queue(events):.4f} $t.u.$"

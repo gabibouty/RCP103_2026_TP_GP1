@@ -42,7 +42,7 @@ def test_all_stats():
         _sended_count = total_messages_sended(events, _time)
         _transmit_count = total_messages_transmit(events, _time)
         _dropped_count = total_messages_dropped(events, QUEUE_SIZE, _time)
-        still_in_transmission = total_messages_still_in_transmission(events, _time)
+        still_in_transmission = messages_still_in_transmission_at(events, _time)
         still_in_queue = messages_in_queue_at(events, QUEUE_SIZE, _time)
 
         print(f"STATS @ {_time}")
@@ -120,7 +120,7 @@ def test_all_stats_with_different_combination():
             _sended_count = total_messages_sended(events, t)
             _transmit_count = total_messages_transmit(events, t)
             _dropped_count = total_messages_dropped(events, _queue_size, t)
-            still_in_transmission = total_messages_still_in_transmission(events, t)
+            still_in_transmission = messages_still_in_transmission_at(events, t)
             still_in_queue = messages_in_queue_at(events, _queue_size, t)
 
             print(

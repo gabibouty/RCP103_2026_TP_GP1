@@ -91,7 +91,7 @@ def total_messages_received(t_events: List[Event], t_time: float) -> int:
     return count
 
 
-def total_messages_still_in_transmission(t_events: List[Event], t_time: float) -> int:
+def messages_still_in_transmission_at(t_events: List[Event], t_time: float) -> int:
     return total_messages_sended(t_events, t_time) - total_messages_received(
         t_events, t_time
     )
