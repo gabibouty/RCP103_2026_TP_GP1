@@ -419,6 +419,16 @@ Test de \emph{Gateway}:
  
 \bigskip
 
+Test de \emph{Stats}:
+\begin{itemize}
+    \item Le test définit par \lstinline|test_all_stats| vérifie que le bon fonctionnement de l'ensemble des fonctions de calculs des statistiques. Une simulation avec 2 clients, 2 serveurs et une capacité de 4 envois par unité de temps pendant 10 unités de temps est lancée. Ce test calcule d'abord le temps moyen et maximal passé dans la file, puis vérifie que ces valeurs sont non nulles. Ensuite, il calcule les statistiques détaillées (messages envoyés, transmis, abandonnés, en transmission ou en file) des évènements. 
+    \item Le test définit par \lstinline|test_all_stats_with_different_combination| vérifie que le bon fonctionnement de l'ensemble des fonctions de calculs des statistiques. Plusieurs simulations utilisant différentes combinaisons pendant 10 unités de temps sont lancées. Les paramètres possibles sont les suivants : une file de taille 4, 8, 12, 16, un nombre maximum de clients de 8 et un nombre maximum de serveurs de 8. Ce test calcule les statistiques détaillées (messages envoyés, transmis, abandonnés, en transmission ou en file) des évènements. Il vérifie pour chaque simulation que le nombre de message envoyé est égal à l'addition des messages transmis, des messages abandonnés, des messages encore dans la file d'attente et des messages en cours de transmission.
+    \item Le test définit par \lstinline|test_mean_queue_size| calcule de la taille moyenne de la file d'attente sur une simulation de 10 unités de temps avec 2 clients, 2 serveurs et une file de taille 4. Il exécute la simulation, calcule la taille moyenne de la file sur toute la durée. Enfin, ce test que cette moyenne est bien comprise entre 0 et la taille maximale de la file.
+    \item Le test définit par \lstinline|test_mean_rqt_in_system| calcule du nombre moyen de requêtes dans le système sur une simulation de 10 unités de temps avec 2 clients, 2 serveurs et une file de taille 4. Cette simulation permet de calculer la moyenne à partir des événements et vérifie que cette moyenne est bien positive ou nulle.
+\end{itemize}
+ 
+\bigskip
+
 \subsection{Exécution des tests}
 Les tests peuvent être lancés depuis le répertoire principal en tapant la commande \lstinline|pytest| (attention, \lstinline|Pytest| doit être préalablement installé).
 L'ensemble des tests présents dans le répertoire \lstinline|tests| seront exécutés.
