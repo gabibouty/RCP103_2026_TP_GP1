@@ -56,7 +56,7 @@ def main():
                 still_in_queue = []
                 total_in_system = []
                 _t = []
-                STEP = 0.25
+                STEP = 0.2
                 _time = STEP
 
                 while _time <= SIMULATION_DURATION:
@@ -182,10 +182,9 @@ def main():
                 found_t1 = False
                 last_row_index = len(all_data) - MAX_ROWS
                 for i in range(all_data_len):
-                    if all_data[i][0] <= 1.0 or i >= last_row_index:
+                    if len(table_data) < (MAX_ROWS / 2 - 2) or i >= last_row_index:
                         table_data.append(all_data[i])
-                    elif not found_t1:
-                        found_t1 = True
+                    elif len(table_data) == (MAX_ROWS / 2 - 2):
                         table_data.append(all_data[i])
                         table_data.append(["...", "...", "...", "...", "...", "..."])
                         table_data.append(["...", "...", "...", "...", "...", "..."])
