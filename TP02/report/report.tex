@@ -236,7 +236,7 @@ Comme décrit précédemment, les temps d'émissions comme les temps de traiteme
 
 \bigskip
 
-\subsection{Les fonctions de logs: functions Trace}
+\subsection{Les fonctions de logs: fonctions Trace}
 
 Le module \lstinline|trace| contient trois fonctions fournissant un système de journalisation au simulateur, permettant de visualiser et d'enregistrer les évènements.
 
@@ -295,6 +295,31 @@ La classe \lstinline|Gateway| est une classe dont le périmètre d'action est de
 Voici le prototype et la description de la principale méthode :
 
 \lstinline|send_message(self, msg: Message, t_time: float)|: ajoute un message dans la file puis tant qu'un serveur est disponible, elle consomme les messages qui se trouvent dans cette même file. Elle renvoie une liste contenant les messages consommés.
+
+\bigskip
+
+\subsection{Les statistiques: fonctions Stats}
+
+La fonction \lstinline|average_time_in_queue(t_events: List[Event])| calcule le temps moyens que passe un message dans la file.
+
+La fonction \lstinline|maximum_waiting_time_in_queue(t_events: List[Event])| calcule le temps maximum que passe un message dans la file.
+
+La fonction \lstinline|total_messages_sended(t_events: List[Event], t_time: float)| calcule le nombre total de message envoyés par les clients à la gateway avant un temps donné.
+
+La fonction \lstinline|total_messages_received(t_events: List[Event], t_time: float)| calcule le nombre total de messages reçus par la gateway à un temps donné.
+
+La fonction \mbox{\lstinline|total_messages_still_in_transmission(t_events: List[Event], t_time: float)|} calcule le nombre total de messages en cours de transmission à un temps donné. Plus précisément il s'agit des messages qui ont été envoyés par les clients mais pas encore reçu par la gateway.
+
+La fonction \lstinline|total_messages_transmit(t_events: List[Event], t_time: float)| calcule le nombre total de messages transmis aux serveurs à un instant donné.
+
+La fonction \lstinline|messages_in_queue_at(t_events: List[Event], t_queue_size: int, t_time: float)| calcule le nombre total de messages dans la file à un instant donné.
+
+La fonction \lstinline|total_messages_dropped(t_events: List[Event], t_queue_size: int, t_time: float)| calcule le nombre total de messages droppés par la file à un instant donné.
+
+La fonction \mbox{\lstinline|mean_queue_size(t_events: List[Event], t_queue_size: int, t_time: float)|} calcule la taille moyenne de la file d'attente pour une période de temps donnée.
+
+La fonction \mbox{\lstinline|rejection_rate(t_events: List[Event], t_queue_size: int, t_time: float)|} calcule le taux des messages droppés (messages droppés / messages reçus).
+
 
 \bigskip
 
