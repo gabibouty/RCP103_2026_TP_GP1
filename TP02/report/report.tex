@@ -27,6 +27,7 @@
 % LIENS
 % ---------------------------------------------
 \usepackage[colorlinks=true,linkcolor=black,urlcolor=blue,citecolor=black]{hyperref}
+\usepackage{pdfpages}
 
 % ---------------------------------------------
 % CODE (optionnel)
@@ -89,7 +90,7 @@
 \bigskip
 
 \begin{abstract}
-    Ce TP a pour objectif de créer un programme permettant de simuler un système simple de type Client(s)/Serveur asynchrones. Ce simulateur nous permettra de réaliser des mesures variées pour qualifier notre système (nombre instantané de requêtes, temps d'attente, etc.), sans avoir à mettre en œuvre concrètement ce dernier.
+    Ce TP a pour objectif de créer un programme permettant de simuler un système simple de type Client(s)/Serveur(s) asynchrones. Ce simulateur nous permettra de réaliser des mesures variées pour qualifier notre système (nombre instantané de requêtes, temps d'attente, etc.), sans avoir à mettre en œuvre concrètement ce dernier.
 \end{abstract}
 
 \bigskip
@@ -99,7 +100,7 @@
 
 Comme évoqué en introduction, ce rapport présente la réalisation d'un simple simulateur à évènements discrets du type Client(s)/Serveur:
 
-Un ensemble de $N$ clients ($N \geq 1$), envoient des messages à 1 serveur. Un portail sert d'intermédiaire entre les clients et le serveur. Compte tenu que le serveur ne peut traiter qu'un message à la fois, le portail permet de temporiser les messages en attente de traitement dans une file de taille fixe $K$.
+Un ensemble de $x$ clients ($x \geq 1$), envoient des messages à un ensemble de $n$ serveurs ($n \geq 1$). Un portail sert d'intermédiaire entre les clients et les serveurs. Compte tenu que les serveurs ne peuvent traiter qu'un message à la fois, le portail permet de temporiser les messages en attente de traitement dans une file de taille fixe $K$ ($1 \leq K \leq \inf$).
 
 \begin{figure}[H]
     \centering
@@ -109,22 +110,26 @@ Un ensemble de $N$ clients ($N \geq 1$), envoient des messages à 1 serveur. Un 
 
 Dans ce simulateur, les envois de messages suivent un processus de Poisson: le taux d'envois est constant dans le temps, les temps entre deux envois consécutifs suivent une distribution exponentielle. De même, le temps de service suit une loi exponentielle.
 
-Compte tenu du fait que nous n'avons pour l'instant qu'un seul serveur, nous pouvons donc définir cette simulation comme un processus de file d'attente de type M/M/1/K:
+De manière générale, dans l'hypothèse où nous n'avons qu'un client, nous pouvons définir cette simulation comme un processus de file d'attente de type M/M/N/K:
 
 \begin{itemize}
     \item M: Arrivées selon un processus de Poisson (Markovien).
     \item M: Temps de service selon une distribution exponentielle (Markovien).
-    \item 1: Nombre de serveurs (ici, 1).
+    \item N: Nombre de serveurs (ici, 1).
     \item K: Capacité du système (ici, la taille de la file du portail de capacité K).
 \end{itemize}
+
 
 La configuration du simulateur est définie comme suit:
 
 \begin{itemize}
-    \item Temps moyen inter-message: configurable
-    \item Temps de transmission: $1t$
-    \item Temps moyen de service: configurable
-    \item Temps total de la simulation: configurable
+    \item Nombre moyen de messages générés par unité de temps par client: $\lambda$
+    \item Nombre moyen de messages traités par serveur par unité de temps: $8$
+    \item Temps de transmission constant: $1t$
+    \item Temps total de la simulation: $t_{\mathrm{max}}$
+    \item Nombre de clients: $x$
+    \item Nombre de serveurs: $n$
+    \item Taille de la file: $k$
 \end{itemize}
 
 \bigskip
@@ -134,6 +139,12 @@ La configuration du simulateur est définie comme suit:
 % ---------------------------------------------
 \section{Architecture du simulateur}
 \subsection{Architecture initiale}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.70\textwidth]{../images/engine_view.png}
+    \caption{Schéma de principe du simulateur}
+\end{figure}
 
 Afin de simuler les transmissions et traitement de messages entre le ou les \emph{Client} et le \emph{Server} (à travers le \emph{Gateway}), chaque étape de gestion du \emph{Message} sera encapsulée dans des \emph{Event}. Ces \emph{Event} pourront être, de fait, de 3 types différents:
 
@@ -147,15 +158,10 @@ Chacun de ces \emph{Event} sera timestampé et stocké chronologiquement dans un
 
 L'ensemble de ces composants seront encapsulés dans un \emph{Engine}, dont la boucle principale viendra interagir avec ces derniers afin de dérouler la simulation.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.80\textwidth]{../images/engine_view.png}
-    \caption{Schéma de principe du simulateur}
-\end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.68\textwidth]{../images/run_algo.png}
+    \includegraphics[width=0.6\textwidth]{../images/run_algo.png}
     \caption{Algorithme de la boucle principale de l'\emph{Engine}}
 \end{figure}
 
@@ -168,7 +174,7 @@ Le dossier fourni s'organise ainsi:
     \item \lstinline|root|: Le point d'entrée du programme principal (\lstinline|tp02_main.py|), les fichiers de configurations de lancement des tests, ainsi que les dépendances Python.
     \item Dossier \lstinline|sources|: Le code applicatif.
     \item Dossier \lstinline|tests|: Le code relatif aux tests unitaires.
-    \item Dossiers \lstinline|report| et \lstinline|images|: Le présent rapport et les images associées.
+    \item Dossiers \lstinline|report| et \lstinline|images|: Le présent rapport, et les résultats de la simulation, ainsi que les images associées au rapport.
 \end{itemize}
 
 \bigskip
@@ -177,7 +183,7 @@ Le dossier fourni s'organise ainsi:
 \bigskip
 
 % ---------------------------------------------
-\section{Création des premières classes}
+\section{Description des classes}
 \subsection{Les données: class Message et class Event}
 Comme évoqué précédemment, la classe \emph{Message} est l'unité d'échange entre \emph{Client} et \emph{Server}.
 Cette classe contient:
@@ -236,40 +242,6 @@ Comme décrit précédemment, les temps d'émissions comme les temps de traiteme
 
 \bigskip
 
-\subsection{Les fonctions de logs: fonctions Trace}
-
-Le module \lstinline|trace| contient trois fonctions fournissant un système de journalisation au simulateur, permettant de visualiser et d'enregistrer les évènements.
-
-Voici le prototype et la description de chaque fonction :
-
-\lstinline|def get_time_and_node(e: Event)|:  prend un évènement en paramètre et retourne un tuple constitué du numéro de nœud et du temps en fonction du type d'évènement.
-
-\lstinline|def generateTraceOut(t_event: list[Event])|:  prend une liste d'évènements en paramètre et écrit sur la sortie standard l'ensemble des évènements contenu dans la liste.
-
-\lstinline|def generateTraceCSV(t_event: list[Event])|: prend une liste d'évènements en paramètre et écrit dans un fichier nommé \lstinline|trace.csv| l'ensemble des évènements contenu dans la liste au format CSV. Le délimiteur utilisé est le caractère '\lstinline|;|'.
-
-\bigskip
-
-\subsection{Le cœur du système: class Engine}
-
-La classe \emph{Engine} représente le cœur du simulateur. Elle définit les instances des différents composants (\emph{Client}, \emph{Server}, etc.) lors de son initialisation, et simule les transactions entre chacuns d'entre eux durant l'exécution de la simulation.
-
-Sa fonction \lstinline|run| permet de lancer l'execution. Celle-ci s'appuie sur un \emph{Scheduler} pour déterminer l'évolulution du temps. Son rôle principale est de forcer les comportements de chacuns des composants (\emph{Client}, \emph{Server}, \emph{Queue}, etc.) et d'encapsuler les \emph{Message} émis, reçu, traités dans des \emph{Event}, afin d'alimenter le \emph{Scheduler}.
-
-La classe \emph{Engine} propose aussi une fonction \lstinline|log| permettant d'afficher les \emph{Event} déjà passés, grâce aux fonctions
-proposées par le module \emph{trace}.
-
-\bigskip
-
-\subsection{Le point d'entrée: function main}
-
-Le point d'entrée du programme se trouve dans \lstinline|tp02_main.py|. Il permet d'executer le programme simplement en appelant \lstinline|python tp02_main.py| depuis le répertoire racine.
-
-En l'état, il se contente de créer une instance d'\emph{Engine},
-et de lancer l'execution de cette instance. Mais on pourrait par exemple imaginer y ajouter un parsing d'arguments pour configurer le simulateur dynamiquement.
-
-\bigskip
-
 \subsection{La file d'attente des évènements: class Queue}
 
 La classe \lstinline|Queue| est une structure de donnée de type FIFO (First In First Out). Elle va garder les messages dans l'attente de leur prise en compte par le serveur.
@@ -298,6 +270,31 @@ Voici le prototype et la description de la principale méthode :
 
 \bigskip
 
+\subsection{Les fonctions de logs: fonctions Trace}
+
+Le module \lstinline|trace| contient trois fonctions fournissant un système de journalisation au simulateur, permettant de visualiser et d'enregistrer les évènements.
+
+Voici le prototype et la description de chaque fonction :
+
+\lstinline|def get_time_and_node(e: Event)|:  prend un évènement en paramètre et retourne un tuple constitué du numéro de nœud et du temps en fonction du type d'évènement.
+
+\lstinline|def generateTraceOut(t_event: list[Event])|:  prend une liste d'évènements en paramètre et écrit sur la sortie standard l'ensemble des évènements contenu dans la liste.
+
+\lstinline|def generateTraceCSV(t_event: list[Event])|: prend une liste d'évènements en paramètre et écrit dans un fichier nommé \lstinline|trace.csv| l'ensemble des évènements contenu dans la liste au format CSV. Le délimiteur utilisé est le caractère '\lstinline|;|'.
+
+\bigskip
+
+\subsection{Le cœur du système: class Engine}
+
+La classe \emph{Engine} représente le cœur du simulateur. Elle définit les instances des différents composants (\emph{Client}, \emph{Server}, etc.) lors de son initialisation, et simule les transactions entre chacuns d'entre eux durant l'exécution de la simulation.
+
+Sa fonction \lstinline|run| permet de lancer l'execution. Celle-ci s'appuie sur un \emph{Scheduler} pour déterminer l'évolulution du temps. Son rôle principale est de forcer les comportements de chacuns des composants (\emph{Client}, \emph{Gateway}, etc.) et d'encapsuler les \emph{Message} émis, reçu, traités dans des \emph{Event}, afin d'alimenter le \emph{Scheduler}.
+
+La classe \emph{Engine} propose aussi une fonction \lstinline|log| permettant d'afficher les \emph{Event} déjà passés, grâce aux fonctions
+proposées par le module \emph{trace}.
+
+\bigskip
+
 \subsection{Les statistiques: fonctions Stats}
 
 La fonction \lstinline|average_time_in_queue(t_events: List[Event])| calcule le temps moyens que passe un message dans la file.
@@ -320,16 +317,49 @@ La fonction \mbox{\lstinline|mean_queue_size(t_events: List[Event], t_queue_size
 
 La fonction \mbox{\lstinline|rejection_rate(t_events: List[Event], t_queue_size: int, t_time: float)|} calcule le taux des messages droppés (messages droppés / messages reçus).
 
-
 \bigskip
 
+\subsection{Le point d'entrée: function main}
+
+Le point d'entrée du programme se trouve dans \lstinline|tp02_main.py|. Il permet d'executer un programme qui utilise le simulateur avec différentes configurations. Le programme inscrit ensuite les resultats dans un rapport pdf.
+Le programme peut-être lancé simplement en appelant \lstinline|python tp02_main.py| depuis le répertoire racine.
+
+Les différentes configurations simulées sont:
+
+\begin{itemize}
+    \item $\lambda=4, x=1, n=1, k=\inf$
+    \item $\lambda=6, x=1, n=1, k=\inf$
+    \item $\lambda=8, x=1, n=1, k=\inf$
+    \item $\lambda=12, x=1, n=1, k=\inf$
+\end{itemize}
+\begin{itemize}
+    \item $\lambda=4, x=1, n=1, k=4$
+    \item $\lambda=6, x=1, n=1, k=4$
+    \item $\lambda=8, x=1, n=1, k=4$
+    \item $\lambda=12, x=1, n=1, k=4$
+\end{itemize}
+\begin{itemize}
+    \item $\lambda=4, x=1, n=1, k=8$
+    \item $\lambda=6, x=1, n=1, k=8$
+    \item $\lambda=8, x=1, n=1, k=8$
+    \item $\lambda=12, x=1, n=1, k=8$
+\end{itemize}
+\begin{itemize}
+    \item $\lambda=4, x=1, n=3, k=8$
+    \item $\lambda=6, x=1, n=3, k=8$
+    \item $\lambda=8, x=1, n=3, k=8$
+    \item $\lambda=12, x=1, n=3, k=8$
+\end{itemize}
 
 
+Les résultats sont disponibles à la fin du présent rapport, ou directement dans le fichier de résultats: \emph{simulation\_results.pdf}
+
+\bigskip
 \bigskip
 \bigskip
 
 % ---------------------------------------------
-\section{Tests des premières classes}
+\section{Tests unitaires}
 \subsection{Le système de test: Pytest}
 Afin de vérifier le bon fonctionnement des classes implémentées, des tests unitaires ont été réalisés avec l'aide de l'utilitaire \lstinline|Pytest|. L'objectif est de tester chaque classe séparément avant de l'intégrer dans le simulateur. L'ensemble des tests sont regroupés dans le répertoire \lstinline|tests|.
 
@@ -414,9 +444,9 @@ Test de \emph{Queue}:
 Test de \emph{Gateway}:
 \begin{itemize}
     \item Le test définit par \lstinline|test_send_message| vérifie que la méthode \lstinline|send_message| envoie un message à un serveur libre.
-    \item Le test définit par \lstinline|test_send_message_dropped_or_in_queue| vérifie que la méthode \lstinline|send_message| envoie un message à un serveur libre et que les messages suivants envoyés à la gateway sont soit droppés soit dans la queue dans le cas où aucun serveur n'est libre. 
+    \item Le test définit par \lstinline|test_send_message_dropped_or_in_queue| vérifie que la méthode \lstinline|send_message| envoie un message à un serveur libre et que les messages suivants envoyés à la gateway sont soit droppés soit dans la queue dans le cas où aucun serveur n'est libre.
 \end{itemize}
- 
+
 \bigskip
 
 Test de \emph{Stats}:
@@ -433,9 +463,7 @@ Test de \emph{Stats}:
 Les tests peuvent être lancés depuis le répertoire principal en tapant la commande \lstinline|pytest| (attention, \lstinline|Pytest| doit être préalablement installé).
 L'ensemble des tests présents dans le répertoire \lstinline|tests| seront exécutés.
 
-\bigskip
-\bigskip
-\bigskip
+\pagebreak
 
 % ---------------------------------------------
 \section{Conclusion}
@@ -443,6 +471,16 @@ Ce TP nous permet d'appréhender ce que peut être un simulateur à évènements
 
 Il nous permet aussi de comprendre l'intérêt que peut représenter la complémentarité qu'il peut exister entre modélisation mathématique et simulation. En effet, la modélisation mathématique nous fournit les outils (variables aléatoires, processus stochastiques, etc.) qui vont nous permettre de construire facilement un simulateur, et ainsi réaliser, tout aussi facilement, des mesures théoriques sur un système complexe. Établir et mettre en œuvre un protocole de mesures sur ce même système dans le monde réel aurait été bien plus lourd et couteux.
 
-D'un point de vue du développement logiciel, les différentes itérations de réalisation, basées sur une approche TDD (Test Driven Developpement), nous permettent de valider progressivement nos composants logiciels. Cela facilite ensuite l'assemblage, et permet aussi d'éviter les régressions.
+Grâce aux résultats générés par le programme de démonstration, nous constatons facilement que ce simulateur va nous permettre d'extraire les métriques qui vont nous guider dans la configuration d'un sytstème. En fonction des spécifications d'accéptabilités définies (temps de traitement maximum ou moyen, taux de perte autorisé, ressources allouables), nous pourrons adapter la configuration du simulateur pour trouver le meilleurs compromis, voir la configuration idéale, répondant à ces spécifications.
+
+D'un point de vue du développement logiciel, les différentes itérations de réalisation, basées sur une approche TDD (Test Driven Developpement), nous permettent de valider progressivement nos composants logiciels. Cela facilite ensuite l'assemblage, et permet aussi d'éviter les régressions. Cependant, certaines améliorations seraient à envisager pour parfaire ce simulateur tel que:
+\begin{itemize}
+    \item L'amélioration des performances des fonctions statistiques.
+    \item Rendre configurable le seed de génération de message (actuellement basé sur l'id du client uniquement)
+    \item etc.
+\end{itemize}
+
+
+\includepdf[pages=-, angle=-90, scale=0.8]{simulation_results.pdf}
 
 \end{document}

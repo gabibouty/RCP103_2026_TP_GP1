@@ -20,7 +20,7 @@ def main():
         [1, 3, 8],
     ]
 
-    with PdfPages("simulation_results.pdf") as pdf:
+    with PdfPages("report/simulation_results.pdf") as pdf:
         for _client_count, _server_count, _queue_size in configuration:
             CLIENT_LAMBDAS = [4, 6, 8, 12]
             for _client_lambda in CLIENT_LAMBDAS:
