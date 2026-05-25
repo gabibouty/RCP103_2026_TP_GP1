@@ -14,7 +14,6 @@ def test_put():
     message2.set_message_arrival_time(1.2)
     message2.set_message_server_time(4.6)
 
-
     queue = Queue()
     queue.put(message1)
     queue.put(message2)
@@ -129,7 +128,7 @@ def test_put_size1():
     message2.set_message_send_time(0.2)
     message2.set_message_arrival_time(1.2)
     message2.set_message_server_time(4.6)
-    
+
     message3 = Message(1, 3)
     message3.set_message_send_time(0.2)
     message3.set_message_arrival_time(1.2)
